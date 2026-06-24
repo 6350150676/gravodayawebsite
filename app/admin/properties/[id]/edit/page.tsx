@@ -29,6 +29,7 @@ export default async function EditPropertyPage({ params }: Props) {
     cities.map((c) => getLocalitiesByCity(c.id))
   ).then((arrays) => arrays.flat());
 
+  // bind id as first arg; useActionState will pass (prev, formData) as remaining args
   const boundUpdate = updatePropertyAction.bind(null, id);
 
   return (

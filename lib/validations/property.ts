@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const propertySchema = z.object({
   title: z.string().min(5).max(200),
-  description: z.string().min(20).max(5000),
+  description: z.string().min(10, "Description must be at least 10 characters").max(5000),
   price: z.number().positive("Price must be positive"),
   price_label: z.string().max(50).optional(),
   category_id: z.number().int().positive(),

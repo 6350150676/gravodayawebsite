@@ -14,7 +14,10 @@ async function requireAdmin() {
   return user;
 }
 
-export async function createPropertyAction(formData: FormData) {
+export async function createPropertyAction(
+  _prev: string | null,
+  formData: FormData,
+): Promise<string | null> {
   await requireAdmin();
   const supabase = createAdminClient();
 
@@ -39,9 +42,7 @@ export async function createPropertyAction(formData: FormData) {
   };
 
   const parsed = propertySchema.safeParse(raw);
-  if (!parsed.success) {
-    throw new Error(parsed.error.errors[0].message);
-  }
+  if (!parsed.success) return parsed.error.errors[0].message;
 
   const slug = slugify(parsed.data.title) + "-" + Date.now();
 
@@ -51,9 +52,8 @@ export async function createPropertyAction(formData: FormData) {
     .select("id")
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) return error.message;
 
-  // Handle image uploads
   const images = formData.getAll("images") as File[];
   await uploadPropertyImages(property.id, images);
 
@@ -61,7 +61,11 @@ export async function createPropertyAction(formData: FormData) {
   redirect("/admin/properties");
 }
 
-export async function updatePropertyAction(id: string, formData: FormData) {
+export async function updatePropertyAction(
+  id: string,
+  _prev: string | null,
+  formData: FormData,
+): Promise<string | null> {
   await requireAdmin();
   const supabase = createAdminClient();
 
@@ -86,14 +90,14 @@ export async function updatePropertyAction(id: string, formData: FormData) {
   };
 
   const parsed = propertySchema.safeParse(raw);
-  if (!parsed.success) throw new Error(parsed.error.errors[0].message);
+  if (!parsed.success) return parsed.error.errors[0].message;
 
   const { error } = await supabase
     .from("properties")
     .update(parsed.data)
     .eq("id", id);
 
-  if (error) throw new Error(error.message);
+  if (error) return error.message;
 
   const images = formData.getAll("images") as File[];
   const validImages = images.filter((f) => f.size > 0);
