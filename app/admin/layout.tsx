@@ -5,7 +5,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+      {/* pt-14 on mobile to clear the fixed top bar; no padding on lg (sidebar is inline) */}
+      <main className="flex-1 p-4 pt-18 lg:pt-4 lg:p-8 overflow-auto min-w-0">
+        {children}
+      </main>
     </div>
   );
 }

@@ -61,7 +61,7 @@ export function PropertyForm({ action, property, categories, cities, localities 
             className={input} placeholder="e.g. 3BHK Apartment in Rajpur Road" />
         </Field>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Category *">
             <select name="category_id" required defaultValue={property?.category.id} className={input}>
               <option value="">Select category</option>
@@ -79,7 +79,7 @@ export function PropertyForm({ action, property, categories, cities, localities 
           </Field>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Price (₹) *">
             <input name="price" type="number" required min={1} defaultValue={property?.price}
               className={input} placeholder="e.g. 4500000" />
@@ -100,7 +100,7 @@ export function PropertyForm({ action, property, categories, cities, localities 
       <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-gray-800">Location</h2>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="City *">
             <select name="city_id" required defaultValue={property?.city.id}
               onChange={(e) => setSelectedCityId(Number(e.target.value))} className={input}>
@@ -126,7 +126,7 @@ export function PropertyForm({ action, property, categories, cities, localities 
             className={input} placeholder="Street / Society name" />
         </Field>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Map Latitude">
             <input name="map_lat" type="number" step="any" defaultValue={property?.map_lat ?? ""}
               className={input} placeholder="e.g. 30.3165" />
@@ -142,7 +142,7 @@ export function PropertyForm({ action, property, categories, cities, localities 
       <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-gray-800">Property Details</h2>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Field label="Area (sq.ft)">
             <input name="area_sqft" type="number" min={1} defaultValue={property?.area_sqft ?? ""}
               className={input} placeholder="e.g. 1200" />
@@ -158,7 +158,7 @@ export function PropertyForm({ action, property, categories, cities, localities 
         </div>
 
         <Field label="Amenities">
-          <div className="grid grid-cols-3 gap-2 mt-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1">
             {AMENITIES_LIST.map((a) => (
               <label key={a} className="flex items-center gap-2 text-sm">
                 <input type="checkbox" name="amenities" value={a}
@@ -228,7 +228,7 @@ export function PropertyForm({ action, property, categories, cities, localities 
       {/* Status & Flags */}
       <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-gray-800">Status</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Field label="Status *">
             <select name="status" required defaultValue={property?.status ?? "active"} className={input}>
               {STATUS_OPTIONS.map((s) => (
