@@ -2,9 +2,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { deletePropertyAction } from "@/lib/actions/property.actions";
+import { DeletePropertyButton } from "@/components/admin/DeletePropertyButton";
 import { formatPrice } from "@/lib/utils";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Properties — Admin" };
@@ -57,7 +57,8 @@ export default async function AdminPropertiesPage() {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Property</th>
@@ -111,13 +112,7 @@ export default async function AdminPropertiesPage() {
                         <Button asChild variant="ghost" size="icon">
                           <Link href={`/admin/properties/${p.id}/edit`}><Pencil size={15} /></Link>
                         </Button>
-                        <form action={deletePropertyAction.bind(null, p.id)}>
-                          <Button type="submit" variant="ghost" size="icon"
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                            onClick={(e) => { if (!confirm("Delete this property?")) e.preventDefault(); }}>
-                            <Trash2 size={15} />
-                          </Button>
-                        </form>
+                        <DeletePropertyButton id={p.id} />
                       </div>
                     </td>
                   </tr>
@@ -125,6 +120,7 @@ export default async function AdminPropertiesPage() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

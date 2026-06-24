@@ -26,7 +26,7 @@ export default async function AdminDashboardPage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4">
         {stats.map(({ label, value }) => (
           <div key={label} className="bg-white rounded-xl shadow-sm p-6">
             <p className="text-sm text-gray-500">{label}</p>
