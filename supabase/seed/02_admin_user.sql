@@ -10,5 +10,5 @@
 -- ============================================================
 
 insert into admins (id, email) values
-  ('<YOUR_ADMIN_USER_UUID>', '<YOUR_ADMIN_EMAIL>')
+  ('db02252c-7697-484d-9c2e-052f24733d2e', 'garvodaydevelopers@gmail.com')
 on conflict (id) do nothing;
