@@ -14,41 +14,28 @@ export interface Database {
   public: {
     Tables: {
       admins: {
-        Row: {
-          id: string;
-          email: string;
-          created_at: string;
-        };
-        Insert: Omit<Database["public"]["Tables"]["admins"]["Row"], "created_at">;
-        Update: Partial<Database["public"]["Tables"]["admins"]["Insert"]>;
+        Row: { id: string; email: string; created_at: string };
+        Insert: { id: string; email: string };
+        Update: { id?: string; email?: string };
+        Relationships: [];
       };
       cities: {
-        Row: {
-          id: number;
-          name: string;
-          slug: string;
-        };
-        Insert: Omit<Database["public"]["Tables"]["cities"]["Row"], "id">;
-        Update: Partial<Database["public"]["Tables"]["cities"]["Insert"]>;
+        Row: { id: number; name: string; slug: string };
+        Insert: { name: string; slug: string };
+        Update: { name?: string; slug?: string };
+        Relationships: [];
       };
       localities: {
-        Row: {
-          id: number;
-          city_id: number;
-          name: string;
-          slug: string;
-        };
-        Insert: Omit<Database["public"]["Tables"]["localities"]["Row"], "id">;
-        Update: Partial<Database["public"]["Tables"]["localities"]["Insert"]>;
+        Row: { id: number; city_id: number; name: string; slug: string };
+        Insert: { city_id: number; name: string; slug: string };
+        Update: { city_id?: number; name?: string; slug?: string };
+        Relationships: [];
       };
       property_categories: {
-        Row: {
-          id: number;
-          name: string;
-          slug: string;
-        };
-        Insert: Omit<Database["public"]["Tables"]["property_categories"]["Row"], "id">;
-        Update: Partial<Database["public"]["Tables"]["property_categories"]["Insert"]>;
+        Row: { id: number; name: string; slug: string };
+        Insert: { name: string; slug: string };
+        Update: { name?: string; slug?: string };
+        Relationships: [];
       };
       properties: {
         Row: {
@@ -74,11 +61,47 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["properties"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["properties"]["Insert"]>;
+        Insert: {
+          slug: string;
+          title: string;
+          description: string;
+          price: number;
+          price_label?: string | null;
+          category_id: number;
+          city_id: number;
+          locality_id?: number | null;
+          address?: string | null;
+          area_sqft?: number | null;
+          bedrooms?: number | null;
+          bathrooms?: number | null;
+          amenities?: string[];
+          is_for_rent?: boolean;
+          is_featured?: boolean;
+          status?: PropertyStatus;
+          map_lat?: number | null;
+          map_lng?: number | null;
+        };
+        Update: {
+          slug?: string;
+          title?: string;
+          description?: string;
+          price?: number;
+          price_label?: string | null;
+          category_id?: number;
+          city_id?: number;
+          locality_id?: number | null;
+          address?: string | null;
+          area_sqft?: number | null;
+          bedrooms?: number | null;
+          bathrooms?: number | null;
+          amenities?: string[];
+          is_for_rent?: boolean;
+          is_featured?: boolean;
+          status?: PropertyStatus;
+          map_lat?: number | null;
+          map_lng?: number | null;
+        };
+        Relationships: [];
       };
       property_images: {
         Row: {
@@ -89,8 +112,19 @@ export interface Database {
           sort_order: number;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["property_images"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["property_images"]["Insert"]>;
+        Insert: {
+          property_id: string;
+          storage_path: string;
+          is_cover?: boolean;
+          sort_order?: number;
+        };
+        Update: {
+          property_id?: string;
+          storage_path?: string;
+          is_cover?: boolean;
+          sort_order?: number;
+        };
+        Relationships: [];
       };
       inquiries: {
         Row: {
@@ -103,8 +137,23 @@ export interface Database {
           status: InquiryStatus;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["inquiries"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["inquiries"]["Insert"]>;
+        Insert: {
+          property_id?: string | null;
+          name: string;
+          phone: string;
+          email?: string | null;
+          message?: string | null;
+          status?: InquiryStatus;
+        };
+        Update: {
+          property_id?: string | null;
+          name?: string;
+          phone?: string;
+          email?: string | null;
+          message?: string | null;
+          status?: InquiryStatus;
+        };
+        Relationships: [];
       };
       seller_submissions: {
         Row: {
@@ -121,18 +170,37 @@ export interface Database {
           admin_notes: string | null;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["seller_submissions"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["seller_submissions"]["Insert"]>;
+        Insert: {
+          name: string;
+          phone: string;
+          email?: string | null;
+          property_type: string;
+          city: string;
+          locality?: string | null;
+          description?: string | null;
+          asking_price?: number | null;
+          status?: SubmissionStatus;
+          admin_notes?: string | null;
+        };
+        Update: {
+          name?: string;
+          phone?: string;
+          email?: string | null;
+          property_type?: string;
+          city?: string;
+          locality?: string | null;
+          description?: string | null;
+          asking_price?: number | null;
+          status?: SubmissionStatus;
+          admin_notes?: string | null;
+        };
+        Relationships: [];
       };
       submission_images: {
-        Row: {
-          id: string;
-          submission_id: string;
-          storage_path: string;
-          created_at: string;
-        };
-        Insert: Omit<Database["public"]["Tables"]["submission_images"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["submission_images"]["Insert"]>;
+        Row: { id: string; submission_id: string; storage_path: string; created_at: string };
+        Insert: { submission_id: string; storage_path: string };
+        Update: { submission_id?: string; storage_path?: string };
+        Relationships: [];
       };
       contact_messages: {
         Row: {
@@ -143,9 +211,24 @@ export interface Database {
           message: string;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["contact_messages"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["contact_messages"]["Insert"]>;
+        Insert: {
+          name: string;
+          phone: string;
+          email?: string | null;
+          message: string;
+        };
+        Update: {
+          name?: string;
+          phone?: string;
+          email?: string | null;
+          message?: string;
+        };
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }
