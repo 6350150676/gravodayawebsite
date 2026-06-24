@@ -6,7 +6,11 @@
       "Bash(git pull *)",
       "Bash(npm install *)",
       "Bash(npx tsc *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git merge *)",
+      "Bash(rm app/properties/page.js app/properties/[id]/page.js app/contact/page.js)",
+      "Bash(rmdir app/properties/[id] app/properties app/contact)"
     ]
   }
 }
