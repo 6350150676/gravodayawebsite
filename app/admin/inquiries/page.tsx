@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -24,6 +25,7 @@ export default async function AdminInquiriesPage({ searchParams }: Props) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/admin/login");
 
+  noStore();
   const { status = "all" } = await searchParams;
   const inquiries = await getInquiries(status);
 
