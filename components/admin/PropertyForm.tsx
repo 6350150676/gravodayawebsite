@@ -32,19 +32,29 @@ const STATUS_OPTIONS = [
 export function PropertyForm({ action, property, categories, cities, localities }: Props) {
   const [isPending, startTransition] = useTransition();
   const [selectedCityId, setSelectedCityId] = useState<number>(property?.city.id ?? 0);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const filteredLocalities = localities.filter((l) => l.city_id === selectedCityId);
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    setPreviewUrls(files.map((f) => URL.createObjectURL(f)));
+    const incoming = Array.from(e.target.files ?? []);
+    setSelectedFiles((prev) => [...prev, ...incoming]);
+    // Reset input so the same file can be re-added if needed
+    e.target.value = "";
+  }
+
+  function removeFile(index: number) {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    // Remove whatever the file input holds (it was reset after each pick)
+    // and inject the accumulated files from state
+    formData.delete("images");
+    selectedFiles.forEach((file) => formData.append("images", file));
     startTransition(() => action(formData));
   }
 
@@ -199,26 +209,49 @@ export function PropertyForm({ action, property, categories, cities, localities 
           </div>
         )}
 
-        <Field label="Upload new images (first image becomes cover)">
-          <input ref={fileRef} name="images" type="file" multiple accept="image/*"
-            onChange={handleFiles}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--color-brand)] file:text-white hover:file:opacity-90" />
-        </Field>
+        <div>
+          <p className="text-sm font-medium text-gray-700 mb-2">
+            Upload images{" "}
+            <span className="text-gray-400 font-normal">
+              — first image becomes cover. You can add more after selecting.
+            </span>
+          </p>
+          <label className="inline-flex items-center gap-2 cursor-pointer bg-[var(--color-brand)] text-white text-sm font-semibold px-4 py-2 rounded-full hover:opacity-90 transition-opacity">
+            <span>+ Add Images</span>
+            <input
+              ref={fileRef}
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFiles}
+              className="sr-only"
+            />
+          </label>
+        </div>
 
-        {previewUrls.length > 0 && (
+        {selectedFiles.length > 0 && (
           <div className="flex flex-wrap gap-3">
-            {previewUrls.map((url, i) => (
-              <div key={url} className="relative">
+            {selectedFiles.map((file, i) => (
+              <div key={`${file.name}-${i}`} className="relative">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={url} alt="" className="w-24 h-24 object-cover rounded-lg border" />
-                {i === 0 && (
-                  <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 rounded">Cover</span>
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={file.name}
+                  className="w-24 h-24 object-cover rounded-lg border"
+                />
+                {i === 0 && !property?.images.length && (
+                  <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 rounded">
+                    Cover
+                  </span>
                 )}
-                <button type="button" onClick={() => {
-                  setPreviewUrls((p) => p.filter((_, j) => j !== i));
-                }} className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5">
+                <button
+                  type="button"
+                  onClick={() => removeFile(i)}
+                  className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5"
+                >
                   <X size={10} />
                 </button>
+                <p className="text-[10px] text-gray-400 mt-0.5 w-24 truncate">{file.name}</p>
               </div>
             ))}
           </div>
