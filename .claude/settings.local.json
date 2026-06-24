@@ -10,7 +10,8 @@
       "Bash(git commit *)",
       "Bash(git merge *)",
       "Bash(rm app/properties/page.js app/properties/[id]/page.js app/contact/page.js)",
-      "Bash(rmdir app/properties/[id] app/properties app/contact)"
+      "Bash(rmdir app/properties/[id] app/properties app/contact)",
+      "Bash(xargs grep -l \"GenericSchema\")"
     ]
   }
 }
