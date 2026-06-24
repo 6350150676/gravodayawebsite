@@ -5,6 +5,41 @@ import { Button } from "@/components/ui/button";
 import { Loader2, X } from "lucide-react";
 import type { PropertyWithRelations } from "@/types";
 
+/** Compress an image file in the browser using Canvas before upload.
+ *  Outputs a JPEG Blob capped at maxWidth × maxHeight, quality 0.82.
+ *  Keeps aspect ratio. Falls back to original if Canvas isn't available. */
+async function compressImage(file: File, maxWidth = 1280, maxHeight = 960, quality = 0.82): Promise<File> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { resolve(file); return; }
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) { resolve(file); return; }
+          resolve(new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" }));
+        },
+        "image/jpeg",
+        quality,
+      );
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+
 interface Lookup { id: number; name: string; slug: string }
 interface LocalityRow { id: number; name: string; slug: string; city_id: number }
 
@@ -33,15 +68,19 @@ export function PropertyForm({ action, property, categories, cities, localities 
   const [isPending, startTransition] = useTransition();
   const [selectedCityId, setSelectedCityId] = useState<number>(property?.city.id ?? 0);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [compressing, setCompressing] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const filteredLocalities = localities.filter((l) => l.city_id === selectedCityId);
 
-  function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const incoming = Array.from(e.target.files ?? []);
-    setSelectedFiles((prev) => [...prev, ...incoming]);
-    // Reset input so the same file can be re-added if needed
     e.target.value = "";
+    if (!incoming.length) return;
+    setCompressing(true);
+    const compressed = await Promise.all(incoming.map((f) => compressImage(f)));
+    setSelectedFiles((prev) => [...prev, ...compressed]);
+    setCompressing(false);
   }
 
   function removeFile(index: number) {
@@ -216,8 +255,8 @@ export function PropertyForm({ action, property, categories, cities, localities 
               — first image becomes cover. You can add more after selecting.
             </span>
           </p>
-          <label className="inline-flex items-center gap-2 cursor-pointer bg-[var(--color-brand)] text-white text-sm font-semibold px-4 py-2 rounded-full hover:opacity-90 transition-opacity">
-            <span>+ Add Images</span>
+          <label className={`inline-flex items-center gap-2 cursor-pointer bg-[var(--color-brand)] text-white text-sm font-semibold px-4 py-2 rounded-full transition-opacity ${compressing ? "opacity-60 pointer-events-none" : "hover:opacity-90"}`}>
+            {compressing ? <><Loader2 size={14} className="animate-spin" /> Compressing…</> : "+ Add Images"}
             <input
               ref={fileRef}
               type="file"
@@ -225,6 +264,7 @@ export function PropertyForm({ action, property, categories, cities, localities 
               accept="image/*"
               onChange={handleFiles}
               className="sr-only"
+              disabled={compressing}
             />
           </label>
         </div>
