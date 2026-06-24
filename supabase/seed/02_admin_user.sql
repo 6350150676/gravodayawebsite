@@ -10,5 +10,5 @@
 -- ============================================================
 
 insert into admins (id, email) values
-  ('db02252c-7697-484d-9c2e-052f24733d2e', 'garvodaydevelopers@gmail.com')
+  ('542d25ea-2a17-401f-9fa3-1978569e7c7e', 'ujjwalsharma1772003@gmail.com')
 on conflict (id) do nothing;
