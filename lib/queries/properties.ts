@@ -86,7 +86,10 @@ export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRela
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error) throw error;
+  if (error) {
+    console.error("[getFeaturedProperties]", error.message);
+    return [];
+  }
   return (data ?? []) as unknown as PropertyWithRelations[];
 }
 
