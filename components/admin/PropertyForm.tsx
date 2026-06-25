@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState, useActionState, startTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, X } from "lucide-react";
 import type { PropertyWithRelations } from "@/types";
@@ -44,7 +44,7 @@ interface Lookup { id: number; name: string; slug: string }
 interface LocalityRow { id: number; name: string; slug: string; city_id: number }
 
 interface Props {
-  action: (formData: FormData) => Promise<void>;
+  action: (prev: string | null, formData: FormData) => Promise<string | null>;
   property?: PropertyWithRelations;
   categories: Lookup[];
   cities: Lookup[];
@@ -65,7 +65,7 @@ const STATUS_OPTIONS = [
 ];
 
 export function PropertyForm({ action, property, categories, cities, localities }: Props) {
-  const [isPending, startTransition] = useTransition();
+  const [error, formAction, isPending] = useActionState(action, null);
   const [selectedCityId, setSelectedCityId] = useState<number>(property?.city.id ?? 0);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [compressing, setCompressing] = useState(false);
@@ -90,17 +90,21 @@ export function PropertyForm({ action, property, categories, cities, localities 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    // Remove whatever the file input holds (it was reset after each pick)
-    // and inject the accumulated files from state
     formData.delete("images");
     selectedFiles.forEach((file) => formData.append("images", file));
-    startTransition(() => action(formData));
+    startTransition(() => formAction(formData));
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
       {/* Basic Info */}
       <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-gray-800">Basic Information</h2>
