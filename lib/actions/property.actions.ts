@@ -7,6 +7,13 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { propertySchema } from "@/lib/validations/property";
 import { slugify } from "@/lib/utils";
 
+/** Convert a FormData value to a finite number. Returns undefined for empty, NaN, or Infinity. */
+function toNum(value: FormDataEntryValue | null): number | undefined {
+  if (!value || value === "") return undefined;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : undefined;
+}
+
 async function requireAdmin() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -24,25 +31,29 @@ export async function createPropertyAction(
   const raw = {
     title: formData.get("title") as string,
     description: formData.get("description") as string,
-    price: Number(formData.get("price")),
+    price: toNum(formData.get("price")),
     price_label: (formData.get("price_label") as string) || undefined,
-    category_id: Number(formData.get("category_id")),
-    city_id: Number(formData.get("city_id")),
-    locality_id: formData.get("locality_id") ? Number(formData.get("locality_id")) : undefined,
+    category_id: toNum(formData.get("category_id")),
+    city_id: toNum(formData.get("city_id")),
+    locality_id: toNum(formData.get("locality_id")),
     address: (formData.get("address") as string) || undefined,
-    area_sqft: formData.get("area_sqft") ? Number(formData.get("area_sqft")) : undefined,
-    bedrooms: formData.get("bedrooms") ? Number(formData.get("bedrooms")) : undefined,
-    bathrooms: formData.get("bathrooms") ? Number(formData.get("bathrooms")) : undefined,
+    area_sqft: toNum(formData.get("area_sqft")),
+    bedrooms: toNum(formData.get("bedrooms")),
+    bathrooms: toNum(formData.get("bathrooms")),
     amenities: formData.getAll("amenities") as string[],
     is_for_rent: formData.get("is_for_rent") === "true",
     is_featured: formData.get("is_featured") === "true",
     status: (formData.get("status") as string) || "active",
-    map_lat: formData.get("map_lat") ? Number(formData.get("map_lat")) : undefined,
-    map_lng: formData.get("map_lng") ? Number(formData.get("map_lng")) : undefined,
+    map_lat: toNum(formData.get("map_lat")),
+    map_lng: toNum(formData.get("map_lng")),
   };
 
   const parsed = propertySchema.safeParse(raw);
-  if (!parsed.success) return parsed.error.errors[0].message;
+  if (!parsed.success) {
+    const err = parsed.error.errors[0];
+    const field = err.path.length ? `${String(err.path[0]).replace(/_/g, " ")}: ` : "";
+    return `${field}${err.message}`;
+  }
 
   const slug = slugify(parsed.data.title) + "-" + Date.now();
 
@@ -72,25 +83,29 @@ export async function updatePropertyAction(
   const raw = {
     title: formData.get("title") as string,
     description: formData.get("description") as string,
-    price: Number(formData.get("price")),
+    price: toNum(formData.get("price")),
     price_label: (formData.get("price_label") as string) || undefined,
-    category_id: Number(formData.get("category_id")),
-    city_id: Number(formData.get("city_id")),
-    locality_id: formData.get("locality_id") ? Number(formData.get("locality_id")) : undefined,
+    category_id: toNum(formData.get("category_id")),
+    city_id: toNum(formData.get("city_id")),
+    locality_id: toNum(formData.get("locality_id")),
     address: (formData.get("address") as string) || undefined,
-    area_sqft: formData.get("area_sqft") ? Number(formData.get("area_sqft")) : undefined,
-    bedrooms: formData.get("bedrooms") ? Number(formData.get("bedrooms")) : undefined,
-    bathrooms: formData.get("bathrooms") ? Number(formData.get("bathrooms")) : undefined,
+    area_sqft: toNum(formData.get("area_sqft")),
+    bedrooms: toNum(formData.get("bedrooms")),
+    bathrooms: toNum(formData.get("bathrooms")),
     amenities: formData.getAll("amenities") as string[],
     is_for_rent: formData.get("is_for_rent") === "true",
     is_featured: formData.get("is_featured") === "true",
     status: (formData.get("status") as string) || "active",
-    map_lat: formData.get("map_lat") ? Number(formData.get("map_lat")) : undefined,
-    map_lng: formData.get("map_lng") ? Number(formData.get("map_lng")) : undefined,
+    map_lat: toNum(formData.get("map_lat")),
+    map_lng: toNum(formData.get("map_lng")),
   };
 
   const parsed = propertySchema.safeParse(raw);
-  if (!parsed.success) return parsed.error.errors[0].message;
+  if (!parsed.success) {
+    const err = parsed.error.errors[0];
+    const field = err.path.length ? `${String(err.path[0]).replace(/_/g, " ")}: ` : "";
+    return `${field}${err.message}`;
+  }
 
   const { error } = await supabase
     .from("properties")
