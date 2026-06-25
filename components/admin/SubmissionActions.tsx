@@ -30,35 +30,55 @@ export function SubmissionActions({
   currentNotes: string | null;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [status, setStatus] = useState<SubmissionStatus>(currentStatus);
   const [notes, setNotes] = useState(currentNotes ?? "");
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const next = e.target.value as SubmissionStatus;
-    startTransition(() => updateSubmissionStatusAction(id, next));
+    const prev = status;
+    setStatus(next);
+    setError(null);
+    startTransition(async () => {
+      try {
+        await updateSubmissionStatusAction(id, next);
+      } catch {
+        setStatus(prev);
+        setError("Failed to update status — try again");
+      }
+    });
   }
 
   function handleSaveNotes() {
-    startTransition(() =>
-      updateSubmissionStatusAction(id, currentStatus, notes).then(() => setOpen(false))
-    );
+    setError(null);
+    startTransition(async () => {
+      try {
+        await updateSubmissionStatusAction(id, status, notes);
+        setOpen(false);
+      } catch {
+        setError("Failed to save notes — try again");
+      }
+    });
   }
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Status dropdown */}
       <select
-        value={currentStatus}
+        value={status}
         onChange={handleStatusChange}
         disabled={isPending}
-        className={`text-xs font-medium border rounded-full px-2.5 py-1 outline-none cursor-pointer w-fit transition-opacity ${colors[currentStatus]} ${isPending ? "opacity-50" : ""}`}
+        className={`text-xs font-medium border rounded-full px-2.5 py-1 outline-none cursor-pointer w-fit transition-opacity ${colors[status]} ${isPending ? "opacity-50" : ""}`}
       >
         {STATUS_OPTIONS.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
 
-      {/* Notes toggle */}
+      {error && (
+        <p className="text-[11px] text-red-500">{error}</p>
+      )}
+
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

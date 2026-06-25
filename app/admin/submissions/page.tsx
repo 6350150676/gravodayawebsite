@@ -27,7 +27,9 @@ export default async function AdminSubmissionsPage({ searchParams }: Props) {
   if (!user) redirect("/admin/login");
 
   noStore();
-  const { status = "all" } = await searchParams;
+  const { status: rawStatus = "all" } = await searchParams;
+  const VALID = ["all", "pending", "approved", "rejected", "published"];
+  const status = VALID.includes(rawStatus) ? rawStatus : "all";
   const submissions = await getSubmissions(status);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

@@ -18,6 +18,9 @@ export async function getSubmissions(status?: string): Promise<SubmissionWithIma
   if (status && status !== "all") query = query.eq("status", status);
 
   const { data, error } = await query;
-  if (error) throw error;
+  if (error) {
+    console.error("[getSubmissions]", error.message);
+    return [];
+  }
   return (data ?? []) as unknown as SubmissionWithImages[];
 }

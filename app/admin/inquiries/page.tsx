@@ -26,7 +26,9 @@ export default async function AdminInquiriesPage({ searchParams }: Props) {
   if (!user) redirect("/admin/login");
 
   noStore();
-  const { status = "all" } = await searchParams;
+  const { status: rawStatus = "all" } = await searchParams;
+  const VALID = ["all", "new", "contacted", "closed"];
+  const status = VALID.includes(rawStatus) ? rawStatus : "all";
   const inquiries = await getInquiries(status);
 
   return (

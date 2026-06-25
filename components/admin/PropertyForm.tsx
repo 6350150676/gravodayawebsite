@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useActionState } from "react";
+import { useRef, useState, useActionState, startTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, X } from "lucide-react";
 import type { PropertyWithRelations } from "@/types";
@@ -92,7 +92,7 @@ export function PropertyForm({ action, property, categories, cities, localities 
     const formData = new FormData(e.currentTarget);
     formData.delete("images");
     selectedFiles.forEach((file) => formData.append("images", file));
-    formAction(formData);
+    startTransition(() => formAction(formData));
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
