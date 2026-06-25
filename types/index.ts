@@ -25,8 +25,8 @@ export interface PropertyWithRelations {
 }
 
 export interface PropertyFilters {
-  category?: string;
-  city?: string;
+  category_id?: number;
+  city_id?: number;
   is_for_rent?: boolean;
   min_price?: number;
   max_price?: number;

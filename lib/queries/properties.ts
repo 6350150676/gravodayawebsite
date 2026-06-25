@@ -18,19 +18,21 @@ export async function getProperties(filters: PropertyFilters = {}): Promise<Prop
       locality:localities(id, name, slug),
       images:property_images(id, storage_path, is_cover, sort_order)
     `)
+    .eq("status", "active")
     .order("created_at", { ascending: false });
 
-  if (filters.category) query = query.eq("category.slug", filters.category);
-  if (filters.city) query = query.eq("city.slug", filters.city);
+  if (filters.category_id) query = query.eq("category_id", filters.category_id);
+  if (filters.city_id)     query = query.eq("city_id", filters.city_id);
   if (filters.is_for_rent !== undefined) query = query.eq("is_for_rent", filters.is_for_rent);
-  if (filters.min_price) query = query.gte("price", filters.min_price);
-  if (filters.max_price) query = query.lte("price", filters.max_price);
-  if (filters.search) {
-    query = query.textSearch("title", filters.search, { type: "websearch" });
-  }
+  if (filters.min_price)   query = query.gte("price", filters.min_price);
+  if (filters.max_price)   query = query.lte("price", filters.max_price);
+  if (filters.search)      query = query.ilike("title", `%${filters.search}%`);
 
   const { data, error } = await query;
-  if (error) throw error;
+  if (error) {
+    console.error("[getProperties]", error.message);
+    return [];
+  }
   return (data ?? []) as unknown as PropertyWithRelations[];
 }
 
