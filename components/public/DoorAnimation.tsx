@@ -13,8 +13,8 @@ export function DoorAnimation() {
     }
     sessionStorage.setItem("gd-intro", "1");
 
-    const t1 = setTimeout(() => setStatus("opening"), 400);
-    const t2 = setTimeout(() => setStatus("done"), 1750);
+    const t1 = setTimeout(() => setStatus("opening"), 600);
+    const t2 = setTimeout(() => setStatus("done"), 2600);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
@@ -22,7 +22,7 @@ export function DoorAnimation() {
 
   const isOpen = status === "opening";
   const panelTransition = isOpen
-    ? "transform 1.25s cubic-bezier(0.76, 0, 0.24, 1)"
+    ? "transform 1.8s cubic-bezier(0.76, 0, 0.24, 1)"
     : "none";
 
   return (
