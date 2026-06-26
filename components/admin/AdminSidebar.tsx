@@ -10,6 +10,7 @@ import {
   Building2,
   MessageSquare,
   FileText,
+  Palette,
   LogOut,
   Menu,
   X,
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/admin/properties", label: "Properties", icon: Building2 },
   { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare },
   { href: "/admin/submissions", label: "Submissions", icon: FileText },
+  { href: "/admin/content", label: "Site Content", icon: Palette },
 ];
 
 function SidebarContent({ onClose }: { onClose?: () => void }) {
