@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Phone } from "lucide-react";
-import { getFeaturedProperties } from "@/lib/queries/properties";
+import { Phone, Building2, Home, Map, Store, Trees, ArrowRight } from "lucide-react";
+import { getFeaturedProperties, getCategories, getCities } from "@/lib/queries/properties";
 import { PropertyCard } from "@/components/public/PropertyCard";
+import { HeroSearch } from "@/components/public/HeroSearch";
+import { Reveal } from "@/components/public/Reveal";
+import { CountUp } from "@/components/public/CountUp";
 
 export const metadata: Metadata = {
   title: "Gravodaya Developers — Premium Properties in Uttarakhand",
@@ -53,15 +56,15 @@ const INTENT_CARDS = [
     sublabel: "Get the best value",
     description: "List with us and reach thousands of qualified buyers. Free valuation & expert assistance.",
     cta: "Get Free Valuation →",
-    accent: "#16a34a",
+    accent: "var(--color-moss)",
   },
 ];
 
 const STATS = [
-  { value: "15+", label: "Years of Experience" },
-  { value: "500+", label: "Happy Families" },
-  { value: "3", label: "Prime Locations" },
-  { value: "100%", label: "Transparency" },
+  { value: 15,  suffix: "+", label: "Years of Experience" },
+  { value: 500, suffix: "+", label: "Happy Families" },
+  { value: 3,   suffix: "",  label: "Prime Locations" },
+  { value: 100, suffix: "%", label: "Transparency" },
 ];
 
 const CITIES = [
@@ -79,13 +82,27 @@ const WHY_US = [
   "Trusted by 500+ families across Uttarakhand",
 ];
 
+/* Map a category name to a representative icon for the quick-links strip */
+function categoryIcon(name: string) {
+  const n = name.toLowerCase();
+  if (/villa|house|independent|bungalow|duplex/.test(n)) return Home;
+  if (/plot|land/.test(n)) return Map;
+  if (/commercial|office|shop|retail|showroom/.test(n)) return Store;
+  if (/farm|resort|retreat|cottage/.test(n)) return Trees;
+  return Building2; // apartments / flats / default
+}
+
 /* ─── page ───────────────────────────────────────────────────────────────── */
 export default async function HomePage() {
-  const featured   = await getFeaturedProperties(6);
+  const [featured, categories, cities] = await Promise.all([
+    getFeaturedProperties(6),
+    getCategories(),
+    getCities(),
+  ]);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 
   return (
-    <div className="bg-[#f8f9fb]">
+    <div className="bg-[var(--color-sand)]">
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
       <section className="relative min-h-[88vh] flex items-center overflow-hidden">
@@ -101,42 +118,39 @@ export default async function HomePage() {
         />
 
         {/* Dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0f1b3c]/90 via-[#0f1b3c]/75 to-[#0f1b3c]/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A34]/90 via-[#1E3A34]/75 to-[#1E3A34]/40" />
 
         {/* Content */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="max-w-2xl">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
+          <div className="max-w-3xl">
 
-            <div className="inline-flex items-center gap-2 bg-[var(--color-gold)]/20 border border-[var(--color-gold)]/40 text-[var(--color-gold)] text-xs font-semibold tracking-[0.2em] uppercase px-4 py-2 rounded-full mb-8">
+            <div className="inline-flex items-center gap-2 bg-[var(--color-gold)]/20 border border-[var(--color-gold)]/40 text-[var(--color-gold)] text-xs font-semibold tracking-[0.2em] uppercase px-4 py-2 rounded-full mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-gold)]" />
               Uttarakhand's Most Trusted Real Estate
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
-              Your Dream Home,{" "}
-              <span className="text-[var(--color-gold)]">Nestled in<br />the Himalayas</span>
+              Find Your Dream Home in the{" "}
+              <span className="text-[var(--color-gold)]">Himalayas</span>
             </h1>
 
-            <p className="mt-6 text-lg text-white/70 leading-relaxed max-w-xl">
-              Premium apartments, villas, plots and commercial spaces in{" "}
+            <p className="mt-5 text-lg text-white/70 leading-relaxed max-w-xl">
+              Apartments, villas, plots &amp; commercial spaces across{" "}
               <span className="text-white font-medium">Dehradun · Haridwar · Rishikesh</span>
             </p>
 
-            <div className="mt-10 flex flex-col sm:flex-row gap-4">
-              <Link href="/properties"
-                className="inline-flex items-center justify-center bg-[var(--color-gold)] text-[var(--color-brand)] font-bold text-base px-8 py-4 rounded-full hover:bg-[var(--color-gold-light)] transition-colors shadow-xl">
-                Explore Properties
-              </Link>
-              <Link href="/contact"
-                className="inline-flex items-center justify-center border-2 border-white/35 text-white font-semibold text-base px-8 py-4 rounded-full hover:bg-white/10 transition-colors backdrop-blur-sm">
-                Sell / List Property
-              </Link>
+            {/* Search widget */}
+            <div className="mt-8">
+              <HeroSearch cities={cities} categories={categories} />
             </div>
 
-            <div className="mt-12 flex flex-wrap gap-x-8 gap-y-2 text-white/50 text-sm">
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-white/55 text-sm">
               <span>✓ RERA Registered</span>
               <span>✓ 15+ Years in Business</span>
               <span>✓ 500+ Happy Families</span>
+              <Link href="/contact" className="text-[var(--color-gold)] font-semibold hover:underline">
+                List your property →
+              </Link>
             </div>
           </div>
         </div>
@@ -144,13 +158,47 @@ export default async function HomePage() {
         {/* Bottom wave */}
         <div className="absolute bottom-0 left-0 right-0 z-10">
           <svg viewBox="0 0 1440 70" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0 70L1440 70L1440 25C1200 70 960 5 720 25C480 50 240 5 0 25Z" fill="#f8f9fb" />
+            <path d="M0 70L1440 70L1440 25C1200 70 960 5 720 25C480 50 240 5 0 25Z" fill="#F7F3EC" />
           </svg>
         </div>
       </section>
 
+      {/* ── BROWSE BY PROPERTY TYPE ──────────────────────────────── */}
+      {categories.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-2">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-2">Browse by Type</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-[var(--color-brand)]">Explore Property Types</h2>
+            </div>
+            <Link href="/properties" className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-brand)] hover:text-[var(--color-gold)] transition-colors">
+              View all <ArrowRight size={15} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+            {categories.map((c) => {
+              const Icon = categoryIcon(c.name);
+              return (
+                <Link
+                  key={c.id}
+                  href={`/properties?category=${c.id}`}
+                  className="group flex flex-col items-center text-center gap-3 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md hover:border-[var(--color-gold)]/40 hover:-translate-y-1 transition-all duration-300"
+                >
+                  <span className="flex items-center justify-center w-12 h-12 rounded-full bg-[var(--color-brand)]/5 text-[var(--color-brand)] group-hover:bg-[var(--color-gold)]/15 group-hover:text-[var(--color-gold)] transition-colors">
+                    <Icon size={22} />
+                  </span>
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-[var(--color-brand)] transition-colors leading-tight">
+                    {c.name}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* ── WHAT ARE YOU LOOKING FOR ─────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20">
         <div className="text-center mb-12">
           <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-3">How Can We Help?</p>
           <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-brand)]">What Are You Looking For?</h2>
@@ -158,28 +206,30 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {INTENT_CARDS.map((card) => (
-            <Link key={card.label} href={card.href}
-              className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-100 hover:border-[var(--color-gold)]/30 transition-all duration-300">
+          {INTENT_CARDS.map((card, i) => (
+            <Reveal key={card.label} delay={i * 120}>
+              <Link href={card.href}
+                className="group block h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-100 hover:border-[var(--color-gold)]/30 hover:-translate-y-1 transition-all duration-300">
 
-              {/* Card photo */}
-              <div className="relative h-44 overflow-hidden">
-                <Image src={card.img} alt={card.imgAlt} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width:768px) 100vw, 33vw" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <span className="absolute bottom-3 left-4 text-white text-xs font-bold tracking-[0.15em] uppercase"
-                  style={{ textShadow: "0 1px 4px rgba(0,0,0,.6)" }}>
-                  {card.sublabel}
-                </span>
-              </div>
+                {/* Card photo */}
+                <div className="relative h-44 overflow-hidden">
+                  <Image src={card.img} alt={card.imgAlt} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width:768px) 100vw, 33vw" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <span className="absolute bottom-3 left-4 text-white text-xs font-bold tracking-[0.15em] uppercase"
+                    style={{ textShadow: "0 1px 4px rgba(0,0,0,.6)" }}>
+                    {card.sublabel}
+                  </span>
+                </div>
 
-              {/* Card text */}
-              <div className="p-6">
-                <div className="w-8 h-1 rounded-full mb-4" style={{ backgroundColor: card.accent }} />
-                <h3 className="text-xl font-bold text-[var(--color-brand)] mb-2">{card.label}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed mb-5">{card.description}</p>
-                <span className="text-sm font-semibold" style={{ color: card.accent }}>{card.cta}</span>
-              </div>
-            </Link>
+                {/* Card text */}
+                <div className="p-6">
+                  <div className="w-8 h-1 rounded-full mb-4 transition-all duration-300 group-hover:w-12" style={{ backgroundColor: card.accent }} />
+                  <h3 className="text-xl font-bold text-[var(--color-brand)] mb-2">{card.label}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed mb-5">{card.description}</p>
+                  <span className="inline-flex items-center gap-1 text-sm font-semibold transition-all group-hover:gap-2" style={{ color: card.accent }}>{card.cta}</span>
+                </div>
+              </Link>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -190,7 +240,9 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
             {STATS.map((s) => (
               <div key={s.label}>
-                <p className="text-4xl sm:text-5xl font-bold text-[var(--color-gold)]">{s.value}</p>
+                <p className="text-4xl sm:text-5xl font-bold text-[var(--color-gold)]">
+                  <CountUp value={s.value} suffix={s.suffix} />
+                </p>
                 <p className="mt-2 text-white/60 text-sm font-medium">{s.label}</p>
               </div>
             ))}
@@ -212,8 +264,10 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featured.map((p) => (
-              <PropertyCard key={p.id} property={p} supabaseUrl={supabaseUrl} />
+            {featured.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 3) * 110}>
+                <PropertyCard property={p} supabaseUrl={supabaseUrl} />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -229,12 +283,13 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {CITIES.map((city) => (
-              <Link key={city.name} href={`/properties?city=${city.name.toLowerCase()}`}
-                className="group relative h-72 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+            {CITIES.map((city, i) => (
+              <Reveal key={city.name} delay={i * 120}>
+              <Link href={`/properties?city=${city.name.toLowerCase()}`}
+                className="group relative block h-72 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
                 <Image src={city.img} alt={city.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width:640px) 100vw, 33vw" />
                 {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0f1b3c]/90 via-[#0f1b3c]/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1E3A34]/90 via-[#1E3A34]/30 to-transparent" />
                 {/* Text */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <div className="w-8 h-0.5 bg-[var(--color-gold)] mb-3" />
@@ -242,18 +297,19 @@ export default async function HomePage() {
                   <p className="text-white/65 text-xs mt-1">{city.note}</p>
                 </div>
               </Link>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* ── WHY GRAVODAYA ───────────────────────────────────────── */}
-      <section className="bg-[#f8f9fb]">
+      <section className="bg-[var(--color-sand)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
             {/* Left */}
-            <div>
+            <Reveal>
               <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-3">Why Choose Us</p>
               <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-brand)] leading-snug mb-4">
                 Where Trust Meets<br />Real Estate
@@ -275,14 +331,14 @@ export default async function HomePage() {
               </ul>
               <div className="mt-10">
                 <a href="tel:+919876543210"
-                  className="inline-flex items-center gap-2.5 bg-[var(--color-brand)] text-white font-bold px-7 py-3.5 rounded-full hover:bg-[var(--color-brand-light)] transition-colors shadow-lg">
+                  className="inline-flex items-center gap-2.5 bg-[var(--color-royal)] text-white font-bold px-7 py-3.5 rounded-full hover:bg-[var(--color-royal-dark)] transition-colors shadow-lg">
                   <Phone size={15} /> Call for Free Consultation
                 </a>
               </div>
-            </div>
+            </Reveal>
 
             {/* Right: photo */}
-            <div className="relative">
+            <Reveal delay={150} className="relative">
               <div className="relative h-[480px] rounded-3xl overflow-hidden shadow-2xl">
                 <Image src={IMG.whyUs} alt="Beautiful property interior" fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" />
                 {/* Gold accent card overlay */}
@@ -305,9 +361,9 @@ export default async function HomePage() {
                 </div>
               </div>
               {/* decorative blobs */}
-              <div className="absolute -top-5 -right-5 w-28 h-28 rounded-full bg-[var(--color-gold)]/15 -z-10" />
-              <div className="absolute -bottom-5 -left-5 w-20 h-20 rounded-full bg-[var(--color-brand)]/10 -z-10" />
-            </div>
+              <div className="absolute -top-5 -right-5 w-28 h-28 rounded-full bg-[var(--color-gold)]/15 -z-10 animate-floaty" />
+              <div className="absolute -bottom-5 -left-5 w-20 h-20 rounded-full bg-[var(--color-brand)]/10 -z-10 animate-floaty" />
+            </Reveal>
           </div>
         </div>
       </section>

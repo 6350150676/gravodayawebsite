@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
 
@@ -18,9 +19,14 @@ export function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 flex-shrink-0" onClick={() => setOpen(false)}>
-          <div className="w-10 h-10 rounded-full bg-[var(--color-gold)] flex items-center justify-center font-bold text-[var(--color-brand)] text-xl select-none">
-            G
-          </div>
+          <Image
+            src="/logo-gold.png"
+            alt="Gravodaya Developers logo"
+            width={56}
+            height={56}
+            priority
+            className="h-12 w-auto object-contain select-none flex-shrink-0"
+          />
           <div>
             <p className="text-white font-bold text-sm tracking-[0.18em] uppercase leading-tight">Gravodaya</p>
             <p className="text-[var(--color-gold)] text-[9px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const QUICK_LINKS = [
   { href: "/properties", label: "Buy Property" },
@@ -19,7 +20,13 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-11 h-11 rounded-full bg-[var(--color-gold)] flex items-center justify-center font-bold text-[var(--color-brand)] text-xl">G</div>
+              <Image
+                src="/logo-gold.png"
+                alt="Gravodaya Developers logo"
+                width={64}
+                height={64}
+                className="h-14 w-auto object-contain flex-shrink-0"
+              />
               <div>
                 <p className="font-bold text-sm tracking-[0.18em] uppercase leading-tight">Gravodaya</p>
                 <p className="text-[var(--color-gold)] text-[9px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>

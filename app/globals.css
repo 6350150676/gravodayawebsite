@@ -1,11 +1,34 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #0f1b3c;
-  --color-brand-light: #1c2c5b;
-  --color-gold: #c9a227;
-  --color-gold-light: #e0c14e;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* ── Brand · Earthy Modern ───────────────────────────────────────
+     Natural, architectural, boutique — built on forest green, sand,
+     terracotta and sage instead of the generic navy + gold. Colours
+     are drawn from materials: forest, moss, clay, sand, ivory.      */
+
+  /* Canonical brand tokens */
+  --color-forest: #1E3A34;           /* Deep Forest Green · primary / structure */
+  --color-forest-light: #2C544B;     /* Forest hover                            */
+  --color-sage: #8AA38C;             /* Sage Green · soft, decorative secondary */
+  --color-moss: #4F6357;             /* Dusty moss-sage · actions (contrast-safe) */
+  --color-moss-dark: #3E4F45;        /* Moss hover                              */
+  --color-terracotta: #C96A4A;       /* Terracotta · accent / pop               */
+  --color-terracotta-light: #D8825F; /* Terracotta hover                        */
+  --color-sand: #F7F3EC;             /* Warm Sand · page background              */
+  --color-ivory: #FFFDF9;            /* Ivory · raised surfaces                  */
+  --color-charcoal: #2D2A26;         /* Charcoal · strong text                  */
+
+  /* Legacy aliases — keep existing utility classes re-themed in place */
+  --color-brand: var(--color-forest);
+  --color-brand-light: var(--color-forest-light);
+  --color-royal: var(--color-moss);
+  --color-royal-dark: var(--color-moss-dark);
+  --color-gold: var(--color-terracotta);
+  --color-gold-light: var(--color-terracotta-light);
+  --color-canvas: var(--color-sand);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-poppins), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 html {
@@ -13,6 +36,152 @@ html {
 }
 
 body {
-  background-color: #f8f9fb;
-  color: #1a1a1a;
+  background-color: var(--color-sand); /* Warm Sand */
+  color: #57514A; /* Body Text · warm muted charcoal */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* ── Scroll-reveal (used by <Reveal />) ─────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── Shimmer (image skeleton) ───────────────────────────────────── */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+
+/* ── Subtle float (decorative) ──────────────────────────────────── */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.animate-floaty {
+  animation: floaty 6s ease-in-out infinite;
+}
+
+/* Hide scrollbar for horizontal scrollers */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Intro: house is sketched, the door swings open, we step inside ─
+   The whole overlay is one SVG: a sand "wall" with the doorway punched
+   out (transparent) so the site shows through it. Two terracotta leaves
+   cover the hole, swing open on their hinges, then the camera dollies
+   forward so the doorway engulfs the screen. */
+.gd-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+.gd-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Camera dolly — push forward through the doorway (its centre stays put
+   while the wall rushes past the screen edges). */
+.gd-camera {
+  transform-box: view-box;
+  transform-origin: 220px 216px; /* centre of the doorway, in viewBox units */
+  will-change: transform;
+  animation: gd-dolly 1.1s cubic-bezier(0.5, 0, 0.9, 0.35) forwards;
+  animation-delay: 2.75s;
+}
+@keyframes gd-dolly {
+  /* Big enough that the doorway hole fully engulfs the screen even on wide
+     monitors (the hole starts ~4.5% of the canvas width). */
+  to { transform: scale(30); }
+}
+
+/* Door leaves swing open on their outer-edge hinges. */
+.gd-leaf {
+  fill: var(--color-terracotta);
+  transform-box: fill-box;
+  animation: gd-leaf-open 0.9s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+  animation-delay: 2s;
+}
+.gd-leaf-left  { transform-origin: left center; }
+.gd-leaf-right { transform-origin: right center; }
+@keyframes gd-leaf-open {
+  to { transform: scaleX(0.04); }
+}
+
+/* Line-drawing strokes */
+@keyframes gd-draw { to { stroke-dashoffset: 0; } }
+@keyframes gd-fade { to { opacity: 1; } }
+@keyframes gd-rise { to { opacity: 1; transform: none; } }
+@keyframes gd-vanish { to { opacity: 0; } }
+
+.gd-stroke {
+  fill: none;
+  stroke: var(--color-brand);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: gd-draw 0.55s ease forwards;
+}
+
+.gd-dot {
+  fill: var(--color-ivory);
+  opacity: 0;
+  animation: gd-fade 0.4s ease forwards;
+  animation-delay: 1.5s;
+}
+
+.gd-wordmark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(2.5rem, 16vh, 7rem);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px);
+  animation:
+    gd-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.4s forwards,
+    gd-vanish 0.35s ease 2s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gd-intro { display: none; }
 }

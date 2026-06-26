@@ -24,6 +24,9 @@ export interface PropertyWithRelations {
   images: { id: string; storage_path: string; is_cover: boolean; sort_order: number }[];
 }
 
+// "newest" is the implicit default (no `sort` param); only explicit sorts are typed.
+export type PropertySort = "price_asc" | "price_desc";
+
 export interface PropertyFilters {
   category_id?: number;
   city_id?: number;
@@ -31,4 +34,5 @@ export interface PropertyFilters {
   min_price?: number;
   max_price?: number;
   search?: string;
+  sort?: PropertySort;
 }
