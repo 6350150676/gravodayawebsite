@@ -26,17 +26,17 @@ export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
 
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-3 mb-5">
+            <div className="group flex items-center gap-3 mb-5">
               <Image
                 src="/logo-gold.png"
                 alt="Gravodaya Developers logo"
-                width={64}
-                height={64}
-                className="h-14 w-auto object-contain flex-shrink-0"
+                width={72}
+                height={72}
+                className="brand-logo h-16 w-auto object-contain flex-shrink-0"
               />
               <div>
-                <p className="font-bold text-sm tracking-[0.18em] uppercase leading-tight">Gravodaya</p>
-                <p className="text-[var(--color-gold)] text-[9px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>
+                <p className="font-bold text-base tracking-[0.18em] uppercase leading-tight">Gravodaya</p>
+                <p className="text-[var(--color-gold)] text-[10px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>
               </div>
             </div>
             <p className="text-white/55 text-sm leading-relaxed max-w-xs">

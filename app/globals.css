@@ -35,6 +35,31 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── Brand logo ─────────────────────────────────────────────────────
+   The source PNG is a leftover solid mustard-gold emblem from the old
+   navy+gold scheme. On the forest-green bar it clashed with the white
+   wordmark beside it. Recolour the flat silhouette to warm ivory so it
+   reads cleanly (high contrast) and unifies with the wordmark, leaving
+   terracotta as the sole accent.
+   It also fades + rises in on load, and lifts gently on hover. */
+.brand-logo {
+  filter: brightness(0) invert(1);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: gd-logo-in 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.group:hover .brand-logo {
+  transform: scale(1.07) rotate(-2deg);
+}
+@keyframes gd-logo-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.85); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-logo { animation: none; }
+  .group:hover .brand-logo { transform: none; }
+}
+
 body {
   background-color: var(--color-sand); /* Warm Sand */
   color: #57514A; /* Body Text · warm muted charcoal */

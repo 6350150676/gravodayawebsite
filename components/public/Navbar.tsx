@@ -21,36 +21,36 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
 
   return (
     <header className="sticky top-0 z-50 bg-[var(--color-brand)] shadow-lg">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 flex-shrink-0" onClick={() => setOpen(false)}>
+      <nav className="w-full px-5 sm:px-8 lg:px-12 h-20 flex items-center justify-between gap-4">
+        {/* Logo — pinned top-left */}
+        <Link href="/" className="group flex items-center gap-3 flex-shrink-0" onClick={() => setOpen(false)}>
           <Image
             src="/logo-gold.png"
             alt="Gravodaya Developers logo"
-            width={56}
-            height={56}
+            width={64}
+            height={64}
             priority
-            className="h-12 w-auto object-contain select-none flex-shrink-0"
+            className="brand-logo h-16 w-auto object-contain select-none flex-shrink-0"
           />
           <div>
-            <p className="text-white font-bold text-sm tracking-[0.18em] uppercase leading-tight">Gravodaya</p>
-            <p className="text-[var(--color-gold)] text-[9px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>
+            <p className="text-white font-bold text-base sm:text-lg tracking-[0.18em] uppercase leading-tight">Gravodaya</p>
+            <p className="text-[var(--color-gold)] text-[10px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>
           </div>
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — links + CTA pinned top-right */}
         <div className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map((l) => (
             <Link key={l.href} href={l.href}
-              className="text-white/75 hover:text-white text-sm font-medium transition-colors">
+              className="text-white/75 hover:text-white text-sm font-medium tracking-wide transition-colors">
               {l.label}
             </Link>
           ))}
           <a
             href={`tel:${phoneTel}`}
-            className="flex items-center gap-2 bg-[var(--color-gold)] text-[var(--color-brand)] px-4 py-2 rounded-full text-sm font-bold hover:bg-[var(--color-gold-light)] transition-colors"
+            className="flex items-center gap-2 bg-[var(--color-gold)] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-[var(--color-gold-light)] transition-colors shadow-sm"
           >
-            <Phone size={13} />
+            <Phone size={14} />
             {phoneDisplay}
           </a>
         </div>
@@ -61,7 +61,7 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
           className="md:hidden text-white p-1.5 -mr-1"
           aria-label="Toggle menu"
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {open ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
