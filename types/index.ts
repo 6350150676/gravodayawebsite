@@ -24,11 +24,51 @@ export interface PropertyWithRelations {
   images: { id: string; storage_path: string; is_cover: boolean; sort_order: number }[];
 }
 
+// "newest" is the implicit default (no `sort` param); only explicit sorts are typed.
+export type PropertySort = "price_asc" | "price_desc";
+
 export interface PropertyFilters {
-  category?: string;
-  city?: string;
+  category_id?: number;
+  city_id?: number;
   is_for_rent?: boolean;
   min_price?: number;
   max_price?: number;
   search?: string;
+  sort?: PropertySort;
+}
+
+/** A single page of results plus the total count (for pagination / infinite scroll). */
+export interface PaginatedProperties {
+  items: PropertyWithRelations[];
+  total: number;
+}
+
+/* ── Editable site content (see lib/site-content) ───────────────────────── */
+
+export type SiteSettings = Record<string, string>;
+
+export interface SiteStat {
+  label: string;
+  value: number;
+  suffix: string;
+}
+
+export interface IntentCard {
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  cta: string | null;
+  href: string;
+  image_url: string | null;
+  accent: string;
+}
+
+/** A city enriched with its presentation meta and live active-property count. */
+export interface CityMeta {
+  id: number;
+  name: string;
+  slug: string;
+  tagline: string | null;
+  image_url: string | null;
+  count: number;
 }

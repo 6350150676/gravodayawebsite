@@ -14,6 +14,13 @@ function toNum(value: FormDataEntryValue | null): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
+function validationError(err: ReturnType<typeof propertySchema.safeParse>): string {
+  if (err.success) return "";
+  const e = err.error.errors[0];
+  const field = e.path.length ? `${String(e.path[0]).replace(/_/g, " ")}: ` : "";
+  return `${field}${e.message}`;
+}
+
 async function requireAdmin() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -21,14 +28,8 @@ async function requireAdmin() {
   return user;
 }
 
-export async function createPropertyAction(
-  _prev: string | null,
-  formData: FormData,
-): Promise<string | null> {
-  await requireAdmin();
-  const supabase = createAdminClient();
-
-  const raw = {
+function parseFormData(formData: FormData) {
+  return {
     title: formData.get("title") as string,
     description: formData.get("description") as string,
     price: toNum(formData.get("price")),
@@ -47,13 +48,17 @@ export async function createPropertyAction(
     map_lat: toNum(formData.get("map_lat")),
     map_lng: toNum(formData.get("map_lng")),
   };
+}
 
-  const parsed = propertySchema.safeParse(raw);
-  if (!parsed.success) {
-    const err = parsed.error.errors[0];
-    const field = err.path.length ? `${String(err.path[0]).replace(/_/g, " ")}: ` : "";
-    return `${field}${err.message}`;
-  }
+export async function createPropertyAction(
+  _prev: string | null,
+  formData: FormData,
+): Promise<string | null> {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const parsed = propertySchema.safeParse(parseFormData(formData));
+  if (!parsed.success) return validationError(parsed);
 
   const slug = slugify(parsed.data.title) + "-" + Date.now();
 
@@ -80,32 +85,8 @@ export async function updatePropertyAction(
   await requireAdmin();
   const supabase = createAdminClient();
 
-  const raw = {
-    title: formData.get("title") as string,
-    description: formData.get("description") as string,
-    price: toNum(formData.get("price")),
-    price_label: (formData.get("price_label") as string) || undefined,
-    category_id: toNum(formData.get("category_id")),
-    city_id: toNum(formData.get("city_id")),
-    locality_id: toNum(formData.get("locality_id")),
-    address: (formData.get("address") as string) || undefined,
-    area_sqft: toNum(formData.get("area_sqft")),
-    bedrooms: toNum(formData.get("bedrooms")),
-    bathrooms: toNum(formData.get("bathrooms")),
-    amenities: formData.getAll("amenities") as string[],
-    is_for_rent: formData.get("is_for_rent") === "true",
-    is_featured: formData.get("is_featured") === "true",
-    status: (formData.get("status") as string) || "active",
-    map_lat: toNum(formData.get("map_lat")),
-    map_lng: toNum(formData.get("map_lng")),
-  };
-
-  const parsed = propertySchema.safeParse(raw);
-  if (!parsed.success) {
-    const err = parsed.error.errors[0];
-    const field = err.path.length ? `${String(err.path[0]).replace(/_/g, " ")}: ` : "";
-    return `${field}${err.message}`;
-  }
+  const parsed = propertySchema.safeParse(parseFormData(formData));
+  if (!parsed.success) return validationError(parsed);
 
   const { error } = await supabase
     .from("properties")
@@ -129,7 +110,6 @@ export async function deletePropertyAction(id: string) {
   await requireAdmin();
   const supabase = createAdminClient();
 
-  // Fetch image paths to delete from storage
   const { data: images } = await supabase
     .from("property_images")
     .select("storage_path")

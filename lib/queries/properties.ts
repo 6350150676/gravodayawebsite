@@ -1,37 +1,65 @@
 import { createClient } from "@/lib/supabase/server";
-import type { PropertyWithRelations, PropertyFilters } from "@/types";
+import type { PropertyWithRelations, PropertyFilters, PaginatedProperties } from "@/types";
 import type { Database } from "@/types/database";
 
 type CityRow = Database["public"]["Tables"]["cities"]["Row"];
 type LocalityRow = Database["public"]["Tables"]["localities"]["Row"];
 type CategoryRow = Database["public"]["Tables"]["property_categories"]["Row"];
 
-export async function getProperties(filters: PropertyFilters = {}): Promise<PropertyWithRelations[]> {
+/** Number of property cards fetched per page / infinite-scroll batch. */
+export const PROPERTIES_PAGE_SIZE = 9;
+
+const CARD_SELECT = `
+  *,
+  category:property_categories(id, name, slug),
+  city:cities(id, name, slug),
+  locality:localities(id, name, slug),
+  images:property_images(id, storage_path, is_cover, sort_order)
+`;
+
+/**
+ * Fetch one page of active properties matching the filters, plus the total
+ * count of all matches (for "X found" + infinite scroll). Only the requested
+ * page of rows is transferred — `range()` pushes the LIMIT/OFFSET to Postgres
+ * and `{ count: "exact" }` returns the full total in the same round-trip.
+ */
+export async function getProperties(
+  filters: PropertyFilters = {},
+  page = 1,
+  pageSize = PROPERTIES_PAGE_SIZE,
+): Promise<PaginatedProperties> {
   const supabase = await createClient();
 
   let query = supabase
     .from("properties")
-    .select(`
-      *,
-      category:property_categories(id, name, slug),
-      city:cities(id, name, slug),
-      locality:localities(id, name, slug),
-      images:property_images(id, storage_path, is_cover, sort_order)
-    `)
-    .order("created_at", { ascending: false });
+    .select(CARD_SELECT, { count: "exact" })
+    .eq("status", "active");
 
-  if (filters.category) query = query.eq("category.slug", filters.category);
-  if (filters.city) query = query.eq("city.slug", filters.city);
+  if (filters.category_id) query = query.eq("category_id", filters.category_id);
+  if (filters.city_id)     query = query.eq("city_id", filters.city_id);
   if (filters.is_for_rent !== undefined) query = query.eq("is_for_rent", filters.is_for_rent);
-  if (filters.min_price) query = query.gte("price", filters.min_price);
-  if (filters.max_price) query = query.lte("price", filters.max_price);
-  if (filters.search) {
-    query = query.textSearch("title", filters.search, { type: "websearch" });
+  if (filters.min_price)   query = query.gte("price", filters.min_price);
+  if (filters.max_price)   query = query.lte("price", filters.max_price);
+  if (filters.search)      query = query.ilike("title", `%${filters.search}%`);
+
+  switch (filters.sort) {
+    case "price_asc":  query = query.order("price", { ascending: true }); break;
+    case "price_desc": query = query.order("price", { ascending: false }); break;
+    default:           query = query.order("created_at", { ascending: false });
   }
 
-  const { data, error } = await query;
-  if (error) throw error;
-  return (data ?? []) as unknown as PropertyWithRelations[];
+  const from = Math.max(0, (page - 1) * pageSize);
+  query = query.range(from, from + pageSize - 1);
+
+  const { data, error, count } = await query;
+  if (error) {
+    console.error("[getProperties]", error.message);
+    return { items: [], total: 0 };
+  }
+  return {
+    items: (data ?? []) as unknown as PropertyWithRelations[],
+    total: count ?? 0,
+  };
 }
 
 export async function getPropertyBySlug(slug: string): Promise<PropertyWithRelations | null> {
@@ -70,6 +98,34 @@ export async function getPropertyById(id: string): Promise<PropertyWithRelations
   return data as unknown as PropertyWithRelations;
 }
 
+export async function getRelatedProperties(
+  property: Pick<PropertyWithRelations, "id"> & { city: { id: number }; category: { id: number } },
+  limit = 3,
+): Promise<PropertyWithRelations[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select(`
+      *,
+      category:property_categories(id, name, slug),
+      city:cities(id, name, slug),
+      locality:localities(id, name, slug),
+      images:property_images(id, storage_path, is_cover, sort_order)
+    `)
+    .eq("status", "active")
+    .eq("city_id", property.city.id)
+    .neq("id", property.id)
+    .order("is_featured", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("[getRelatedProperties]", error.message);
+    return [];
+  }
+  return (data ?? []) as unknown as PropertyWithRelations[];
+}
+
 export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRelations[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -86,7 +142,10 @@ export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRela
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error) throw error;
+  if (error) {
+    console.error("[getFeaturedProperties]", error.message);
+    return [];
+  }
   return (data ?? []) as unknown as PropertyWithRelations[];
 }
 

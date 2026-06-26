@@ -24,6 +24,10 @@ Go to **Supabase Dashboard → SQL Editor** and run these files **in order**:
 
 1. `supabase/migrations/20240001000000_initial_schema.sql`
 2. `supabase/migrations/20240001000001_storage.sql`
+3. `supabase/migrations/20240002000000_site_content.sql` — editable homepage
+   content (hero, stats, "why us", city cards, intent cards, contact info).
+   Safe to re-run; seeds the defaults the site already ships with. After this,
+   manage it all from **Admin → Site Content**.
 
 ## 4. Seed lookup data
 
