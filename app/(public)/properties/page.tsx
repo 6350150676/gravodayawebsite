@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getProperties, getCategories, getCities } from "@/lib/queries/properties";
-import type { PropertySort } from "@/types";
-import { PropertyCard } from "@/components/public/PropertyCard";
+import type { PropertySort, PropertyFilters as Filters } from "@/types";
 import { PropertyFilters } from "@/components/public/PropertyFilters";
+import { PropertyInfiniteList } from "@/components/public/PropertyInfiniteList";
 import { SortSelect } from "@/components/public/SortSelect";
-import { Reveal } from "@/components/public/Reveal";
 
 export const metadata: Metadata = {
   title: "Properties — Gravodaya Developers",
@@ -37,21 +36,25 @@ export default async function PropertiesPage({ searchParams }: Props) {
   const search     = sp.q?.trim() || undefined;
   const sort       = VALID_SORTS.includes(sp.sort as PropertySort) ? (sp.sort as PropertySort) : undefined;
 
-  const [properties, categories, cities] = await Promise.all([
-    getProperties({
-      is_for_rent: type,
-      category_id: categoryId,
-      city_id:     cityId,
-      min_price:   minPrice,
-      max_price:   maxPrice,
-      search,
-      sort,
-    }),
+  const filters: Filters = {
+    is_for_rent: type,
+    category_id: categoryId,
+    city_id:     cityId,
+    min_price:   minPrice,
+    max_price:   maxPrice,
+    search,
+    sort,
+  };
+
+  const [{ items: properties, total }, categories, cities] = await Promise.all([
+    getProperties(filters, 1),
     getCategories(),
     getCities(),
   ]);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  // Remount the infinite list whenever the filters change so it resets to page 1.
+  const filterKey = JSON.stringify(filters);
 
   return (
     <div className="bg-[var(--color-sand)] min-h-screen">
@@ -82,7 +85,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
               <PropertyFilters
                 categories={categories}
                 cities={cities}
-                total={properties.length}
+                total={total}
               />
             </Suspense>
           </aside>
@@ -93,8 +96,8 @@ export default async function PropertiesPage({ searchParams }: Props) {
             {/* Results toolbar */}
             <div className="flex items-center justify-between gap-3 bg-white rounded-2xl shadow-sm border border-gray-100 px-4 sm:px-5 py-3 mb-5">
               <p className="text-sm text-gray-500">
-                <strong className="text-[var(--color-brand)]">{properties.length}</strong>{" "}
-                {properties.length === 1 ? "property" : "properties"} found
+                <strong className="text-[var(--color-brand)]">{total}</strong>{" "}
+                {total === 1 ? "property" : "properties"} found
               </p>
               <Suspense>
                 <SortSelect />
@@ -102,20 +105,20 @@ export default async function PropertiesPage({ searchParams }: Props) {
             </div>
 
             {/* Grid / empty state */}
-            {properties.length === 0 ? (
+            {total === 0 ? (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
                 <p className="text-5xl mb-4">🏠</p>
                 <p className="text-lg font-semibold text-gray-800 mb-2">No properties found</p>
                 <p className="text-gray-400 text-sm">Try adjusting your filters or check back soon.</p>
               </div>
             ) : (
-              <div className="space-y-5">
-                {properties.map((p, i) => (
-                  <Reveal key={p.id} delay={Math.min(i, 4) * 70}>
-                    <PropertyCard property={p} supabaseUrl={supabaseUrl} layout="horizontal" />
-                  </Reveal>
-                ))}
-              </div>
+              <PropertyInfiniteList
+                key={filterKey}
+                initial={properties}
+                total={total}
+                filters={filters}
+                supabaseUrl={supabaseUrl}
+              />
             )}
           </section>
         </div>

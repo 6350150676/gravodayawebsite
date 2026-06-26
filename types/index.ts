@@ -36,3 +36,39 @@ export interface PropertyFilters {
   search?: string;
   sort?: PropertySort;
 }
+
+/** A single page of results plus the total count (for pagination / infinite scroll). */
+export interface PaginatedProperties {
+  items: PropertyWithRelations[];
+  total: number;
+}
+
+/* ── Editable site content (see lib/site-content) ───────────────────────── */
+
+export type SiteSettings = Record<string, string>;
+
+export interface SiteStat {
+  label: string;
+  value: number;
+  suffix: string;
+}
+
+export interface IntentCard {
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  cta: string | null;
+  href: string;
+  image_url: string | null;
+  accent: string;
+}
+
+/** A city enriched with its presentation meta and live active-property count. */
+export interface CityMeta {
+  id: number;
+  name: string;
+  slug: string;
+  tagline: string | null;
+  image_url: string | null;
+  count: number;
+}

@@ -16,6 +16,7 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import { getPropertyBySlug, getRelatedProperties } from "@/lib/queries/properties";
+import { getSiteSettings } from "@/lib/queries/site-content";
 import { formatPrice } from "@/lib/utils";
 import { PropertyGallery } from "@/components/public/PropertyGallery";
 import { InquiryForm } from "@/components/public/InquiryForm";
@@ -29,9 +30,6 @@ interface Props {
 }
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const PHONE_DISPLAY = "+91 98765 43210";
-const PHONE_TEL = "+919876543210";
-const WHATSAPP = "919876543210";
 
 function imageUrl(path: string) {
   return `${SUPABASE_URL}/storage/v1/object/public/property-images/${path}`;
@@ -59,7 +57,13 @@ export default async function PropertyDetailPage({ params }: Props) {
   const property = await getPropertyBySlug(slug);
   if (!property || property.status !== "active") notFound();
 
-  const related = await getRelatedProperties(property, 3);
+  const [related, settings] = await Promise.all([
+    getRelatedProperties(property, 3),
+    getSiteSettings(),
+  ]);
+  const PHONE_DISPLAY = settings.phone_display;
+  const PHONE_TEL = settings.phone_tel;
+  const WHATSAPP = settings.whatsapp_number;
 
   // Sort images: cover first, then by sort_order
   const sorted = [...property.images].sort((a, b) => {

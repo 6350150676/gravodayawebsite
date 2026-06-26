@@ -11,7 +11,12 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function Navbar() {
+interface Props {
+  phoneTel: string;
+  phoneDisplay: string;
+}
+
+export function Navbar({ phoneTel, phoneDisplay }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -42,11 +47,11 @@ export function Navbar() {
             </Link>
           ))}
           <a
-            href="tel:+919876543210"
+            href={`tel:${phoneTel}`}
             className="flex items-center gap-2 bg-[var(--color-gold)] text-[var(--color-brand)] px-4 py-2 rounded-full text-sm font-bold hover:bg-[var(--color-gold-light)] transition-colors"
           >
             <Phone size={13} />
-            +91 98765 43210
+            {phoneDisplay}
           </a>
         </div>
 
@@ -71,11 +76,11 @@ export function Navbar() {
           ))}
           <div className="pt-4">
             <a
-              href="tel:+919876543210"
+              href={`tel:${phoneTel}`}
               className="flex items-center justify-center gap-2 bg-[var(--color-gold)] text-[var(--color-brand)] px-5 py-3 rounded-full text-sm font-bold w-full"
             >
               <Phone size={15} />
-              Call Us: +91 98765 43210
+              Call Us: {phoneDisplay}
             </a>
           </div>
         </div>

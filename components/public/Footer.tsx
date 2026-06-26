@@ -8,7 +8,14 @@ const QUICK_LINKS = [
   { href: "/contact", label: "Contact Us" },
 ];
 
-export function Footer() {
+interface Props {
+  phoneTel: string;
+  phoneDisplay: string;
+  email: string;
+  address: string;
+}
+
+export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
   return (
     <footer className="bg-[var(--color-brand)] text-white">
       {/* Divider */}
@@ -57,16 +64,16 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-white/60">
               <li className="flex items-start gap-2.5">
                 <span className="mt-0.5 flex-shrink-0">📍</span>
-                <span>Race Course Road, Dehradun,<br />Uttarakhand — 248001</span>
+                <span>{address}</span>
               </li>
               <li>
-                <a href="tel:+919876543210" className="flex items-center gap-2.5 hover:text-[var(--color-gold)] transition-colors">
-                  <span>📞</span> +91 98765 43210
+                <a href={`tel:${phoneTel}`} className="flex items-center gap-2.5 hover:text-[var(--color-gold)] transition-colors">
+                  <span>📞</span> {phoneDisplay}
                 </a>
               </li>
               <li>
-                <a href="mailto:info@gravodaya.com" className="flex items-center gap-2.5 hover:text-[var(--color-gold)] transition-colors">
-                  <span>✉️</span> info@gravodaya.com
+                <a href={`mailto:${email}`} className="flex items-center gap-2.5 hover:text-[var(--color-gold)] transition-colors">
+                  <span>✉️</span> {email}
                 </a>
               </li>
             </ul>

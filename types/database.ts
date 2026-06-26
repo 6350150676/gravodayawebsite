@@ -20,9 +20,9 @@ export interface Database {
         Relationships: [];
       };
       cities: {
-        Row: { id: number; name: string; slug: string };
-        Insert: { name: string; slug: string };
-        Update: { name?: string; slug?: string };
+        Row: { id: number; name: string; slug: string; tagline: string | null; image_url: string | null; sort_order: number };
+        Insert: { name: string; slug: string; tagline?: string | null; image_url?: string | null; sort_order?: number };
+        Update: { name?: string; slug?: string; tagline?: string | null; image_url?: string | null; sort_order?: number };
         Relationships: [];
       };
       localities: {
@@ -222,6 +222,59 @@ export interface Database {
           phone?: string;
           email?: string | null;
           message?: string;
+        };
+        Relationships: [];
+      };
+      site_settings: {
+        Row: { key: string; value: string | null; updated_at: string };
+        Insert: { key: string; value?: string | null };
+        Update: { key?: string; value?: string | null };
+        Relationships: [];
+      };
+      site_stats: {
+        Row: { id: number; label: string; value: number; suffix: string; sort_order: number };
+        Insert: { label: string; value?: number; suffix?: string; sort_order?: number };
+        Update: { id?: number; label?: string; value?: number; suffix?: string; sort_order?: number };
+        Relationships: [];
+      };
+      site_features: {
+        Row: { id: number; text: string; sort_order: number };
+        Insert: { text: string; sort_order?: number };
+        Update: { id?: number; text?: string; sort_order?: number };
+        Relationships: [];
+      };
+      intent_cards: {
+        Row: {
+          id: number;
+          title: string;
+          subtitle: string | null;
+          description: string | null;
+          cta: string | null;
+          href: string;
+          image_url: string | null;
+          accent: string;
+          sort_order: number;
+        };
+        Insert: {
+          title: string;
+          subtitle?: string | null;
+          description?: string | null;
+          cta?: string | null;
+          href?: string;
+          image_url?: string | null;
+          accent?: string;
+          sort_order?: number;
+        };
+        Update: {
+          id?: number;
+          title?: string;
+          subtitle?: string | null;
+          description?: string | null;
+          cta?: string | null;
+          href?: string;
+          image_url?: string | null;
+          accent?: string;
+          sort_order?: number;
         };
         Relationships: [];
       };

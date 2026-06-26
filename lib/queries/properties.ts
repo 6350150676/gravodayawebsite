@@ -1,23 +1,38 @@
 import { createClient } from "@/lib/supabase/server";
-import type { PropertyWithRelations, PropertyFilters } from "@/types";
+import type { PropertyWithRelations, PropertyFilters, PaginatedProperties } from "@/types";
 import type { Database } from "@/types/database";
 
 type CityRow = Database["public"]["Tables"]["cities"]["Row"];
 type LocalityRow = Database["public"]["Tables"]["localities"]["Row"];
 type CategoryRow = Database["public"]["Tables"]["property_categories"]["Row"];
 
-export async function getProperties(filters: PropertyFilters = {}): Promise<PropertyWithRelations[]> {
+/** Number of property cards fetched per page / infinite-scroll batch. */
+export const PROPERTIES_PAGE_SIZE = 9;
+
+const CARD_SELECT = `
+  *,
+  category:property_categories(id, name, slug),
+  city:cities(id, name, slug),
+  locality:localities(id, name, slug),
+  images:property_images(id, storage_path, is_cover, sort_order)
+`;
+
+/**
+ * Fetch one page of active properties matching the filters, plus the total
+ * count of all matches (for "X found" + infinite scroll). Only the requested
+ * page of rows is transferred — `range()` pushes the LIMIT/OFFSET to Postgres
+ * and `{ count: "exact" }` returns the full total in the same round-trip.
+ */
+export async function getProperties(
+  filters: PropertyFilters = {},
+  page = 1,
+  pageSize = PROPERTIES_PAGE_SIZE,
+): Promise<PaginatedProperties> {
   const supabase = await createClient();
 
   let query = supabase
     .from("properties")
-    .select(`
-      *,
-      category:property_categories(id, name, slug),
-      city:cities(id, name, slug),
-      locality:localities(id, name, slug),
-      images:property_images(id, storage_path, is_cover, sort_order)
-    `)
+    .select(CARD_SELECT, { count: "exact" })
     .eq("status", "active");
 
   if (filters.category_id) query = query.eq("category_id", filters.category_id);
@@ -33,12 +48,18 @@ export async function getProperties(filters: PropertyFilters = {}): Promise<Prop
     default:           query = query.order("created_at", { ascending: false });
   }
 
-  const { data, error } = await query;
+  const from = Math.max(0, (page - 1) * pageSize);
+  query = query.range(from, from + pageSize - 1);
+
+  const { data, error, count } = await query;
   if (error) {
     console.error("[getProperties]", error.message);
-    return [];
+    return { items: [], total: 0 };
   }
-  return (data ?? []) as unknown as PropertyWithRelations[];
+  return {
+    items: (data ?? []) as unknown as PropertyWithRelations[],
+    total: count ?? 0,
+  };
 }
 
 export async function getPropertyBySlug(slug: string): Promise<PropertyWithRelations | null> {
