@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { MapPin, BedDouble, Bath, Maximize2, ArrowRight, CalendarDays } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PropertyWithRelations } from "@/types";
@@ -32,7 +33,7 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
       >
         {/* Image */}
         <div className="relative sm:w-72 lg:w-80 flex-shrink-0 h-52 sm:h-auto sm:min-h-[210px] bg-gray-100 overflow-hidden">
-          <CoverImage src={imgSrc} alt={property.title} />
+          <CoverImage src={imgSrc} alt={property.title} sizes="(max-width:640px) 100vw, 320px" />
           <Badges property={property} />
         </div>
 
@@ -96,7 +97,7 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
       className="group block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 h-full"
     >
       <div className="relative h-52 bg-gray-100 overflow-hidden">
-        <CoverImage src={imgSrc} alt={property.title} />
+        <CoverImage src={imgSrc} alt={property.title} sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw" />
         <Badges property={property} />
       </div>
 
@@ -139,7 +140,7 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
 }
 
 /* ── shared pieces ───────────────────────────────────────────────── */
-function CoverImage({ src, alt }: { src: string | null; alt: string }) {
+function CoverImage({ src, alt, sizes }: { src: string | null; alt: string; sizes: string }) {
   if (!src) {
     return (
       <div className="w-full h-full flex items-center justify-center text-gray-300">
@@ -150,11 +151,12 @@ function CoverImage({ src, alt }: { src: string | null; alt: string }) {
     );
   }
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    <Image
       src={src}
       alt={alt}
-      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      fill
+      sizes={sizes}
+      className="object-cover group-hover:scale-105 transition-transform duration-500"
     />
   );
 }

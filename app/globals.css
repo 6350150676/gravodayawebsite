@@ -51,7 +51,6 @@ h1, h2, h3, h4, h5, h6 {
   transition:
     opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
 }
 .reveal.is-visible {
   opacity: 1;
@@ -117,27 +116,46 @@ h1, h2, h3, h4, h5, h6 {
   display: block;
 }
 
+/* ── Timeline ──────────────────────────────────────────────────────
+   0.00–1.75s  house draws itself, line by line
+   1.75–2.10s  beat (the finished sketch registers)
+   2.10–3.20s  the door swings open; the site shows through the gap
+   3.20–3.60s  beat (you see the open doorway + a glimpse inside)
+   3.60–5.00s  camera walks forward; the doorway engulfs the screen
+   ~5.05s      overlay unmounts
+   ────────────────────────────────────────────────────────────────── */
+
 /* Camera dolly — push forward through the doorway (its centre stays put
-   while the wall rushes past the screen edges). */
+   while the wall rushes past the screen edges). A steady ease so the reveal
+   is watchable; the scale overshoots full coverage, so the screen is engulfed
+   before the easing tail — it never crawls at the end. */
 .gd-camera {
   transform-box: view-box;
   transform-origin: 220px 216px; /* centre of the doorway, in viewBox units */
   will-change: transform;
-  animation: gd-dolly 1.1s cubic-bezier(0.5, 0, 0.9, 0.35) forwards;
-  animation-delay: 2.75s;
+  animation: gd-dolly 1.4s cubic-bezier(0.42, 0, 0.4, 1) forwards;
+  animation-delay: 3.6s;
 }
 @keyframes gd-dolly {
   /* Big enough that the doorway hole fully engulfs the screen even on wide
      monitors (the hole starts ~4.5% of the canvas width). */
-  to { transform: scale(30); }
+  to { transform: scale(28); }
 }
 
-/* Door leaves swing open on their outer-edge hinges. */
+/* The line drawing + leaves fade out as the walk-in starts, so they dissolve
+   cleanly instead of scaling into a smear of stray segments. */
+.gd-art {
+  animation: gd-vanish 0.45s ease forwards;
+  animation-delay: 3.6s;
+}
+
+/* Door leaves swing open on their outer-edge hinges, then settle. */
 .gd-leaf {
   fill: var(--color-terracotta);
   transform-box: fill-box;
-  animation: gd-leaf-open 0.9s cubic-bezier(0.45, 0, 0.2, 1) forwards;
-  animation-delay: 2s;
+  will-change: transform;
+  animation: gd-leaf-open 1.1s cubic-bezier(0.34, 0, 0.18, 1) forwards;
+  animation-delay: 2.1s;
 }
 .gd-leaf-left  { transform-origin: left center; }
 .gd-leaf-right { transform-origin: right center; }
@@ -145,7 +163,8 @@ h1, h2, h3, h4, h5, h6 {
   to { transform: scaleX(0.04); }
 }
 
-/* Line-drawing strokes */
+/* Line-drawing strokes — non-scaling so the lines stay crisp (not thick
+   bars) when the camera scales them up on the way in. */
 @keyframes gd-draw { to { stroke-dashoffset: 0; } }
 @keyframes gd-fade { to { opacity: 1; } }
 @keyframes gd-rise { to { opacity: 1; transform: none; } }
@@ -157,16 +176,17 @@ h1, h2, h3, h4, h5, h6 {
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: gd-draw 0.55s ease forwards;
+  animation: gd-draw 0.65s ease forwards;
 }
 
 .gd-dot {
   fill: var(--color-ivory);
   opacity: 0;
   animation: gd-fade 0.4s ease forwards;
-  animation-delay: 1.5s;
+  animation-delay: 1.75s;
 }
 
 .gd-wordmark {
@@ -178,8 +198,8 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0;
   transform: translateY(10px);
   animation:
-    gd-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.4s forwards,
-    gd-vanish 0.35s ease 2s forwards;
+    gd-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1.5s forwards,
+    gd-vanish 0.45s ease 3.15s forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

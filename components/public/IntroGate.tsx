@@ -28,10 +28,15 @@ export function IntroGate() {
       setDone(true);
       return;
     }
-    sessionStorage.setItem("gd-intro", "1");
 
-    // draw (~1.6s) → leaves swing open (2.0s) → dolly in (2.75s) → unmount.
-    const t = setTimeout(() => setDone(true), 3850);
+    // Flag is set on COMPLETION (not on mount) so React StrictMode's
+    // double-invoke in dev doesn't skip the animation on first load.
+    // draw (~1.75s) → door swings open (2.1s) → walk in (3.6s) → unmount.
+    // Keep in sync with the timeline in globals.css (.gd-camera / .gd-art).
+    const t = setTimeout(() => {
+      sessionStorage.setItem("gd-intro", "1");
+      setDone(true);
+    }, 5050);
     return () => clearTimeout(t);
   }, []);
 
@@ -54,8 +59,9 @@ export function IntroGate() {
           </mask>
         </defs>
 
+        {/* The wall scales forward on the walk-in (solid sand → clean reveal
+            as the doorway hole grows to engulf the screen). */}
         <g className="gd-camera">
-          {/* Sand wall with the doorway cut out */}
           <rect
             x="0"
             y="0"
@@ -64,27 +70,28 @@ export function IntroGate() {
             style={{ fill: "var(--color-sand)" }}
             mask="url(#gd-door-mask)"
           />
+        </g>
 
-          {/* House drawing, centred in the larger canvas */}
-          <g transform="translate(110, 85)">
-            {STROKES.map((s, i) => (
-              <path
-                key={i}
-                d={s.d}
-                pathLength={1}
-                className="gd-stroke"
-                style={{ animationDelay: `${s.delay}s` }}
-              />
-            ))}
+        {/* The line drawing + door leaves sit on top and FADE on the walk-in
+            (they don't scale, so they never smear across the screen). */}
+        <g className="gd-art" transform="translate(110, 85)">
+          {STROKES.map((s, i) => (
+            <path
+              key={i}
+              d={s.d}
+              pathLength={1}
+              className="gd-stroke"
+              style={{ animationDelay: `${s.delay}s` }}
+            />
+          ))}
 
-            {/* Door leaves — terracotta, swing open over the hole */}
-            <g className="gd-leaf gd-leaf-left">
-              <rect x="100" y="112" width="10" height="38" />
-            </g>
-            <g className="gd-leaf gd-leaf-right">
-              <rect x="110" y="112" width="10" height="38" />
-              <circle cx="116" cy="131" r="1.8" className="gd-dot" />
-            </g>
+          {/* Door leaves — terracotta, swing open over the hole */}
+          <g className="gd-leaf gd-leaf-left">
+            <rect x="100" y="112" width="10" height="38" />
+          </g>
+          <g className="gd-leaf gd-leaf-right">
+            <rect x="110" y="112" width="10" height="38" />
+            <circle cx="116" cy="131" r="1.8" className="gd-dot" />
           </g>
         </g>
       </svg>
@@ -104,14 +111,15 @@ export function IntroGate() {
   );
 }
 
-/* Stroke order + stagger (house-local coords). Each line draws over 0.55s. */
+/* Stroke order + stagger (house-local coords). Each line draws over 0.65s;
+   the ~0.16s step lets you watch them appear one at a time. */
 const STROKES: { d: string; delay: number }[] = [
   { d: "M10 150 H210", delay: 0 }, // ground
-  { d: "M55 150 V82", delay: 0.12 }, // left wall
-  { d: "M165 150 V82", delay: 0.24 }, // right wall
-  { d: "M45 84 L110 36 L175 84", delay: 0.42 }, // roof
-  { d: "M140 60 V40 H152 V70", delay: 0.58 }, // chimney
-  { d: "M72 96 H98 V122 H72 Z M85 96 V122 M72 109 H98", delay: 0.74 }, // window L
-  { d: "M122 96 H148 V122 H122 Z M135 96 V122 M122 109 H148", delay: 0.9 }, // window R
-  { d: "M100 150 V112 H120 V150", delay: 1.06 }, // door frame
+  { d: "M55 150 V82", delay: 0.16 }, // left wall
+  { d: "M165 150 V82", delay: 0.32 }, // right wall
+  { d: "M45 84 L110 36 L175 84", delay: 0.5 }, // roof
+  { d: "M140 60 V40 H152 V70", delay: 0.66 }, // chimney
+  { d: "M72 96 H98 V122 H72 Z M85 96 V122 M72 109 H98", delay: 0.82 }, // window L
+  { d: "M122 96 H148 V122 H122 Z M135 96 V122 M122 109 H148", delay: 0.98 }, // window R
+  { d: "M100 150 V112 H120 V150", delay: 1.14 }, // door frame
 ];

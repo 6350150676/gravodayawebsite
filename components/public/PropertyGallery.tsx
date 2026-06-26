@@ -83,6 +83,7 @@ export function PropertyGallery({ images, badges }: Props) {
           <img
             src={images[active].url}
             alt={images[active].alt}
+            decoding="async"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -126,7 +127,7 @@ export function PropertyGallery({ images, badges }: Props) {
               aria-label={`Show photo ${i + 1}`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
+              <img src={img.url} alt={img.alt} loading="lazy" decoding="async" className="w-full h-full object-cover" />
             </button>
           ))}
         </div>
@@ -167,6 +168,7 @@ export function PropertyGallery({ images, badges }: Props) {
           <img
             src={images[active].url}
             alt={images[active].alt}
+            decoding="async"
             className="max-h-[88vh] max-w-[92vw] object-contain select-none"
             onClick={(e) => e.stopPropagation()}
           />
