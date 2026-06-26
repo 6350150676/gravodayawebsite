@@ -137,26 +137,31 @@ insert into site_settings (key, value) values
   ('rating_count',   '120+')
 on conflict (key) do nothing;
 
--- ── Stats ──
-insert into site_stats (label, value, suffix, sort_order) values
+-- ── Stats (only seed when empty, so re-running won't duplicate) ──
+insert into site_stats (label, value, suffix, sort_order)
+select * from (values
   ('Years of Experience', 15,  '+', 1),
   ('Happy Families',      500,  '+', 2),
   ('Prime Locations',       3,  '',  3),
   ('Transparency',        100,  '%', 4)
-on conflict do nothing;
+) as v(label, value, suffix, sort_order)
+where not exists (select 1 from site_stats);
 
--- ── "Why choose us" features ──
-insert into site_features (text, sort_order) values
+-- ── "Why choose us" features (only seed when empty) ──
+insert into site_features (text, sort_order)
+select * from (values
   ('RERA registered & legally compliant properties',                1),
   ('Dedicated relationship manager for every buyer',                2),
   ('Transparent pricing — no hidden charges',                       3),
   ('Expert knowledge of Dehradun, Haridwar & Rishikesh markets',    4),
   ('End-to-end support from search to registration',                5),
   ('Trusted by 500+ families across Uttarakhand',                   6)
-on conflict do nothing;
+) as v(text, sort_order)
+where not exists (select 1 from site_features);
 
--- ── Intent cards (Buy / Rent / Sell) ──
-insert into intent_cards (title, subtitle, description, cta, href, image_url, accent, sort_order) values
+-- ── Intent cards / Buy · Rent · Sell (only seed when empty) ──
+insert into intent_cards (title, subtitle, description, cta, href, image_url, accent, sort_order)
+select * from (values
   ('Buy a Home', 'Own your dream property',
    'Browse apartments, villas, plots & more for sale across Dehradun, Haridwar and Rishikesh.',
    'Explore for Sale →', '/properties',
@@ -172,4 +177,5 @@ insert into intent_cards (title, subtitle, description, cta, href, image_url, ac
    'Get Free Valuation →', '/contact',
    'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80&auto=format&fit=crop',
    'var(--color-moss)', 3)
-on conflict do nothing;
+) as v(title, subtitle, description, cta, href, image_url, accent, sort_order)
+where not exists (select 1 from intent_cards);
