@@ -40,7 +40,14 @@ export async function getProperties(
   if (filters.is_for_rent !== undefined) query = query.eq("is_for_rent", filters.is_for_rent);
   if (filters.min_price)   query = query.gte("price", filters.min_price);
   if (filters.max_price)   query = query.lte("price", filters.max_price);
-  if (filters.search)      query = query.ilike("title", `%${filters.search}%`);
+  if (filters.min_bedrooms)  query = query.gte("bedrooms", filters.min_bedrooms);
+  if (filters.min_bathrooms) query = query.gte("bathrooms", filters.min_bathrooms);
+  if (filters.search) {
+    // Match across title, description and address. Strip characters that would
+    // break PostgREST's `or()` filter grammar (commas, parens, wildcards).
+    const q = filters.search.replace(/[,()%*]/g, " ").trim();
+    if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%,address.ilike.%${q}%`);
+  }
 
   switch (filters.sort) {
     case "price_asc":  query = query.order("price", { ascending: true }); break;

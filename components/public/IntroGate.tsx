@@ -1,6 +1,11 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
+
+// Layout effect on the client (runs before paint so first-visit covers the
+// page instantly), plain effect on the server (avoids the SSR warning).
+const useDecideEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * First-visit intro: a simple house is sketched line-by-line, then its front
@@ -17,17 +22,21 @@ import { useEffect, useState } from "react";
  * - Skipped for users who prefer reduced motion (CSS + JS guard).
  */
 export function IntroGate() {
-  const [done, setDone] = useState(false);
+  // Starts hidden: the overlay only mounts once we've confirmed (on the
+  // client) that this is a genuine first visit. This is why a refresh — where
+  // the intro is skipped — never flashes the overlay's first frame before the
+  // effect can hide it.
+  const [play, setPlay] = useState(false);
 
-  useEffect(() => {
+  useDecideEffect(() => {
     const reduce = window.matchMedia?.(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    if (reduce || sessionStorage.getItem("gd-intro")) {
-      setDone(true);
-      return;
-    }
+    // Already seen this session (or reduced motion) → stay hidden.
+    if (reduce || sessionStorage.getItem("gd-intro")) return;
+
+    setPlay(true);
 
     // Flag is set on COMPLETION (not on mount) so React StrictMode's
     // double-invoke in dev doesn't skip the animation on first load.
@@ -35,12 +44,12 @@ export function IntroGate() {
     // Keep in sync with the timeline in globals.css (.gd-camera / .gd-art).
     const t = setTimeout(() => {
       sessionStorage.setItem("gd-intro", "1");
-      setDone(true);
+      setPlay(false);
     }, 5050);
     return () => clearTimeout(t);
   }, []);
 
-  if (done) return null;
+  if (!play) return null;
 
   return (
     <div aria-hidden="true" className="gd-intro">
