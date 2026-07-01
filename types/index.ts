@@ -33,6 +33,10 @@ export interface PropertyFilters {
   is_for_rent?: boolean;
   min_price?: number;
   max_price?: number;
+  /** Minimum number of bedrooms (matches `bedrooms >= n`). */
+  min_bedrooms?: number;
+  /** Minimum number of bathrooms (matches `bathrooms >= n`). */
+  min_bathrooms?: number;
   search?: string;
   sort?: PropertySort;
 }
