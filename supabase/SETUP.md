@@ -1,14 +1,14 @@
-# Supabase Setup Guide
+﻿# Supabase Setup Guide
 
 ## 1. Create the Supabase project
 
-1. Go to [supabase.com](https://supabase.com) → New project
-2. Name: `gravodaya-website` | Region: `ap-south-1` (Mumbai, closest to Dehradun)
+1. Go to [supabase.com](https://supabase.com) â†’ New project
+2. Name: `garvoday-website` | Region: `ap-south-1` (Mumbai, closest to Dehradun)
 3. Set a strong database password and save it
 
 ## 2. Get your API keys
 
-Dashboard → Settings → API:
+Dashboard â†’ Settings â†’ API:
 
 | Variable | Where to find it |
 |---|---|
@@ -20,25 +20,25 @@ Copy these into a `.env.local` file (never commit it).
 
 ## 3. Run the migrations
 
-Go to **Supabase Dashboard → SQL Editor** and run these files **in order**:
+Go to **Supabase Dashboard â†’ SQL Editor** and run these files **in order**:
 
 1. `supabase/migrations/20240001000000_initial_schema.sql`
 2. `supabase/migrations/20240001000001_storage.sql`
-3. `supabase/migrations/20240002000000_site_content.sql` — editable homepage
+3. `supabase/migrations/20240002000000_site_content.sql` â€” editable homepage
    content (hero, stats, "why us", city cards, intent cards, contact info).
    Safe to re-run; seeds the defaults the site already ships with. After this,
-   manage it all from **Admin → Site Content**.
+   manage it all from **Admin â†’ Site Content**.
 
 ## 4. Seed lookup data
 
 Still in the SQL Editor, run:
 
-1. `supabase/seed/01_lookups.sql` — adds cities, localities, categories
+1. `supabase/seed/01_lookups.sql` â€” adds cities, localities, categories
 
 ## 5. Create the admin user
 
-1. Dashboard → Authentication → Users → **Add user**
-2. Enter your admin email + strong password → Create
+1. Dashboard â†’ Authentication â†’ Users â†’ **Add user**
+2. Enter your admin email + strong password â†’ Create
 3. Copy the UUID of the newly created user
 4. Open `supabase/seed/02_admin_user.sql`
 5. Replace `<YOUR_ADMIN_USER_UUID>` and `<YOUR_ADMIN_EMAIL>`

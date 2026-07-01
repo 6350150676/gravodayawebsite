@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -17,13 +17,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Gravodaya Developers — Premium Properties in Uttarakhand",
-    template: "%s | Gravodaya Developers",
+    default: "Garvoday Developers â€” Premium Properties in Uttarakhand",
+    template: "%s | Garvoday Developers",
   },
   description:
     "Premium apartments, villas, plots and commercial spaces in Dehradun, Haridwar and Rishikesh.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://gravodaya.com"
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com"
   ),
 };
 

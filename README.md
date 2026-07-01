@@ -1,6 +1,6 @@
-# gravodaya-website
+﻿# garvoday-website
 
-Real estate website with AI chatbot for **Gravodaya Developers Pvt. Ltd.**
+Real estate website with AI chatbot for **Garvoday Developers Pvt. Ltd.**
 
 Built with **Next.js (App Router)** + **Tailwind CSS v4**.
 
@@ -46,7 +46,7 @@ lib/
 ## Roadmap (from project proposal)
 
 - [x] Website frontend (Home, Listings, Detail, Contact, WhatsApp button)
-- [ ] Database (Supabase or MongoDB — to be decided)
+- [ ] Database (Supabase or MongoDB â€” to be decided)
 - [ ] Admin panel (login, add/edit/delete properties, view leads)
 - [ ] AI chatbot (property recommendations + lead capture)
 - [ ] Deployment (domain, hosting, SSL)

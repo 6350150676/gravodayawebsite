@@ -1,18 +1,18 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
 /**
  * First-visit intro: a simple house is sketched line-by-line, then its front
  * door swings open on its hinges and the "camera" dollies forward through the
- * doorway — so it feels like the gate opens and you step inside before the
+ * doorway â€” so it feels like the gate opens and you step inside before the
  * site (visible through the open door) fills the screen.
  *
  * It is one SVG: a sand "wall" with the doorway punched out (transparent, via
  * a mask) so the real page shows through it; two terracotta leaves cover that
  * hole, swing open, then the whole group scales up about the doorway.
  *
- * - Pure CSS / SVG — no animation library; timing lives in globals.css.
+ * - Pure CSS / SVG â€” no animation library; timing lives in globals.css.
  * - Plays once per browser session (sessionStorage).
  * - Skipped for users who prefer reduced motion (CSS + JS guard).
  */
@@ -31,7 +31,7 @@ export function IntroGate() {
 
     // Flag is set on COMPLETION (not on mount) so React StrictMode's
     // double-invoke in dev doesn't skip the animation on first load.
-    // draw (~1.75s) → door swings open (2.1s) → walk in (3.6s) → unmount.
+    // draw (~1.75s) â†’ door swings open (2.1s) â†’ walk in (3.6s) â†’ unmount.
     // Keep in sync with the timeline in globals.css (.gd-camera / .gd-art).
     const t = setTimeout(() => {
       sessionStorage.setItem("gd-intro", "1");
@@ -59,7 +59,7 @@ export function IntroGate() {
           </mask>
         </defs>
 
-        {/* The wall scales forward on the walk-in (solid sand → clean reveal
+        {/* The wall scales forward on the walk-in (solid sand â†’ clean reveal
             as the doorway hole grows to engulf the screen). */}
         <g className="gd-camera">
           <rect
@@ -85,7 +85,7 @@ export function IntroGate() {
             />
           ))}
 
-          {/* Door leaves — terracotta, swing open over the hole */}
+          {/* Door leaves â€” terracotta, swing open over the hole */}
           <g className="gd-leaf gd-leaf-left">
             <rect x="100" y="112" width="10" height="38" />
           </g>
@@ -101,7 +101,7 @@ export function IntroGate() {
           className="font-bold uppercase tracking-[0.28em] text-[var(--color-brand)]"
           style={{ fontFamily: "var(--font-heading)" }}
         >
-          Gravodaya
+          Garvoday
         </p>
         <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-[var(--color-gold)]">
           Developers

@@ -38,11 +38,11 @@ function imageUrl(path: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const property = await getPropertyBySlug(slug);
-  if (!property) return { title: "Property not found — Gravodaya Developers" };
+  if (!property) return { title: "Property not found — Garvoday Developers" };
 
   const cover = property.images.find((i) => i.is_cover) ?? property.images[0];
   return {
-    title: `${property.title} — Gravodaya Developers`,
+    title: `${property.title} — Garvoday Developers`,
     description: property.description.slice(0, 155),
     openGraph: {
       title: property.title,
@@ -91,11 +91,6 @@ export default async function PropertyDetailPage({ params }: Props) {
     },
     { icon: Building2, label: "Type", value: property.category.name },
   ].filter(Boolean) as { icon: typeof BedDouble; label: string; value: string }[];
-
-  const mapSrc =
-    property.map_lat != null && property.map_lng != null
-      ? `https://maps.google.com/maps?q=${property.map_lat},${property.map_lng}&z=15&output=embed`
-      : null;
 
   return (
     <div className="bg-[var(--color-sand)] min-h-screen pb-16">
@@ -194,24 +189,7 @@ export default async function PropertyDetailPage({ params }: Props) {
               </Reveal>
             )}
 
-            {/* Map */}
-            {mapSrc && (
-              <Reveal as="section" className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="text-lg font-bold text-[var(--color-brand)] mb-1">Location</h2>
-                <p className="text-sm text-gray-400 mb-4 flex items-center gap-1.5">
-                  <MapPin size={14} className="text-[var(--color-gold)]" /> {locationText}
-                </p>
-                <div className="rounded-xl overflow-hidden border border-gray-100">
-                  <iframe
-                    src={mapSrc}
-                    title="Property location map"
-                    className="w-full h-80 sm:h-96"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
-                </div>
-              </Reveal>
-            )}
+
           </div>
 
           {/* ════════════ RIGHT SIDEBAR ════════════ */}

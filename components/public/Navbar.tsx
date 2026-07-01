@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -8,6 +8,7 @@ import { Menu, X, Phone } from "lucide-react";
 const NAV_LINKS = [
   { href: "/properties", label: "Properties" },
   { href: "/properties?type=rent", label: "Rentals" },
+  { href: "/sell", label: "List Property" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -22,23 +23,23 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
   return (
     <header className="sticky top-0 z-50 bg-[var(--color-brand)] shadow-lg">
       <nav className="w-full px-5 sm:px-8 lg:px-12 h-20 flex items-center justify-between gap-4">
-        {/* Logo — pinned top-left */}
+        {/* Logo â€” pinned top-left */}
         <Link href="/" className="group flex items-center gap-3 flex-shrink-0" onClick={() => setOpen(false)}>
           <Image
             src="/logo-gold.png"
-            alt="Gravodaya Developers logo"
+            alt="Garvoday Developers logo"
             width={64}
             height={64}
             priority
             className="brand-logo h-16 w-auto object-contain select-none flex-shrink-0"
           />
           <div>
-            <p className="text-white font-bold text-base sm:text-lg tracking-[0.18em] uppercase leading-tight">Gravodaya</p>
+            <p className="text-white font-bold text-base sm:text-lg tracking-[0.18em] uppercase leading-tight">Garvoday</p>
             <p className="text-[var(--color-gold)] text-[10px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>
           </div>
         </Link>
 
-        {/* Desktop nav — links + CTA pinned top-right */}
+        {/* Desktop nav â€” links + CTA pinned top-right */}
         <div className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map((l) => (
             <Link key={l.href} href={l.href}

@@ -1,4 +1,4 @@
-import { loginAction } from "@/lib/actions/auth.actions";
+﻿import { loginAction } from "@/lib/actions/auth.actions";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
@@ -17,7 +17,7 @@ export default async function AdminLoginPage({ searchParams }: Props) {
         {/* Logo / brand */}
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-[var(--color-brand)]">
-            Gravodaya
+            Garvoday
           </h1>
           <p className="text-sm text-gray-500 mt-1">Admin Panel</p>
         </div>

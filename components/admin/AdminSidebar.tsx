@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -32,7 +32,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       {/* Brand */}
       <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
         <div>
-          <span className="text-lg font-bold tracking-wide">Gravodaya</span>
+          <span className="text-lg font-bold tracking-wide">Garvoday</span>
           <span className="block text-xs text-white/50 mt-0.5">Admin Panel</span>
         </div>
         {onClose && (
@@ -87,12 +87,12 @@ export function AdminSidebar() {
 
   return (
     <>
-      {/* ── Desktop sidebar ── */}
+      {/* â”€â”€ Desktop sidebar â”€â”€ */}
       <aside className="hidden lg:flex lg:w-60 lg:min-h-screen bg-[var(--color-brand)] text-white flex-col flex-shrink-0">
         <SidebarContent />
       </aside>
 
-      {/* ── Mobile top bar ── */}
+      {/* â”€â”€ Mobile top bar â”€â”€ */}
       <div className="lg:hidden fixed top-0 inset-x-0 z-30 h-14 bg-[var(--color-brand)] text-white flex items-center px-4 gap-3">
         <button
           onClick={() => setOpen(true)}
@@ -101,10 +101,10 @@ export function AdminSidebar() {
         >
           <Menu size={22} />
         </button>
-        <span className="font-bold text-base tracking-wide">Gravodaya Admin</span>
+        <span className="font-bold text-base tracking-wide">Garvoday Admin</span>
       </div>
 
-      {/* ── Mobile drawer backdrop ── */}
+      {/* â”€â”€ Mobile drawer backdrop â”€â”€ */}
       {open && (
         <div
           className="lg:hidden fixed inset-0 z-40 bg-black/50"
@@ -112,7 +112,7 @@ export function AdminSidebar() {
         />
       )}
 
-      {/* ── Mobile drawer ── */}
+      {/* â”€â”€ Mobile drawer â”€â”€ */}
       <aside
         className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 bg-[var(--color-brand)] text-white flex flex-col transform transition-transform duration-200 ${
           open ? "translate-x-0" : "-translate-x-full"

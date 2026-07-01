@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Phone, Building2, Home, Map, Store, Trees, ArrowRight } from "lucide-react";
@@ -16,7 +16,7 @@ import { Reveal } from "@/components/public/Reveal";
 import { CountUp } from "@/components/public/CountUp";
 
 export const metadata: Metadata = {
-  title: "Gravodaya Developers — Premium Properties in Uttarakhand",
+  title: "Garvoday Developers â€” Premium Properties in Uttarakhand",
   description:
     "Find premium apartments, villas, plots and commercial spaces in Dehradun, Haridwar and Rishikesh. Trusted by 500+ families across Uttarakhand.",
 };
@@ -39,7 +39,7 @@ function splitLastWord(title: string): [string, string] {
   return [words.join(" "), last];
 }
 
-/* ─── page ───────────────────────────────────────────────────────────────── */
+/* â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export default async function HomePage() {
   const [featured, categories, primeCities, settings, stats, features, intentCards] =
     await Promise.all([
@@ -58,7 +58,7 @@ export default async function HomePage() {
   return (
     <div className="bg-[var(--color-sand)]">
 
-      {/* ── HERO ──────────────────────────────────────────────────── */}
+      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative min-h-[88vh] flex items-center overflow-hidden">
 
         {/* Background photo */}
@@ -98,11 +98,11 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-white/55 text-sm">
-              <span>✓ RERA Registered</span>
-              <span>✓ 15+ Years in Business</span>
-              <span>✓ 500+ Happy Families</span>
+              <span>âœ“ RERA Registered</span>
+              <span>âœ“ 15+ Years in Business</span>
+              <span>âœ“ 500+ Happy Families</span>
               <Link href="/contact" className="text-[var(--color-gold)] font-semibold hover:underline">
-                List your property →
+                List your property â†’
               </Link>
             </div>
           </div>
@@ -116,7 +116,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── BROWSE BY PROPERTY TYPE ──────────────────────────────── */}
+      {/* â”€â”€ BROWSE BY PROPERTY TYPE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {categories.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-2">
           <div className="flex items-end justify-between mb-6">
@@ -150,7 +150,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── WHAT ARE YOU LOOKING FOR ─────────────────────────────── */}
+      {/* â”€â”€ WHAT ARE YOU LOOKING FOR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {intentCards.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20">
           <div className="text-center mb-12">
@@ -195,7 +195,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── STATS ───────────────────────────────────────────────── */}
+      {/* â”€â”€ STATS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {stats.length > 0 && (
         <section className="bg-[var(--color-brand)]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -213,7 +213,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── FEATURED PROPERTIES ────────────────────────────────── */}
+      {/* â”€â”€ FEATURED PROPERTIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {featured.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
@@ -223,7 +223,7 @@ export default async function HomePage() {
               <div className="mt-3 w-16 h-1 bg-[var(--color-gold)] rounded-full" />
             </div>
             <Link href="/properties" className="text-sm font-semibold text-[var(--color-brand)] hover:text-[var(--color-gold)] transition-colors">
-              View All →
+              View All â†’
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -236,7 +236,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── PRIME LOCATIONS ─────────────────────────────────────── */}
+      {/* â”€â”€ PRIME LOCATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {primeCities.length > 0 && (
         <section className="bg-white border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -275,7 +275,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── WHY GRAVODAYA ───────────────────────────────────────── */}
+      {/* â”€â”€ WHY GARVODAY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="bg-[var(--color-sand)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -318,7 +318,7 @@ export default async function HomePage() {
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-[var(--color-gold)] flex items-center justify-center flex-shrink-0 font-bold text-[var(--color-brand)] text-xl">G</div>
                     <div>
-                      <p className="font-bold text-[var(--color-brand)] text-sm">Gravodaya Developers</p>
+                      <p className="font-bold text-[var(--color-brand)] text-sm">Garvoday Developers</p>
                       <p className="text-gray-500 text-xs mt-0.5">{settings.company_tagline}</p>
                       <div className="flex gap-0.5 mt-1">
                         {[1,2,3,4,5].map((i) => (
@@ -340,7 +340,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── CTA BANNER ──────────────────────────────────────────── */}
+      {/* â”€â”€ CTA BANNER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative overflow-hidden bg-[var(--color-brand)]">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/[0.03]" />
@@ -352,7 +352,7 @@ export default async function HomePage() {
             Ready to Find Your Perfect Home?
           </h2>
           <p className="text-white/60 mb-10 text-base max-w-md mx-auto">
-            Talk to our experts today — free consultation, zero obligations.
+            Talk to our experts today â€” free consultation, zero obligations.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href={`tel:${settings.phone_tel}`}
