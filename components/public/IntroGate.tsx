@@ -1,11 +1,11 @@
-"use client";
-
-import { useEffect, useLayoutEffect, useState } from "react";
-
-// Layout effect on the client (runs before paint so first-visit covers the
-// page instantly), plain effect on the server (avoids the SSR warning).
-const useDecideEffect =
-  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+// Server component — no "use client". The overlay markup is rendered into the
+// initial HTML so it covers the page on the *very first paint*. A tiny
+// render-blocking inline script (below) decides — synchronously, before the
+// body paints — whether this is a genuine first visit and, if so, flips
+// <html data-intro="play"> so the CSS overlay shows. This is what kills the
+// old flash: the previous version was a client component that rendered nothing
+// on the server, so the browser painted the real site first and only mounted
+// the overlay 1-2 frames later, after React hydrated.
 
 /**
  * First-visit intro: a simple house is sketched line-by-line, then its front
@@ -19,104 +19,97 @@ const useDecideEffect =
  *
  * - Pure CSS / SVG — no animation library; timing lives in globals.css.
  * - Plays once per browser session (sessionStorage).
- * - Skipped for users who prefer reduced motion (CSS + JS guard).
+ * - Skipped for users who prefer reduced motion (script + CSS guard).
+ * - Visibility is driven entirely by <html data-intro="…">, set before paint,
+ *   so the site is never visible before the overlay.
  */
+
+// Runs before the body paints. Keep the timeout in sync with the CSS timeline
+// in globals.css (.gd-camera / .gd-art end ~5.0s).
+const INTRO_SCRIPT = `(function(){try{
+  var d=document.documentElement;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce||sessionStorage.getItem('gd-intro')){return;}
+  d.setAttribute('data-intro','play');
+  setTimeout(function(){
+    try{sessionStorage.setItem('gd-intro','1');}catch(e){}
+    d.setAttribute('data-intro','done');
+  },5100);
+}catch(e){}})();`;
+
 export function IntroGate() {
-  // Starts hidden: the overlay only mounts once we've confirmed (on the
-  // client) that this is a genuine first visit. This is why a refresh — where
-  // the intro is skipped — never flashes the overlay's first frame before the
-  // effect can hide it.
-  const [play, setPlay] = useState(false);
-
-  useDecideEffect(() => {
-    const reduce = window.matchMedia?.(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    // Already seen this session (or reduced motion) → stay hidden.
-    if (reduce || sessionStorage.getItem("gd-intro")) return;
-
-    setPlay(true);
-
-    // Flag is set on COMPLETION (not on mount) so React StrictMode's
-    // double-invoke in dev doesn't skip the animation on first load.
-    // draw (~1.75s) → door swings open (2.1s) → walk in (3.6s) → unmount.
-    // Keep in sync with the timeline in globals.css (.gd-camera / .gd-art).
-    const t = setTimeout(() => {
-      sessionStorage.setItem("gd-intro", "1");
-      setPlay(false);
-    }, 5050);
-    return () => clearTimeout(t);
-  }, []);
-
-  if (!play) return null;
-
   return (
-    <div aria-hidden="true" className="gd-intro">
-      <svg
-        className="gd-overlay"
-        viewBox="0 0 440 340"
-        preserveAspectRatio="xMidYMid slice"
-        role="img"
-      >
-        <defs>
-          {/* White = keep the wall, black = punch the doorway through to the
-              page behind. Coords are the door interior in canvas units. */}
-          <mask id="gd-door-mask">
-            <rect x="0" y="0" width="440" height="340" fill="#fff" />
-            <rect x="210" y="197" width="20" height="38" fill="#000" />
-          </mask>
-        </defs>
+    <>
+      {/* Inline, non-src script → React renders it in place (not hoisted) and
+          it executes synchronously during HTML parse, before the page paints. */}
+      <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
 
-        {/* The wall scales forward on the walk-in (solid sand → clean reveal
-            as the doorway hole grows to engulf the screen). */}
-        <g className="gd-camera">
-          <rect
-            x="0"
-            y="0"
-            width="440"
-            height="340"
-            style={{ fill: "var(--color-sand)" }}
-            mask="url(#gd-door-mask)"
-          />
-        </g>
-
-        {/* The line drawing + door leaves sit on top and FADE on the walk-in
-            (they don't scale, so they never smear across the screen). */}
-        <g className="gd-art" transform="translate(110, 85)">
-          {STROKES.map((s, i) => (
-            <path
-              key={i}
-              d={s.d}
-              pathLength={1}
-              className="gd-stroke"
-              style={{ animationDelay: `${s.delay}s` }}
-            />
-          ))}
-
-          {/* Door leaves — terracotta, swing open over the hole */}
-          <g className="gd-leaf gd-leaf-left">
-            <rect x="100" y="112" width="10" height="38" />
-          </g>
-          <g className="gd-leaf gd-leaf-right">
-            <rect x="110" y="112" width="10" height="38" />
-            <circle cx="116" cy="131" r="1.8" className="gd-dot" />
-          </g>
-        </g>
-      </svg>
-
-      <div className="gd-wordmark select-none">
-        <p
-          className="font-bold uppercase tracking-[0.28em] text-[var(--color-brand)]"
-          style={{ fontFamily: "var(--font-heading)" }}
+      <div aria-hidden="true" className="gd-intro">
+        <svg
+          className="gd-overlay"
+          viewBox="0 0 440 340"
+          preserveAspectRatio="xMidYMid slice"
+          role="img"
         >
-          Gravodaya
-        </p>
-        <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-[var(--color-gold)]">
-          Developers
-        </p>
+          <defs>
+            {/* White = keep the wall, black = punch the doorway through to the
+                page behind. Coords are the door interior in canvas units. */}
+            <mask id="gd-door-mask">
+              <rect x="0" y="0" width="440" height="340" fill="#fff" />
+              <rect x="210" y="197" width="20" height="38" fill="#000" />
+            </mask>
+          </defs>
+
+          {/* The wall scales forward on the walk-in (solid sand → clean reveal
+              as the doorway hole grows to engulf the screen). */}
+          <g className="gd-camera">
+            <rect
+              x="0"
+              y="0"
+              width="440"
+              height="340"
+              style={{ fill: "var(--color-sand)" }}
+              mask="url(#gd-door-mask)"
+            />
+          </g>
+
+          {/* The line drawing + door leaves sit on top and FADE on the walk-in
+              (they don't scale, so they never smear across the screen). */}
+          <g className="gd-art" transform="translate(110, 85)">
+            {STROKES.map((s, i) => (
+              <path
+                key={i}
+                d={s.d}
+                pathLength={1}
+                className="gd-stroke"
+                style={{ animationDelay: `${s.delay}s` }}
+              />
+            ))}
+
+            {/* Door leaves — terracotta, swing open over the hole */}
+            <g className="gd-leaf gd-leaf-left">
+              <rect x="100" y="112" width="10" height="38" />
+            </g>
+            <g className="gd-leaf gd-leaf-right">
+              <rect x="110" y="112" width="10" height="38" />
+              <circle cx="116" cy="131" r="1.8" className="gd-dot" />
+            </g>
+          </g>
+        </svg>
+
+        <div className="gd-wordmark select-none">
+          <p
+            className="font-bold uppercase tracking-[0.28em] text-[var(--color-brand)]"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            Gravodaya
+          </p>
+          <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-[var(--color-gold)]">
+            Developers
+          </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

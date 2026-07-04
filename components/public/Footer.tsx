@@ -28,10 +28,10 @@ export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
           <div>
             <div className="group flex items-center gap-3 mb-5">
               <Image
-                src="/logo-gold.png"
+                src="/logo.png"
                 alt="Gravodaya Developers logo"
-                width={72}
-                height={72}
+                width={96}
+                height={64}
                 className="brand-logo h-16 w-auto object-contain flex-shrink-0"
               />
               <div>

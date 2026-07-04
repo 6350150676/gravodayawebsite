@@ -132,6 +132,17 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   z-index: 9999;
   pointer-events: none;
+  /* Hidden by default so the overlay never blocks the site on repeat visits,
+     with JS off, or under reduced motion. The pre-paint inline script in
+     IntroGate flips <html data-intro="play"> on a genuine first visit — which
+     is what shows the overlay from the very first paint (no site flash). */
+  display: none;
+}
+html[data-intro="play"] .gd-intro {
+  display: block;
+}
+html[data-intro="done"] .gd-intro {
+  display: none;
 }
 .gd-overlay {
   position: absolute;

@@ -21,18 +21,18 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
 
   return (
     <header className="sticky top-0 z-50 bg-[var(--color-brand)] shadow-lg">
-      <nav className="w-full px-5 sm:px-8 lg:px-12 h-20 flex items-center justify-between gap-4">
+      <nav className="w-full px-5 sm:px-8 lg:px-12 h-28 flex items-center justify-between gap-4">
         {/* Logo — pinned top-left */}
-        <Link href="/" className="group flex items-center gap-3 flex-shrink-0" onClick={() => setOpen(false)}>
+        <Link href="/" className="group flex items-center gap-0 shrink-0" onClick={() => setOpen(false)}>
           <Image
-            src="/logo-gold.png"
+            src="/logo.png"
             alt="Gravodaya Developers logo"
-            width={64}
+            width={96}
             height={64}
             priority
-            className="brand-logo h-16 w-auto object-contain select-none flex-shrink-0"
+            className="brand-logo h-24 w-auto object-contain select-none flex-shrink-0"
           />
-          <div>
+          <div className="-ml-8">
             <p className="text-white font-bold text-base sm:text-lg tracking-[0.18em] uppercase leading-tight">Gravodaya</p>
             <p className="text-[var(--color-gold)] text-[10px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>
           </div>
