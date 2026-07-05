@@ -66,13 +66,3 @@ export interface IntentCard {
   image_url: string | null;
   accent: string;
 }
-
-/** A city enriched with its presentation meta and live active-property count. */
-export interface CityMeta {
-  id: number;
-  name: string;
-  slug: string;
-  tagline: string | null;
-  image_url: string | null;
-  count: number;
-}

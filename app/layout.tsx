@@ -19,13 +19,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
         title: {
-                default: "Gravodaya Developers — Premium Properties in Uttarakhand",
-                template: "%s | Gravodaya Developers",
+                default: "Garvoday Developers — Premium Properties in Uttarakhand",
+                template: "%s | Garvoday Developers",
         },
         description:
-                "Premium apartments, villas, plots and commercial spaces in Dehradun, Haridwar and Rishikesh.",
+                "Premium apartments, villas, plots and commercial spaces in Haridwar.",
         metadataBase: new URL(
-                process.env.NEXT_PUBLIC_SITE_URL ?? "https://gravodaya.com"
+                process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com"
         ),
 };
 

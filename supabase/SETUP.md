@@ -1,9 +1,9 @@
-# Supabase Setup Guide
+﻿# Supabase Setup Guide
 
 ## 1. Create the Supabase project
 
 1. Go to [supabase.com](https://supabase.com) → New project
-2. Name: `gravodaya-website` | Region: `ap-south-1` (Mumbai, closest to Dehradun)
+2. Name: `gravodaya-website` | Region: `ap-south-1` (Mumbai, closest to Haridwar)
 3. Set a strong database password and save it
 
 ## 2. Get your API keys

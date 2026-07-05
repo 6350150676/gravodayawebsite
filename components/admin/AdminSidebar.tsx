@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -32,7 +32,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       {/* Brand */}
       <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
         <div>
-          <span className="text-lg font-bold tracking-wide">Gravodaya</span>
+          <span className="text-lg font-bold tracking-wide">Garvoday</span>
           <span className="block text-xs text-white/50 mt-0.5">Admin Panel</span>
         </div>
         {onClose && (
@@ -101,7 +101,7 @@ export function AdminSidebar() {
         >
           <Menu size={22} />
         </button>
-        <span className="font-bold text-base tracking-wide">Gravodaya Admin</span>
+        <span className="font-bold text-base tracking-wide">Garvoday Admin</span>
       </div>
 
       {/* ── Mobile drawer backdrop ── */}

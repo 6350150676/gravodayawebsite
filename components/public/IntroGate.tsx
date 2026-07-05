@@ -102,7 +102,7 @@ export function IntroGate() {
             className="font-bold uppercase tracking-[0.28em] text-[var(--color-brand)]"
             style={{ fontFamily: "var(--font-heading)" }}
           >
-            Gravodaya
+            Garvoday
           </p>
           <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-[var(--color-gold)]">
             Developers

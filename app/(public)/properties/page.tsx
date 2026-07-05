@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getProperties, getCategories, getCities } from "@/lib/queries/properties";
 import type { PropertySort, PropertyFilters as Filters } from "@/types";
@@ -7,8 +7,8 @@ import { PropertyInfiniteList } from "@/components/public/PropertyInfiniteList";
 import { SortSelect } from "@/components/public/SortSelect";
 
 export const metadata: Metadata = {
-  title: "Properties — Gravodaya Developers",
-  description: "Browse apartments, villas, plots and commercial spaces for sale and rent in Dehradun, Haridwar and Rishikesh.",
+  title: "Properties — Garvoday Developers",
+  description: "Browse apartments, villas, plots and commercial spaces for sale and rent in Haridwar.",
 };
 
 interface Props {
@@ -71,7 +71,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
               : "All Properties"}
           </h1>
           <p className="text-white/55 text-sm mt-2">
-            Dehradun · Haridwar · Rishikesh, Uttarakhand
+            Haridwar, Uttarakhand
           </p>
         </div>
       </div>

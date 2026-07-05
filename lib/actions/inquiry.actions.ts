@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { inquirySchema } from "@/lib/validations/inquiry";
+import { sendInquiryNotification } from "@/lib/email/inquiry-notification";
+import { getSiteSettings } from "@/lib/queries/site-content";
 import type { Database, InquiryStatus } from "@/types/database";
 
 type InquiryInsert = Database["public"]["Tables"]["inquiries"]["Insert"];
@@ -69,6 +71,34 @@ export async function createInquiryAction(
   if (error) {
     console.error("[createInquiryAction]", error.message);
     return { ok: false, error: "Something went wrong. Please try again or call us." };
+  }
+
+  // Send email notification — fire and forget, don't block the response
+  try {
+    let propertyTitle: string | null = null;
+    if (property_id) {
+      const { data: prop } = await supabase
+        .from("properties")
+        .select("title, slug")
+        .eq("id", property_id)
+        .single();
+      propertyTitle = prop?.title ?? null;
+    }
+    const settings = await getSiteSettings();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    await sendInquiryNotification({
+      name,
+      phone,
+      email: email || null,
+      message: message || null,
+      propertyTitle,
+      propertyUrl: propertyTitle && property_id
+        ? `${siteUrl}/properties/${(await supabase.from("properties").select("slug").eq("id", property_id).single()).data?.slug}`
+        : null,
+      toEmail: settings.contact_email,
+    });
+  } catch (emailErr) {
+    console.error("[createInquiryAction] email failed:", emailErr);
   }
 
   return { ok: true };

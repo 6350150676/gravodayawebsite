@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -8,6 +8,8 @@ import { Menu, X, Phone } from "lucide-react";
 const NAV_LINKS = [
   { href: "/properties", label: "Properties" },
   { href: "/properties?type=rent", label: "Rentals" },
+  { href: "/sell", label: "List Property" },
+  { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -26,14 +28,14 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
         <Link href="/" className="group flex items-center gap-0 shrink-0" onClick={() => setOpen(false)}>
           <Image
             src="/logo.png"
-            alt="Gravodaya Developers logo"
+            alt="Garvoday Developers logo"
             width={96}
             height={64}
             priority
             className="brand-logo h-24 w-auto object-contain select-none flex-shrink-0"
           />
           <div className="-ml-8">
-            <p className="text-white font-bold text-base sm:text-lg tracking-[0.18em] uppercase leading-tight">Gravodaya</p>
+            <p className="text-white font-bold text-base sm:text-lg tracking-[0.18em] uppercase leading-tight">Garvoday</p>
             <p className="text-[var(--color-gold)] text-[10px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>
           </div>
         </Link>

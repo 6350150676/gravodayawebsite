@@ -1,5 +1,5 @@
--- ============================================================
--- Gravodaya Developers — Editable Site Content
+﻿-- ============================================================
+-- Garvoday Developers — Editable Site Content
 -- ------------------------------------------------------------
 -- Moves the landing-page marketing content (hero, stats, "why
 -- us" points, prime-location cities, intent cards, contact info)
@@ -101,38 +101,26 @@ end $$;
 -- SEED DEFAULTS  (matches the current hard-coded landing page)
 -- ============================================================
 
--- ── City presentation (Dehradun / Haridwar / Rishikesh) ──
-update cities set
-  tagline    = 'Capital City · Gateway to the Hills',
-  image_url  = 'https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=800&q=80&auto=format&fit=crop',
-  sort_order = 1
-where slug = 'dehradun';
-
+-- ── City presentation (Haridwar) ──
 update cities set
   tagline    = 'Spiritual Hub · High Rental Demand',
-  image_url  = 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&q=80&auto=format&fit=crop',
-  sort_order = 2
+  image_url  = 'https://images.unsplash.com/photo-1622611908679-cbeda47d9404?w=800&q=80&auto=format&fit=crop',
+  sort_order = 1
 where slug = 'haridwar';
-
-update cities set
-  tagline    = 'Scenic Beauty · Premium Retreats',
-  image_url  = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80&auto=format&fit=crop',
-  sort_order = 3
-where slug = 'rishikesh';
 
 -- ── Settings ──
 insert into site_settings (key, value) values
   ('phone_display',  '+91 98765 43210'),
   ('phone_tel',      '+919876543210'),
   ('whatsapp_number','919876543210'),
-  ('contact_email',  'info@gravodaya.com'),
-  ('contact_address','Race Course Road, Dehradun, Uttarakhand — 248001'),
+  ('contact_email',  'info@garvoday.com'),
+  ('contact_address','Kankhal, Haridwar, Uttarakhand'),
   ('hero_badge',     'Uttarakhand''s Most Trusted Real Estate'),
   ('hero_title',     'Find Your Dream Home in the Himalayas'),
-  ('hero_subtitle',  'Apartments, villas, plots & commercial spaces across Dehradun · Haridwar · Rishikesh'),
+  ('hero_subtitle',  'Apartments, villas, plots & commercial spaces across Haridwar'),
   ('hero_image_url', 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=85&auto=format&fit=crop'),
-  ('whyus_image_url','https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900&q=80&auto=format&fit=crop'),
-  ('company_tagline','Trusted Since 2008 · Dehradun'),
+  ('whyus_image_url','https://images.unsplash.com/photo-1750301668797-f21fa5973d62?w=900&q=80&auto=format&fit=crop'),
+  ('company_tagline','Trusted Since 2008 · Haridwar'),
   ('rating_value',   '5.0'),
   ('rating_count',   '120+')
 on conflict (key) do nothing;
@@ -142,7 +130,7 @@ insert into site_stats (label, value, suffix, sort_order)
 select * from (values
   ('Years of Experience', 15,  '+', 1),
   ('Happy Families',      500,  '+', 2),
-  ('Prime Locations',       3,  '',  3),
+  ('Prime Location',       1,  '',  3),
   ('Transparency',        100,  '%', 4)
 ) as v(label, value, suffix, sort_order)
 where not exists (select 1 from site_stats);
@@ -153,7 +141,7 @@ select * from (values
   ('RERA registered & legally compliant properties',                1),
   ('Dedicated relationship manager for every buyer',                2),
   ('Transparent pricing — no hidden charges',                       3),
-  ('Expert knowledge of Dehradun, Haridwar & Rishikesh markets',    4),
+  ('Expert knowledge of the Haridwar real estate market',           4),
   ('End-to-end support from search to registration',                5),
   ('Trusted by 500+ families across Uttarakhand',                   6)
 ) as v(text, sort_order)
@@ -163,19 +151,19 @@ where not exists (select 1 from site_features);
 insert into intent_cards (title, subtitle, description, cta, href, image_url, accent, sort_order)
 select * from (values
   ('Buy a Home', 'Own your dream property',
-   'Browse apartments, villas, plots & more for sale across Dehradun, Haridwar and Rishikesh.',
+   'Browse apartments, villas, plots & more for sale across Haridwar.',
    'Explore for Sale →', '/properties',
-   'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80&auto=format&fit=crop',
+   'https://images.unsplash.com/photo-1642667670006-6b3059ccf96d?w=800&q=80&auto=format&fit=crop',
    'var(--color-brand)', 1),
   ('Rent a Property', 'Comfortable living spaces',
    'Find fully furnished or semi-furnished homes & offices at fair monthly rentals.',
    'Browse Rentals →', '/properties?type=rent',
-   'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80&auto=format&fit=crop',
+   'https://images.unsplash.com/photo-1688653802629-5360086bf632?w=800&q=80&auto=format&fit=crop',
    'var(--color-gold)', 2),
   ('Sell Your Property', 'Get the best value',
    'List with us and reach thousands of qualified buyers. Free valuation & expert assistance.',
    'Get Free Valuation →', '/contact',
-   'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80&auto=format&fit=crop',
+   'https://images.unsplash.com/photo-1613977257365-aaae5a9817ff?w=800&q=80&auto=format&fit=crop',
    'var(--color-moss)', 3)
 ) as v(title, subtitle, description, cta, href, image_url, accent, sort_order)
 where not exists (select 1 from intent_cards);

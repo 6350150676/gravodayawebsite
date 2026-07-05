@@ -1,16 +1,45 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Loader2, Sparkles } from "lucide-react";
+import { MessageSquare, X, Send, Loader2, Sparkles, Mic, MicOff } from "lucide-react";
 import { PropertyCard } from "@/components/public/PropertyCard";
 import type { PropertyWithRelations } from "@/types";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 
+interface SpeechRecognitionResultLike {
+  0: { transcript: string };
+}
+interface SpeechRecognitionEventLike extends Event {
+  results: ArrayLike<SpeechRecognitionResultLike>;
+}
+interface SpeechRecognitionErrorEventLike extends Event {
+  error: string;
+}
+interface SpeechRecognitionLike extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start: () => void;
+  stop: () => void;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+}
+
+function getSpeechRecognitionCtor(): (new () => SpeechRecognitionLike) | undefined {
+  if (typeof window === "undefined") return undefined;
+  const w = window as unknown as {
+    SpeechRecognition?: new () => SpeechRecognitionLike;
+    webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition;
+}
+
 const EXAMPLES = [
-  "3 BHK apartment in Dehradun under 80 lakh",
+  "3 BHK apartment in Haridwar under 80 lakh",
   "Villa for rent with a garden",
-  "Plots in Haridwar",
+  "Plots in Kankhal",
 ];
 
 interface Turn {
@@ -30,11 +59,76 @@ export function ChatSearch() {
       text: "Hi! Tell me what you're looking for and I'll find matching properties. Try one of the examples below.",
     },
   ]);
+  const [listening, setListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const shouldListenRef = useRef(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [turns, loading]);
+
+  useEffect(() => {
+    setVoiceSupported(!!getSpeechRecognitionCtor());
+    return () => {
+      shouldListenRef.current = false;
+      recognitionRef.current?.stop();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      shouldListenRef.current = false;
+      recognitionRef.current?.stop();
+    }
+  }, [open]);
+
+  function startRecognition() {
+    const SpeechRecognitionCtor = getSpeechRecognitionCtor();
+    if (!SpeechRecognitionCtor) return;
+
+    const recognition = new SpeechRecognitionCtor();
+    recognition.lang = "en-IN";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.onresult = (event) => {
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(transcript);
+    };
+    recognition.onerror = (event) => {
+      // "no-speech" fires on silence during continuous listening — harmless, onend will restart it.
+      if (event.error !== "no-speech") {
+        shouldListenRef.current = false;
+        setListening(false);
+      }
+    };
+    recognition.onend = () => {
+      if (shouldListenRef.current) {
+        recognition.start();
+      } else {
+        setListening(false);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setListening(true);
+  }
+
+  function toggleListening() {
+    if (listening) {
+      shouldListenRef.current = false;
+      recognitionRef.current?.stop();
+      return;
+    }
+
+    shouldListenRef.current = true;
+    startRecognition();
+  }
 
   async function send(prompt: string) {
     const text = prompt.trim();
@@ -166,10 +260,25 @@ export function ChatSearch() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="e.g. 2 BHK flat in Rishikesh…"
+              placeholder={listening ? "Listening…" : "e.g. 2 BHK flat in Haridwar…"}
               className="flex-1 rounded-full border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-[var(--color-brand)]"
               maxLength={500}
             />
+            {voiceSupported && (
+              <button
+                type="button"
+                onClick={toggleListening}
+                disabled={loading}
+                aria-label={listening ? "Stop voice input" : "Start voice input"}
+                className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full transition-colors disabled:opacity-40 ${
+                  listening
+                    ? "animate-pulse bg-red-500 text-white"
+                    : "bg-gray-100 text-[var(--color-brand)] hover:bg-gray-200"
+                }`}
+              >
+                {listening ? <MicOff size={17} /> : <Mic size={17} />}
+              </button>
+            )}
             <button
               type="submit"
               disabled={loading || !input.trim()}
@@ -179,6 +288,11 @@ export function ChatSearch() {
               <Send size={17} />
             </button>
           </form>
+          {!voiceSupported && (
+            <p className="bg-white px-3 pb-2.5 text-center text-[11px] text-gray-400">
+              Tip: tap the mic on your keyboard to dictate
+            </p>
+          )}
         </div>
       )}
     </>
