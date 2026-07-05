@@ -1,5 +1,5 @@
 ﻿-- ============================================================
--- Garvoday Developers â€” Initial Schema
+-- Garvoday Developers — Initial Schema
 -- ============================================================
 
 -- Extensions
@@ -50,7 +50,7 @@ create table properties (
   title       text not null,
   description text not null,
   price       numeric(14, 2) not null check (price > 0),
-  price_label text,                          -- e.g. "â‚¹45 L onwards"
+  price_label text,                          -- e.g. "₹45 L onwards"
   category_id integer not null references property_categories (id),
   city_id     integer not null references cities (id),
   locality_id integer references localities (id),

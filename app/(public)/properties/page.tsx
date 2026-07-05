@@ -7,8 +7,8 @@ import { PropertyInfiniteList } from "@/components/public/PropertyInfiniteList";
 import { SortSelect } from "@/components/public/SortSelect";
 
 export const metadata: Metadata = {
-  title: "Properties â€” Garvoday Developers",
-  description: "Browse apartments, villas, plots and commercial spaces for sale and rent in Dehradun, Haridwar and Rishikesh.",
+  title: "Properties — Garvoday Developers",
+  description: "Browse apartments, villas, plots and commercial spaces for sale and rent in Haridwar.",
 };
 
 interface Props {
@@ -59,7 +59,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
   return (
     <div className="bg-[var(--color-sand)] min-h-screen">
 
-      {/* â”€â”€ Page header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Page header ────────────────────────────────────── */}
       <div className="bg-[var(--color-brand)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-2">
@@ -71,7 +71,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
               : "All Properties"}
           </h1>
           <p className="text-white/55 text-sm mt-2">
-            Dehradun Â· Haridwar Â· Rishikesh, Uttarakhand
+            Haridwar, Uttarakhand
           </p>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
 
-          {/* â”€â”€ Filter sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Filter sidebar ─────────────────────────────── */}
           <aside className="lg:sticky lg:top-20 lg:self-start">
             <Suspense>
               <PropertyFilters
@@ -90,7 +90,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
             </Suspense>
           </aside>
 
-          {/* â”€â”€ Results column â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Results column ─────────────────────────────── */}
           <section className="min-w-0">
 
             {/* Results toolbar */}
@@ -107,7 +107,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
             {/* Grid / empty state */}
             {total === 0 ? (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
-                <p className="text-5xl mb-4">ðŸ </p>
+                <p className="text-5xl mb-4">🏠</p>
                 <p className="text-lg font-semibold text-gray-800 mb-2">No properties found</p>
                 <p className="text-gray-400 text-sm">Try adjusting your filters or check back soon.</p>
               </div>

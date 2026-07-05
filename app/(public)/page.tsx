@@ -2,13 +2,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Phone, Building2, Home, Map, Store, Trees, ArrowRight } from "lucide-react";
-import { getFeaturedProperties, getCategories } from "@/lib/queries/properties";
+import { getFeaturedProperties, getCategories, getCities } from "@/lib/queries/properties";
 import {
   getSiteSettings,
   getSiteStats,
   getSiteFeatures,
   getIntentCards,
-  getCitiesWithMeta,
 } from "@/lib/queries/site-content";
 import { PropertyCard } from "@/components/public/PropertyCard";
 import { HeroSearch } from "@/components/public/HeroSearch";
@@ -16,9 +15,9 @@ import { Reveal } from "@/components/public/Reveal";
 import { CountUp } from "@/components/public/CountUp";
 
 export const metadata: Metadata = {
-  title: "Garvoday Developers â€” Premium Properties in Uttarakhand",
+  title: "Garvoday Developers — Premium Properties in Uttarakhand",
   description:
-    "Find premium apartments, villas, plots and commercial spaces in Dehradun, Haridwar and Rishikesh. Trusted by 500+ families across Uttarakhand.",
+    "Find premium apartments, villas, plots and commercial spaces in Haridwar. Trusted by 500+ families across Uttarakhand.",
 };
 
 /* Map a category name to a representative icon for the quick-links strip */
@@ -39,13 +38,13 @@ function splitLastWord(title: string): [string, string] {
   return [words.join(" "), last];
 }
 
-/* â”€â”€â”€ page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─── page ───────────────────────────────────────────────────────────────── */
 export default async function HomePage() {
-  const [featured, categories, primeCities, settings, stats, features, intentCards] =
+  const [featured, categories, cities, settings, stats, features, intentCards] =
     await Promise.all([
       getFeaturedProperties(6),
       getCategories(),
-      getCitiesWithMeta(),
+      getCities(),
       getSiteSettings(),
       getSiteStats(),
       getSiteFeatures(),
@@ -58,7 +57,7 @@ export default async function HomePage() {
   return (
     <div className="bg-[var(--color-sand)]">
 
-      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── HERO ──────────────────────────────────────────────────── */}
       <section className="relative min-h-[88vh] flex items-center overflow-hidden">
 
         {/* Background photo */}
@@ -94,15 +93,15 @@ export default async function HomePage() {
 
             {/* Search widget */}
             <div className="mt-8">
-              <HeroSearch cities={primeCities} categories={categories} />
+              <HeroSearch cities={cities} categories={categories} />
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-white/55 text-sm">
-              <span>âœ“ RERA Registered</span>
-              <span>âœ“ 15+ Years in Business</span>
-              <span>âœ“ 500+ Happy Families</span>
+              <span>✓ RERA Registered</span>
+              <span>✓ 15+ Years in Business</span>
+              <span>✓ 500+ Happy Families</span>
               <Link href="/contact" className="text-[var(--color-gold)] font-semibold hover:underline">
-                List your property â†’
+                List your property →
               </Link>
             </div>
           </div>
@@ -116,7 +115,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* â”€â”€ BROWSE BY PROPERTY TYPE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── BROWSE BY PROPERTY TYPE ──────────────────────────────── */}
       {categories.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-2">
           <div className="flex items-end justify-between mb-6">
@@ -150,7 +149,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* â”€â”€ WHAT ARE YOU LOOKING FOR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── WHAT ARE YOU LOOKING FOR ─────────────────────────────── */}
       {intentCards.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20">
           <div className="text-center mb-12">
@@ -195,7 +194,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* â”€â”€ STATS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── STATS ───────────────────────────────────────────────── */}
       {stats.length > 0 && (
         <section className="bg-[var(--color-brand)]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -213,7 +212,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* â”€â”€ FEATURED PROPERTIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── FEATURED PROPERTIES ────────────────────────────────── */}
       {featured.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
@@ -223,7 +222,7 @@ export default async function HomePage() {
               <div className="mt-3 w-16 h-1 bg-[var(--color-gold)] rounded-full" />
             </div>
             <Link href="/properties" className="text-sm font-semibold text-[var(--color-brand)] hover:text-[var(--color-gold)] transition-colors">
-              View All â†’
+              View All →
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -236,46 +235,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* â”€â”€ PRIME LOCATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      {primeCities.length > 0 && (
-        <section className="bg-white border-t border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div className="text-center mb-12">
-              <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-3">Where We Operate</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-brand)]">Prime Locations</h2>
-              <div className="mt-3 mx-auto w-16 h-1 bg-[var(--color-gold)] rounded-full" />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {primeCities.map((city, i) => (
-                <Reveal key={city.id} delay={i * 120}>
-                  <Link href={`/properties?city=${city.id}`}
-                    className="group relative block h-72 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                    {city.image_url && (
-                      <Image src={city.image_url} alt={city.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width:640px) 100vw, 33vw" />
-                    )}
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1E3A34]/90 via-[#1E3A34]/30 to-transparent" />
-                    {/* Text */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <div className="w-8 h-0.5 bg-[var(--color-gold)] mb-3" />
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className="text-xl font-bold text-white">{city.name}</h3>
-                        <span className="text-[11px] font-semibold text-white bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                          {city.count} {city.count === 1 ? "property" : "properties"}
-                        </span>
-                      </div>
-                      {city.tagline && <p className="text-white/65 text-xs mt-1">{city.tagline}</p>}
-                    </div>
-                  </Link>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* â”€â”€ WHY GARVODAY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── WHY GRAVODAYA ───────────────────────────────────────── */}
       <section className="bg-[var(--color-sand)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -340,7 +300,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* â”€â”€ CTA BANNER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── CTA BANNER ──────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[var(--color-brand)]">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/[0.03]" />
@@ -352,7 +312,7 @@ export default async function HomePage() {
             Ready to Find Your Perfect Home?
           </h2>
           <p className="text-white/60 mb-10 text-base max-w-md mx-auto">
-            Talk to our experts today â€” free consultation, zero obligations.
+            Talk to our experts today — free consultation, zero obligations.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href={`tel:${settings.phone_tel}`}

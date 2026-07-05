@@ -37,9 +37,9 @@ function getSpeechRecognitionCtor(): (new () => SpeechRecognitionLike) | undefin
 }
 
 const EXAMPLES = [
-  "3 BHK apartment in Dehradun under 80 lakh",
+  "3 BHK apartment in Haridwar under 80 lakh",
   "Villa for rent with a garden",
-  "Plots in Haridwar",
+  "Plots in Kankhal",
 ];
 
 interface Turn {
@@ -260,7 +260,7 @@ export function ChatSearch() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={listening ? "Listening…" : "e.g. 2 BHK flat in Rishikesh…"}
+              placeholder={listening ? "Listening…" : "e.g. 2 BHK flat in Haridwar…"}
               className="flex-1 rounded-full border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-[var(--color-brand)]"
               maxLength={500}
             />

@@ -13,5 +13,5 @@ export const chatRatelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(20, "1 m"),
   analytics: true,
-  prefix: "gravodaya:chat",
+  prefix: "garvoday:chat",
 });

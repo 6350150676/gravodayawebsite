@@ -5,7 +5,7 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Contact Us — Garvoday Developers",
-  description: "Get in touch with Garvoday Developers for property inquiries, site visits, or any questions about real estate in Dehradun, Haridwar & Rishikesh.",
+  description: "Get in touch with Garvoday Developers for property inquiries, site visits, or any questions about real estate in Haridwar.",
 };
 
 export default async function ContactPage() {

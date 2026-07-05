@@ -5,7 +5,7 @@ import { createSubmissionAction, type SubmissionFormState } from "@/lib/actions/
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 const PROPERTY_TYPES = ["Apartment", "Villa / House", "Plot / Land", "Commercial Space", "New Project Unit", "Other"];
-const CITIES = ["Dehradun", "Haridwar", "Rishikesh"];
+const CITIES = ["Haridwar"];
 
 const initialState: SubmissionFormState = { ok: false };
 
@@ -69,7 +69,7 @@ export function SubmissionForm() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           <Field label="Locality / Area" error={state.fieldErrors?.locality}>
-            <input name="locality" type="text" placeholder="e.g. Rajpur Road" className={inp(!!state.fieldErrors?.locality)} />
+            <input name="locality" type="text" placeholder="e.g. Kankhal" className={inp(!!state.fieldErrors?.locality)} />
           </Field>
           <Field label="Asking Price (₹)" error={state.fieldErrors?.asking_price}>
             <input name="asking_price" type="text" placeholder="e.g. 45,00,000" className={inp(!!state.fieldErrors?.asking_price)} />

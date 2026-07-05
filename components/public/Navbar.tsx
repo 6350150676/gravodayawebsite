@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/properties", label: "Properties" },
   { href: "/properties?type=rent", label: "Rentals" },
   { href: "/sell", label: "List Property" },
+  { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -23,7 +24,7 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
   return (
     <header className="sticky top-0 z-50 bg-[var(--color-brand)] shadow-lg">
       <nav className="w-full px-5 sm:px-8 lg:px-12 h-20 flex items-center justify-between gap-4">
-        {/* Logo â€” pinned top-left */}
+        {/* Logo — pinned top-left */}
         <Link href="/" className="group flex items-center gap-3 flex-shrink-0" onClick={() => setOpen(false)}>
           <Image
             src="/logo-gold.png"
@@ -39,7 +40,7 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
           </div>
         </Link>
 
-        {/* Desktop nav â€” links + CTA pinned top-right */}
+        {/* Desktop nav — links + CTA pinned top-right */}
         <div className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map((l) => (
             <Link key={l.href} href={l.href}

@@ -87,12 +87,12 @@ export function AdminSidebar() {
 
   return (
     <>
-      {/* â”€â”€ Desktop sidebar â”€â”€ */}
+      {/* ── Desktop sidebar ── */}
       <aside className="hidden lg:flex lg:w-60 lg:min-h-screen bg-[var(--color-brand)] text-white flex-col flex-shrink-0">
         <SidebarContent />
       </aside>
 
-      {/* â”€â”€ Mobile top bar â”€â”€ */}
+      {/* ── Mobile top bar ── */}
       <div className="lg:hidden fixed top-0 inset-x-0 z-30 h-14 bg-[var(--color-brand)] text-white flex items-center px-4 gap-3">
         <button
           onClick={() => setOpen(true)}
@@ -104,7 +104,7 @@ export function AdminSidebar() {
         <span className="font-bold text-base tracking-wide">Garvoday Admin</span>
       </div>
 
-      {/* â”€â”€ Mobile drawer backdrop â”€â”€ */}
+      {/* ── Mobile drawer backdrop ── */}
       {open && (
         <div
           className="lg:hidden fixed inset-0 z-40 bg-black/50"
@@ -112,7 +112,7 @@ export function AdminSidebar() {
         />
       )}
 
-      {/* â”€â”€ Mobile drawer â”€â”€ */}
+      {/* ── Mobile drawer ── */}
       <aside
         className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 bg-[var(--color-brand)] text-white flex flex-col transform transition-transform duration-200 ${
           open ? "translate-x-0" : "-translate-x-full"

@@ -4,7 +4,7 @@ import { ShieldCheck, Clock, BadgeCheck, TrendingUp } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "List Your Property — Garvoday Developers",
-  description: "Want to sell or rent your property in Dehradun, Haridwar, or Rishikesh? List it free with Garvoday Developers and reach serious buyers.",
+  description: "Want to sell or rent your property in Haridwar? List it free with Garvoday Developers and reach serious buyers.",
 };
 
 const WHY_ITEMS = [
@@ -26,7 +26,7 @@ export default function SellPage() {
           List your property with us
         </h1>
         <p className="mt-3 text-white/60 text-sm max-w-md mx-auto">
-          Reach thousands of verified buyers across Dehradun, Haridwar &amp; Rishikesh — completely free.
+          Reach thousands of verified buyers across Haridwar — completely free.
         </p>
       </div>
 
