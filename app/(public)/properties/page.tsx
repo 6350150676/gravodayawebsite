@@ -9,6 +9,9 @@ import { SortSelect } from "@/components/public/SortSelect";
 export const metadata: Metadata = {
   title: "Properties — Garvoday Developers",
   description: "Browse apartments, villas, plots and commercial spaces for sale and rent in Haridwar.",
+  // Filter/search query strings shouldn't fragment ranking across near-duplicate
+  // pages — always point search engines at the canonical unfiltered listing.
+  alternates: { canonical: "/properties" },
 };
 
 interface Props {

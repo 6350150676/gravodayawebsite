@@ -44,6 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${property.title} — Garvoday Developers`,
     description: property.description.slice(0, 155),
+    alternates: { canonical: `/properties/${slug}` },
     openGraph: {
       title: property.title,
       description: property.description.slice(0, 155),
@@ -92,8 +93,53 @@ export default async function PropertyDetailPage({ params }: Props) {
     { icon: Building2, label: "Type", value: property.category.name },
   ].filter(Boolean) as { icon: typeof BedDouble; label: string; value: string }[];
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
+  const propertyUrl = `${siteUrl}/properties/${property.slug}`;
+
+  const listingJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    url: propertyUrl,
+    name: property.title,
+    description: property.description,
+    image: galleryImages.map((img) => img.url),
+    datePosted: property.created_at,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: property.address || undefined,
+      addressLocality: property.city.name,
+      addressRegion: "Uttarakhand",
+      addressCountry: "IN",
+    },
+    offers: {
+      "@type": "Offer",
+      price: property.price,
+      priceCurrency: "INR",
+      availability: "https://schema.org/InStock",
+      businessFunction: property.is_for_rent ? "https://schema.org/LeaseOut" : "https://schema.org/Sell",
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Properties", item: `${siteUrl}/properties` },
+      { "@type": "ListItem", position: 3, name: property.title, item: propertyUrl },
+    ],
+  };
+
   return (
     <div className="bg-[var(--color-sand)] min-h-screen pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(listingJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ── Breadcrumb ──────────────────────────────────────────── */}
       <div className="border-b border-gray-200 bg-white">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-1.5 text-xs text-gray-400 overflow-x-auto no-scrollbar">

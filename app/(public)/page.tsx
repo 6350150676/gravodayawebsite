@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: "Garvoday Developers — Premium Properties in Uttarakhand",
   description:
     "Find premium apartments, villas, plots and commercial spaces in Haridwar. Trusted by 500+ families across Uttarakhand.",
+  alternates: { canonical: "/" },
 };
 
 /* Map a category name to a representative icon for the quick-links strip */
@@ -53,9 +54,41 @@ export default async function HomePage() {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const [titleHead, titleTail] = splitLastWord(settings.hero_title);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
+
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    name: "Garvoday Developers Pvt. Ltd.",
+    url: siteUrl,
+    logo: `${siteUrl}/logo.png`,
+    image: `${siteUrl}/logo.png`,
+    telephone: settings.phone_tel,
+    email: settings.contact_email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: settings.contact_address,
+      addressLocality: "Haridwar",
+      addressRegion: "Uttarakhand",
+      addressCountry: "IN",
+    },
+    areaServed: {
+      "@type": "City",
+      name: "Haridwar",
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: settings.rating_value,
+      reviewCount: settings.rating_count.replace(/\D/g, "") || "1",
+    },
+  };
 
   return (
     <div className="bg-[var(--color-sand)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+      />
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
       <section className="relative min-h-[88vh] flex items-center overflow-hidden">

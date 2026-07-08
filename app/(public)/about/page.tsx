@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "About Us — Garvoday Developers",
   description:
     "Garvoday Developers is Haridwar's trusted real estate partner — learn about our story, our values, and our vision for the city.",
+  alternates: { canonical: "/about" },
 };
 
 const VALUES = [
