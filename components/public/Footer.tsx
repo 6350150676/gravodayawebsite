@@ -81,9 +81,13 @@ export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
           </div>
         </div>
 
-        <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-white/35 text-xs">
+        <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-white/35 text-xs">
           <p>© {new Date().getFullYear()} Garvoday Developers Pvt. Ltd. All rights reserved.</p>
-          <p>RERA Registered · Haridwar, Uttarakhand</p>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="hover:text-[var(--color-gold)] transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-[var(--color-gold)] transition-colors">Terms of Service</Link>
+            <p>RERA Registered · Haridwar, Uttarakhand</p>
+          </div>
         </div>
       </div>
     </footer>

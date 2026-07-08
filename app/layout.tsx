@@ -17,16 +17,32 @@ const inter = Inter({
         display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
+const SITE_TITLE = "Garvoday Developers — Premium Properties in Uttarakhand";
+const SITE_DESCRIPTION =
+        "Premium apartments, villas, plots and commercial spaces in Haridwar.";
+
 export const metadata: Metadata = {
         title: {
-                default: "Garvoday Developers — Premium Properties in Uttarakhand",
+                default: SITE_TITLE,
                 template: "%s | Garvoday Developers",
         },
-        description:
-                "Premium apartments, villas, plots and commercial spaces in Haridwar.",
-        metadataBase: new URL(
-                process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com"
-        ),
+        description: SITE_DESCRIPTION,
+        metadataBase: new URL(SITE_URL),
+        openGraph: {
+                type: "website",
+                url: SITE_URL,
+                siteName: "Garvoday Developers",
+                title: SITE_TITLE,
+                description: SITE_DESCRIPTION,
+                images: ["/logo.png"],
+        },
+        twitter: {
+                card: "summary_large_image",
+                title: SITE_TITLE,
+                description: SITE_DESCRIPTION,
+                images: ["/logo.png"],
+        },
 };
 
 export default function RootLayout({
@@ -35,7 +51,7 @@ export default function RootLayout({
         children: React.ReactNode;
 }) {
         return (
-                <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
+                <html lang="en" className={`${poppins.variable} ${inter.variable}`} suppressHydrationWarning>
                         <body>
                                 <Suspense fallback={null}>
                                         <RouteProgress />

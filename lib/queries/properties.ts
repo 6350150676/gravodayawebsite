@@ -156,6 +156,21 @@ export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRela
   return (data ?? []) as unknown as PropertyWithRelations[];
 }
 
+/** Slug + last-updated for every active property, for the sitemap. */
+export async function getAllPropertySlugs(): Promise<{ slug: string; updated_at: string }[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("slug, updated_at")
+    .eq("status", "active");
+
+  if (error) {
+    console.error("[getAllPropertySlugs]", error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
 export async function getCities(): Promise<CityRow[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("cities").select("*").order("name");
