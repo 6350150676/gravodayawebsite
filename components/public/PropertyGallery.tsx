@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, X, Expand, ImageIcon } from "lucide-react";
 
 interface Props {
@@ -79,12 +80,13 @@ export function PropertyGallery({ images, badges }: Props) {
           className="relative block w-full aspect-[16/10] overflow-hidden rounded-2xl bg-gray-100 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand)] focus-visible:ring-offset-2"
           aria-label="Open photo gallery"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={images[active].url}
             alt={images[active].alt}
-            decoding="async"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            fill
+            priority={active === 0}
+            sizes="(max-width: 1024px) 100vw, 700px"
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <span className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/55 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
@@ -126,8 +128,7 @@ export function PropertyGallery({ images, badges }: Props) {
               }`}
               aria-label={`Show photo ${i + 1}`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.url} alt={img.alt} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+              <Image src={img.url} alt={img.alt} fill sizes="96px" className="object-cover" />
             </button>
           ))}
         </div>
