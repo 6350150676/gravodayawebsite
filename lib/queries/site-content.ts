@@ -1,10 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import type { SiteSettings, SiteStat, IntentCard } from "@/types";
+import type { SiteSettings, SiteStat, IntentCard, HeroSlide } from "@/types";
 import {
   DEFAULT_SETTINGS,
   DEFAULT_STATS,
   DEFAULT_FEATURES,
   DEFAULT_INTENT_CARDS,
+  DEFAULT_HERO_SLIDES,
 } from "@/lib/site-content/defaults";
 
 /**
@@ -49,6 +50,11 @@ export async function getSiteFeatures(): Promise<string[]> {
   const rows = (data ?? []) as unknown as { text: string }[];
   if (error || rows.length === 0) return DEFAULT_FEATURES;
   return rows.map((r) => r.text);
+}
+
+/** Hero carousel slides are hard-coded — see lib/site-content/defaults.ts */
+export function getHeroSlides(): HeroSlide[] {
+  return DEFAULT_HERO_SLIDES;
 }
 
 export async function getIntentCards(): Promise<IntentCard[]> {

@@ -3,12 +3,12 @@
 import { useRef, useState, useActionState, startTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, X } from "lucide-react";
-import type { PropertyWithRelations } from "@/types";
+import type { ProjectWithRelations } from "@/types";
 
 /** Compress an image file in the browser using Canvas before upload.
- *  Outputs a JPEG Blob capped at maxWidth × maxHeight, quality 0.82.
+ *  Outputs a JPEG Blob capped at maxWidth × maxHeight, quality 0.85.
  *  Keeps aspect ratio. Falls back to original if Canvas isn't available. */
-async function compressImage(file: File, maxWidth = 1280, maxHeight = 960, quality = 0.82): Promise<File> {
+async function compressImage(file: File, maxWidth = 1600, maxHeight = 1200, quality = 0.85): Promise<File> {
   return new Promise((resolve) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -41,39 +41,23 @@ async function compressImage(file: File, maxWidth = 1280, maxHeight = 960, quali
 }
 
 interface Lookup { id: number; name: string; slug: string }
-interface LocalityRow { id: number; name: string; slug: string; city_id: number }
-interface ProjectLookup { id: string; name: string }
 
 interface Props {
   action: (prev: string | null, formData: FormData) => Promise<string | null>;
-  property?: PropertyWithRelations;
-  categories: Lookup[];
+  project?: ProjectWithRelations;
   cities: Lookup[];
-  localities: LocalityRow[];
-  projects: ProjectLookup[];
 }
-
-const AMENITIES_LIST = [
-  "Parking", "Lift", "Power Backup", "Security", "CCTV",
-  "Swimming Pool", "Gym", "Club House", "Garden", "Water Supply 24x7",
-  "Gated Community", "Modular Kitchen", "Balcony", "Servant Room",
-];
 
 const STATUS_OPTIONS = [
   { value: "active", label: "Active" },
-  { value: "sold", label: "Sold" },
-  { value: "rented", label: "Rented" },
   { value: "inactive", label: "Inactive" },
 ];
 
-export function PropertyForm({ action, property, categories, cities, localities, projects }: Props) {
+export function ProjectForm({ action, project, cities }: Props) {
   const [error, formAction, isPending] = useActionState(action, null);
-  const [selectedCityId, setSelectedCityId] = useState<number>(property?.city.id ?? 0);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [compressing, setCompressing] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  const filteredLocalities = localities.filter((l) => l.city_id === selectedCityId);
 
   async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const incoming = Array.from(e.target.files ?? []);
@@ -111,146 +95,63 @@ export function PropertyForm({ action, property, categories, cities, localities,
       <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-gray-800">Basic Information</h2>
 
-        <Field label="Title *">
-          <input name="title" required defaultValue={property?.title}
-            className={input} placeholder="e.g. 3BHK Apartment in Rajpur Road" />
+        <Field label="Project Name *">
+          <input name="name" required defaultValue={project?.name}
+            className={input} placeholder="e.g. Palm City" />
+        </Field>
+
+        <Field label="Tagline">
+          <input name="tagline" defaultValue={project?.tagline ?? ""}
+            className={input} placeholder="e.g. Gated colony with plots &amp; villas near Roorkee" />
         </Field>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Category *">
-            <select name="category_id" required defaultValue={property?.category.id} className={input}>
-              <option value="">Select category</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </Field>
-
-          <Field label="Listing Type *">
-            <select name="is_for_rent" required defaultValue={property?.is_for_rent ? "true" : "false"} className={input}>
-              <option value="false">For Sale</option>
-              <option value="true">For Rent</option>
-            </select>
-          </Field>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Price (₹) *">
-            <input name="price" type="number" required min={1} defaultValue={property?.price}
-              className={input} placeholder="e.g. 4500000" />
-          </Field>
-          <Field label="Price Label">
-            <input name="price_label" defaultValue={property?.price_label ?? ""}
-              className={input} placeholder="e.g. ₹45 L onwards" />
-          </Field>
-        </div>
-
-        <Field label="Description *">
-          <textarea name="description" required rows={5} defaultValue={property?.description}
-            className={input} placeholder="Describe the property..." />
-        </Field>
-
-        <Field label="Part of Project">
-          <select name="project_id" defaultValue={property?.project?.id ?? ""} className={input}>
-            <option value="">None — standalone listing</option>
-            {projects.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        </Field>
-      </section>
-
-      {/* Location */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="font-semibold text-gray-800">Location</h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="City *">
-            <select name="city_id" required defaultValue={property?.city.id}
-              onChange={(e) => setSelectedCityId(Number(e.target.value))} className={input}>
+          <Field label="City">
+            <select name="city_id" defaultValue={project?.city?.id ?? ""} className={input}>
               <option value="">Select city</option>
               {cities.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </Field>
-
-          <Field label="Locality">
-            <select name="locality_id" defaultValue={property?.locality?.id ?? ""} className={input}>
-              <option value="">Select locality</option>
-              {filteredLocalities.map((l) => (
-                <option key={l.id} value={l.id}>{l.name}</option>
-              ))}
-            </select>
+          <Field label="Location">
+            <input name="location" defaultValue={project?.location ?? ""}
+              className={input} placeholder="e.g. Near Roorkee, Haridwar region" />
           </Field>
         </div>
 
-        <Field label="Full Address">
-          <input name="address" defaultValue={property?.address ?? ""}
-            className={input} placeholder="Street / Society name" />
+        <Field label="Description *">
+          <textarea name="description" required rows={10} defaultValue={project?.description}
+            className={input} placeholder="Colony overview, layout details, specs, amenities..." />
         </Field>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Map Latitude">
-            <input name="map_lat" type="number" step="any" defaultValue={property?.map_lat ?? ""}
-              className={input} placeholder="e.g. 30.3165" />
-          </Field>
-          <Field label="Map Longitude">
-            <input name="map_lng" type="number" step="any" defaultValue={property?.map_lng ?? ""}
-              className={input} placeholder="e.g. 78.0322" />
-          </Field>
-        </div>
-      </section>
+        <Field label="Payment Plan">
+          <textarea name="payment_plan" rows={8} defaultValue={project?.payment_plan ?? ""}
+            className={input} placeholder="Price breakup, booking amount, construction milestones..." />
+        </Field>
 
-      {/* Details */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="font-semibold text-gray-800">Property Details</h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Field label="Area (sq.ft)">
-            <input name="area_sqft" type="number" min={1} defaultValue={property?.area_sqft ?? ""}
-              className={input} placeholder="e.g. 1200" />
-          </Field>
-          <Field label="Bedrooms">
-            <input name="bedrooms" type="number" min={0} max={20} defaultValue={property?.bedrooms ?? ""}
-              className={input} placeholder="e.g. 3" />
-          </Field>
-          <Field label="Bathrooms">
-            <input name="bathrooms" type="number" min={0} max={20} defaultValue={property?.bathrooms ?? ""}
-              className={input} placeholder="e.g. 2" />
-          </Field>
-        </div>
-
-        <Field label="Amenities">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1">
-            {AMENITIES_LIST.map((a) => (
-              <label key={a} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="amenities" value={a}
-                  defaultChecked={property?.amenities.includes(a)}
-                  className="rounded border-gray-300" />
-                {a}
-              </label>
-            ))}
-          </div>
+        <Field label="Brochure URL">
+          <input name="brochure_url" type="url" defaultValue={project?.brochure_url ?? ""}
+            className={input} placeholder="https://..." />
         </Field>
       </section>
 
       {/* Images */}
       <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-gray-800">Images</h2>
+        <p className="text-xs text-gray-400 -mt-2">Layout plan, floor plans, site photos — first image becomes cover.</p>
 
-        {/* Existing images */}
-        {property?.images && property.images.length > 0 && (
+        {project?.images && project.images.length > 0 && (
           <div>
             <p className="text-sm text-gray-500 mb-2">Existing images (manage on the edit page)</p>
             <div className="flex flex-wrap gap-3">
-              {[...property.images]
+              {[...project.images]
                 .sort((a, b) => a.sort_order - b.sort_order)
                 .map((img) => (
                   <div key={img.id} className="relative">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`${supabaseUrl}/storage/v1/object/public/property-images/${img.storage_path}`}
+                      src={`${supabaseUrl}/storage/v1/object/public/project-images/${img.storage_path}`}
                       alt=""
                       className="w-24 h-24 object-cover rounded-lg border"
                     />
@@ -294,7 +195,7 @@ export function PropertyForm({ action, property, categories, cities, localities,
                   alt={file.name}
                   className="w-24 h-24 object-cover rounded-lg border"
                 />
-                {i === 0 && !property?.images.length && (
+                {i === 0 && !project?.images.length && (
                   <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 rounded">
                     Cover
                   </span>
@@ -316,9 +217,9 @@ export function PropertyForm({ action, property, categories, cities, localities,
       {/* Status & Flags */}
       <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-gray-800">Status</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Status *">
-            <select name="status" required defaultValue={property?.status ?? "active"} className={input}>
+            <select name="status" required defaultValue={project?.status ?? "active"} className={input}>
               {STATUS_OPTIONS.map((s) => (
                 <option key={s.value} value={s.value}>{s.label}</option>
               ))}
@@ -326,7 +227,7 @@ export function PropertyForm({ action, property, categories, cities, localities,
           </Field>
 
           <Field label="Featured?">
-            <select name="is_featured" defaultValue={property?.is_featured ? "true" : "false"} className={input}>
+            <select name="is_featured" defaultValue={project?.is_featured ? "true" : "false"} className={input}>
               <option value="false">No</option>
               <option value="true">Yes — show on homepage</option>
             </select>
@@ -336,7 +237,7 @@ export function PropertyForm({ action, property, categories, cities, localities,
 
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending} className="min-w-[140px]">
-          {isPending ? <><Loader2 size={16} className="animate-spin" /> Saving…</> : property ? "Update Property" : "Create Property"}
+          {isPending ? <><Loader2 size={16} className="animate-spin" /> Saving…</> : project ? "Update Project" : "Create Project"}
         </Button>
         <Button type="button" variant="outline" onClick={() => history.back()}>
           Cancel

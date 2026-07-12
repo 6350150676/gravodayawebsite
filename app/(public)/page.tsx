@@ -5,14 +5,14 @@ import { Phone, Building2, Home, Map, Store, Trees, ArrowRight } from "lucide-re
 import { getFeaturedProperties, getCategories, getCities } from "@/lib/queries/properties";
 import {
   getSiteSettings,
-  getSiteStats,
   getSiteFeatures,
   getIntentCards,
+  getHeroSlides,
 } from "@/lib/queries/site-content";
 import { PropertyCard } from "@/components/public/PropertyCard";
 import { HeroSearch } from "@/components/public/HeroSearch";
+import { HeroCarousel } from "@/components/public/HeroCarousel";
 import { Reveal } from "@/components/public/Reveal";
-import { CountUp } from "@/components/public/CountUp";
 
 export const metadata: Metadata = {
   title: "Garvoday Developers — Premium Properties in Uttarakhand",
@@ -31,29 +31,20 @@ function categoryIcon(name: string) {
   return Building2; // apartments / flats / default
 }
 
-/* Split a heading so the final word can be highlighted in gold */
-function splitLastWord(title: string): [string, string] {
-  const words = title.trim().split(/\s+/);
-  if (words.length <= 1) return ["", title];
-  const last = words.pop()!;
-  return [words.join(" "), last];
-}
-
 /* ─── page ───────────────────────────────────────────────────────────────── */
 export default async function HomePage() {
-  const [featured, categories, cities, settings, stats, features, intentCards] =
+  const [featured, categories, cities, settings, features, intentCards] =
     await Promise.all([
       getFeaturedProperties(6),
       getCategories(),
       getCities(),
       getSiteSettings(),
-      getSiteStats(),
       getSiteFeatures(),
       getIntentCards(),
     ]);
+  const heroSlides = getHeroSlides();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const [titleHead, titleTail] = splitLastWord(settings.hero_title);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
 
   const orgJsonLd = {
@@ -90,63 +81,22 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
       />
 
-      {/* ── HERO ──────────────────────────────────────────────────── */}
-      <section className="relative min-h-[88vh] flex items-center overflow-hidden">
-
-        {/* Background photo */}
-        <Image
-          src={settings.hero_image_url}
-          alt="Luxury home"
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-
-        {/* Dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1E3A34]/90 via-[#1E3A34]/75 to-[#1E3A34]/40" />
-
-        {/* Content */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
-          <div className="max-w-3xl">
-
-            <div className="inline-flex items-center gap-2 bg-[var(--color-gold)]/20 border border-[var(--color-gold)]/40 text-[var(--color-gold)] text-xs font-semibold tracking-[0.2em] uppercase px-4 py-2 rounded-full mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-gold)]" />
-              {settings.hero_badge}
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
-              {titleHead}{titleHead && " "}
-              <span className="text-[var(--color-gold)]">{titleTail}</span>
-            </h1>
-
-            <p className="mt-5 text-lg text-white/70 leading-relaxed max-w-xl">
-              {settings.hero_subtitle}
-            </p>
-
-            {/* Search widget */}
-            <div className="mt-8">
-              <HeroSearch cities={cities} categories={categories} />
-            </div>
-
-            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-white/55 text-sm">
-              <span>✓ RERA Registered</span>
-              <span>✓ 15+ Years in Business</span>
-              <span>✓ 500+ Happy Families</span>
-              <Link href="/contact" className="text-[var(--color-gold)] font-semibold hover:underline">
-                List your property →
-              </Link>
-            </div>
-          </div>
+      {/* ── HERO CAROUSEL ────────────────────────────────────────── */}
+      <HeroCarousel slides={heroSlides}>
+        {/* Search widget */}
+        <div className="mt-8">
+          <HeroSearch cities={cities} categories={categories} />
         </div>
 
-        {/* Bottom wave */}
-        <div className="absolute bottom-0 left-0 right-0 z-10">
-          <svg viewBox="0 0 1440 70" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0 70L1440 70L1440 25C1200 70 960 5 720 25C480 50 240 5 0 25Z" fill="#F7F3EC" />
-          </svg>
+        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-white/55 text-sm">
+          <span>✓ RERA Registered</span>
+          <span>✓ 15+ Years in Business</span>
+          <span>✓ 500+ Happy Families</span>
+          <Link href="/contact" className="text-[var(--color-gold)] font-semibold hover:underline">
+            List your property →
+          </Link>
         </div>
-      </section>
+      </HeroCarousel>
 
       {/* ── BROWSE BY PROPERTY TYPE ──────────────────────────────── */}
       {categories.length > 0 && (
@@ -223,24 +173,6 @@ export default async function HomePage() {
                 </Link>
               </Reveal>
             ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── STATS ───────────────────────────────────────────────── */}
-      {stats.length > 0 && (
-        <section className="bg-[var(--color-brand)]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-              {stats.map((s) => (
-                <div key={s.label}>
-                  <p className="text-4xl sm:text-5xl font-bold text-[var(--color-gold)]">
-                    <CountUp value={s.value} suffix={s.suffix} />
-                  </p>
-                  <p className="mt-2 text-white/60 text-sm font-medium">{s.label}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
       )}

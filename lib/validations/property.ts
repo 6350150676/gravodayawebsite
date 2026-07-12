@@ -13,6 +13,7 @@ export const propertySchema = z.object({
   category_id: z.number().int("Invalid category").positive("Category is required"),
   city_id: z.number().int("Invalid city").positive("City is required"),
   locality_id: z.number().int("Invalid locality").positive().optional(),
+  project_id: z.string().uuid("Invalid project").optional(),
 
   address: z.string().max(300, "Address is too long").optional(),
 

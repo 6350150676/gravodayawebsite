@@ -16,7 +16,6 @@ export interface AdminIntentCard {
   image_url: string | null;
   accent: string;
 }
-
 export interface AdminContent {
   /** False when the site-content migration hasn't been applied yet. */
   ready: boolean;

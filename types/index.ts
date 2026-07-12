@@ -1,4 +1,4 @@
-export type { Database, PropertyStatus, InquiryStatus, SubmissionStatus } from "./database";
+export type { Database, PropertyStatus, InquiryStatus, SubmissionStatus, ProjectStatus } from "./database";
 
 export interface PropertyWithRelations {
   id: string;
@@ -21,6 +21,23 @@ export interface PropertyWithRelations {
   category: { id: number; name: string; slug: string };
   city: { id: number; name: string; slug: string };
   locality: { id: number; name: string; slug: string } | null;
+  project: { id: string; name: string; slug: string } | null;
+  images: { id: string; storage_path: string; is_cover: boolean; sort_order: number }[];
+}
+
+export interface ProjectWithRelations {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string | null;
+  location: string | null;
+  description: string;
+  payment_plan: string | null;
+  brochure_url: string | null;
+  is_featured: boolean;
+  status: import("./database").ProjectStatus;
+  created_at: string;
+  city: { id: number; name: string; slug: string } | null;
   images: { id: string; storage_path: string; is_cover: boolean; sort_order: number }[];
 }
 
@@ -55,6 +72,13 @@ export interface SiteStat {
   label: string;
   value: number;
   suffix: string;
+}
+
+export interface HeroSlide {
+  badge: string | null;
+  title: string;
+  subtitle: string | null;
+  image_url: string;
 }
 
 export interface IntentCard {

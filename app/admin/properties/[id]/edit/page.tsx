@@ -4,6 +4,7 @@ import { PropertyForm } from "@/components/admin/PropertyForm";
 import { ImageManager } from "@/components/admin/ImageManager";
 import { updatePropertyAction } from "@/lib/actions/property.actions";
 import { getPropertyById, getCities, getCategories, getLocalitiesByCity } from "@/lib/queries/properties";
+import { getProjects } from "@/lib/queries/projects";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Edit Property — Admin" };
@@ -17,10 +18,11 @@ export default async function EditPropertyPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/admin/login");
 
-  const [property, categories, cities] = await Promise.all([
+  const [property, categories, cities, projects] = await Promise.all([
     getPropertyById(id),
     getCategories(),
     getCities(),
+    getProjects(),
   ]);
 
   if (!property) notFound();
@@ -48,6 +50,7 @@ export default async function EditPropertyPage({ params }: Props) {
         categories={categories}
         cities={cities}
         localities={allLocalities}
+        projects={projects}
       />
     </div>
   );

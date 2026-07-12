@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
 
 const NAV_LINKS = [
+  { href: "/projects", label: "Projects" },
   { href: "/properties", label: "Properties" },
   { href: "/properties?type=rent", label: "Rentals" },
   { href: "/sell", label: "List Property" },

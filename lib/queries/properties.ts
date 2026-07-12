@@ -14,6 +14,7 @@ const CARD_SELECT = `
   category:property_categories(id, name, slug),
   city:cities(id, name, slug),
   locality:localities(id, name, slug),
+  project:projects(id, name, slug),
   images:property_images(id, storage_path, is_cover, sort_order)
 `;
 
@@ -78,6 +79,7 @@ export async function getPropertyBySlug(slug: string): Promise<PropertyWithRelat
       category:property_categories(id, name, slug),
       city:cities(id, name, slug),
       locality:localities(id, name, slug),
+  project:projects(id, name, slug),
       images:property_images(id, storage_path, is_cover, sort_order)
     `)
     .eq("slug", slug)
@@ -96,6 +98,7 @@ export async function getPropertyById(id: string): Promise<PropertyWithRelations
       category:property_categories(id, name, slug),
       city:cities(id, name, slug),
       locality:localities(id, name, slug),
+  project:projects(id, name, slug),
       images:property_images(id, storage_path, is_cover, sort_order)
     `)
     .eq("id", id)
@@ -117,6 +120,7 @@ export async function getRelatedProperties(
       category:property_categories(id, name, slug),
       city:cities(id, name, slug),
       locality:localities(id, name, slug),
+  project:projects(id, name, slug),
       images:property_images(id, storage_path, is_cover, sort_order)
     `)
     .eq("status", "active")
@@ -142,6 +146,7 @@ export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRela
       category:property_categories(id, name, slug),
       city:cities(id, name, slug),
       locality:localities(id, name, slug),
+  project:projects(id, name, slug),
       images:property_images(id, storage_path, is_cover, sort_order)
     `)
     .eq("status", "active")

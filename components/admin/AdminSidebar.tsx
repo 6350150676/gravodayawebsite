@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Building2,
+  Landmark,
   MessageSquare,
   FileText,
   Palette,
@@ -18,6 +19,7 @@ import {
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/projects", label: "Projects", icon: Landmark },
   { href: "/admin/properties", label: "Properties", icon: Building2 },
   { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare },
   { href: "/admin/submissions", label: "Submissions", icon: FileText },

@@ -205,6 +205,19 @@ export default async function PropertyDetailPage({ params }: Props) {
               ))}
             </div>
 
+            {/* Part of project */}
+            {property.project && (
+              <Link
+                href={`/projects/${property.project.slug}`}
+                className="mt-6 flex items-center justify-between gap-3 bg-[var(--color-brand)]/5 hover:bg-[var(--color-brand)]/10 border border-[var(--color-brand)]/15 rounded-2xl px-5 py-4 transition-colors group"
+              >
+                <span className="text-sm text-gray-600">
+                  Part of <span className="font-bold text-[var(--color-brand)]">{property.project.name}</span> — view layout, floor plans &amp; payment plan
+                </span>
+                <ChevronRight size={16} className="text-[var(--color-brand)] flex-shrink-0 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            )}
+
             {/* Description */}
             <Reveal as="section" className="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <h2 className="text-lg font-bold text-[var(--color-brand)] mb-3">About this property</h2>

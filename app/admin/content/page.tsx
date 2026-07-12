@@ -64,12 +64,8 @@ export default async function AdminContentPage() {
       </Section>
 
       {/* ── Hero ────────────────────────────────────────────────── */}
-      <Section title="Homepage Hero" desc="The big banner at the top of the homepage. The last word of the title is highlighted in gold.">
+      <Section title="Homepage Hero" desc="'Why choose us' section image. The hero banner itself is a rotating carousel — edit its slides directly in lib/site-content/defaults.ts (DEFAULT_HERO_SLIDES).">
         <form action={updateSettingsAction} className="space-y-4">
-          <Field name="hero_badge" label="Badge text" defaultValue={content.settings.hero_badge} />
-          <Field name="hero_title" label="Title" defaultValue={content.settings.hero_title} />
-          <Field name="hero_subtitle" label="Subtitle" defaultValue={content.settings.hero_subtitle} />
-          <Field name="hero_image_url" label="Hero background image URL" defaultValue={content.settings.hero_image_url} />
           <Field name="whyus_image_url" label="'Why choose us' image URL" defaultValue={content.settings.whyus_image_url} />
           <SaveButton />
         </form>

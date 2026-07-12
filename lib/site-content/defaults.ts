@@ -4,7 +4,7 @@
  * identically *before* the `20240002000000_site_content.sql` migration is run,
  * and merged under any values the admin later sets in the database.
  */
-import type { SiteSettings, SiteStat, IntentCard } from "@/types";
+import type { SiteSettings, SiteStat, IntentCard, HeroSlide } from "@/types";
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   phone_display: "+91 98765 43210",
@@ -24,6 +24,27 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   rating_value: "5.0",
   rating_count: "120+",
 };
+
+export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
+  {
+    badge: "Uttarakhand's Most Trusted Real Estate",
+    title: "Find Your Dream Home in the Himalayas",
+    subtitle: "Apartments, villas, plots & commercial spaces across Haridwar.",
+    image_url: DEFAULT_SETTINGS.hero_image_url,
+  },
+  {
+    badge: "Our Vision",
+    title: "Building Communities, Not Just Colonies",
+    subtitle: "We aim to make quality real estate accessible and transparent for every family in Uttarakhand.",
+    image_url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1800&q=85&auto=format&fit=crop",
+  },
+  {
+    badge: "About Us",
+    title: "Trusted Since 2008 — Haridwar's Local Experts",
+    subtitle: "RERA registered, family-owned, and committed to honest pricing with no hidden charges.",
+    image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1800&q=85&auto=format&fit=crop",
+  },
+];
 
 export const DEFAULT_STATS: SiteStat[] = [
   { label: "Years of Experience", value: 15, suffix: "+" },

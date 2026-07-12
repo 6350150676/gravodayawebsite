@@ -7,6 +7,7 @@ export type Json =
   | Json[];
 
 export type PropertyStatus = "active" | "sold" | "rented" | "inactive";
+export type ProjectStatus = "active" | "inactive";
 export type InquiryStatus = "new" | "contacted" | "closed";
 export type SubmissionStatus = "pending" | "approved" | "rejected" | "published";
 
@@ -48,6 +49,7 @@ export interface Database {
           category_id: number;
           city_id: number;
           locality_id: number | null;
+          project_id: string | null;
           address: string | null;
           area_sqft: number | null;
           bedrooms: number | null;
@@ -70,6 +72,7 @@ export interface Database {
           category_id: number;
           city_id: number;
           locality_id?: number | null;
+          project_id?: string | null;
           address?: string | null;
           area_sqft?: number | null;
           bedrooms?: number | null;
@@ -90,6 +93,7 @@ export interface Database {
           category_id?: number;
           city_id?: number;
           locality_id?: number | null;
+          project_id?: string | null;
           address?: string | null;
           area_sqft?: number | null;
           bedrooms?: number | null;
@@ -100,6 +104,71 @@ export interface Database {
           status?: PropertyStatus;
           map_lat?: number | null;
           map_lng?: number | null;
+        };
+        Relationships: [];
+      };
+      projects: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          tagline: string | null;
+          location: string | null;
+          city_id: number | null;
+          description: string;
+          payment_plan: string | null;
+          brochure_url: string | null;
+          is_featured: boolean;
+          status: ProjectStatus;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          slug: string;
+          name: string;
+          tagline?: string | null;
+          location?: string | null;
+          city_id?: number | null;
+          description: string;
+          payment_plan?: string | null;
+          brochure_url?: string | null;
+          is_featured?: boolean;
+          status?: ProjectStatus;
+        };
+        Update: {
+          slug?: string;
+          name?: string;
+          tagline?: string | null;
+          location?: string | null;
+          city_id?: number | null;
+          description?: string;
+          payment_plan?: string | null;
+          brochure_url?: string | null;
+          is_featured?: boolean;
+          status?: ProjectStatus;
+        };
+        Relationships: [];
+      };
+      project_images: {
+        Row: {
+          id: string;
+          project_id: string;
+          storage_path: string;
+          is_cover: boolean;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          project_id: string;
+          storage_path: string;
+          is_cover?: boolean;
+          sort_order?: number;
+        };
+        Update: {
+          project_id?: string;
+          storage_path?: string;
+          is_cover?: boolean;
+          sort_order?: number;
         };
         Relationships: [];
       };
