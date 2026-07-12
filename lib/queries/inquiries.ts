@@ -20,7 +20,10 @@ export async function getInquiries(status?: string): Promise<InquiryWithProperty
   }
 
   const { data, error } = await query;
-  if (error) throw error;
+  if (error) {
+    console.error("[getInquiries]", error.message);
+    return [];
+  }
   return (data ?? []) as unknown as InquiryWithProperty[];
 }
 

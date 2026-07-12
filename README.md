@@ -1,6 +1,6 @@
-# gravodaya-website
+﻿# gravodaya-website
 
-Real estate website with AI chatbot for **Gravodaya Developers Pvt. Ltd.**
+Real estate website with AI chatbot for **Garvoday Developers Pvt. Ltd.**
 
 Built with **Next.js (App Router)** + **Tailwind CSS v4**.
 

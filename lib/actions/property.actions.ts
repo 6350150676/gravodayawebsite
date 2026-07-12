@@ -37,6 +37,7 @@ function parseFormData(formData: FormData) {
     category_id: toNum(formData.get("category_id")),
     city_id: toNum(formData.get("city_id")),
     locality_id: toNum(formData.get("locality_id")),
+    project_id: (formData.get("project_id") as string) || undefined,
     address: (formData.get("address") as string) || undefined,
     area_sqft: toNum(formData.get("area_sqft")),
     bedrooms: toNum(formData.get("bedrooms")),

@@ -1,4 +1,4 @@
-export type { Database, PropertyStatus, InquiryStatus, SubmissionStatus } from "./database";
+export type { Database, PropertyStatus, InquiryStatus, SubmissionStatus, ProjectStatus } from "./database";
 
 export interface PropertyWithRelations {
   id: string;
@@ -21,8 +21,28 @@ export interface PropertyWithRelations {
   category: { id: number; name: string; slug: string };
   city: { id: number; name: string; slug: string };
   locality: { id: number; name: string; slug: string } | null;
+  project: { id: string; name: string; slug: string } | null;
   images: { id: string; storage_path: string; is_cover: boolean; sort_order: number }[];
 }
+
+export interface ProjectWithRelations {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string | null;
+  location: string | null;
+  description: string;
+  payment_plan: string | null;
+  brochure_url: string | null;
+  is_featured: boolean;
+  status: import("./database").ProjectStatus;
+  created_at: string;
+  city: { id: number; name: string; slug: string } | null;
+  images: { id: string; storage_path: string; is_cover: boolean; sort_order: number }[];
+}
+
+// "newest" is the implicit default (no `sort` param); only explicit sorts are typed.
+export type PropertySort = "price_asc" | "price_desc";
 
 export interface PropertyFilters {
   category_id?: number;
@@ -30,5 +50,43 @@ export interface PropertyFilters {
   is_for_rent?: boolean;
   min_price?: number;
   max_price?: number;
+  /** Minimum number of bedrooms (matches `bedrooms >= n`). */
+  min_bedrooms?: number;
+  /** Minimum number of bathrooms (matches `bathrooms >= n`). */
+  min_bathrooms?: number;
   search?: string;
+  sort?: PropertySort;
+}
+
+/** A single page of results plus the total count (for pagination / infinite scroll). */
+export interface PaginatedProperties {
+  items: PropertyWithRelations[];
+  total: number;
+}
+
+/* ── Editable site content (see lib/site-content) ───────────────────────── */
+
+export type SiteSettings = Record<string, string>;
+
+export interface SiteStat {
+  label: string;
+  value: number;
+  suffix: string;
+}
+
+export interface HeroSlide {
+  badge: string | null;
+  title: string;
+  subtitle: string | null;
+  image_url: string;
+}
+
+export interface IntentCard {
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  cta: string | null;
+  href: string;
+  image_url: string | null;
+  accent: string;
 }

@@ -42,6 +42,7 @@ async function compressImage(file: File, maxWidth = 1280, maxHeight = 960, quali
 
 interface Lookup { id: number; name: string; slug: string }
 interface LocalityRow { id: number; name: string; slug: string; city_id: number }
+interface ProjectLookup { id: string; name: string }
 
 interface Props {
   action: (prev: string | null, formData: FormData) => Promise<string | null>;
@@ -49,6 +50,7 @@ interface Props {
   categories: Lookup[];
   cities: Lookup[];
   localities: LocalityRow[];
+  projects: ProjectLookup[];
 }
 
 const AMENITIES_LIST = [
@@ -64,7 +66,7 @@ const STATUS_OPTIONS = [
   { value: "inactive", label: "Inactive" },
 ];
 
-export function PropertyForm({ action, property, categories, cities, localities }: Props) {
+export function PropertyForm({ action, property, categories, cities, localities, projects }: Props) {
   const [error, formAction, isPending] = useActionState(action, null);
   const [selectedCityId, setSelectedCityId] = useState<number>(property?.city.id ?? 0);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -146,6 +148,15 @@ export function PropertyForm({ action, property, categories, cities, localities 
         <Field label="Description *">
           <textarea name="description" required rows={5} defaultValue={property?.description}
             className={input} placeholder="Describe the property..." />
+        </Field>
+
+        <Field label="Part of Project">
+          <select name="project_id" defaultValue={property?.project?.id ?? ""} className={input}>
+            <option value="">None — standalone listing</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
         </Field>
       </section>
 

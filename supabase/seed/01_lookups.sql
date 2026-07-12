@@ -5,39 +5,18 @@
 
 -- Cities
 insert into cities (name, slug) values
-  ('Dehradun',  'dehradun'),
-  ('Haridwar',  'haridwar'),
-  ('Rishikesh', 'rishikesh')
+  ('Haridwar',  'haridwar')
 on conflict (slug) do nothing;
 
--- Localities — Dehradun (city_id = 1)
-insert into localities (city_id, name, slug) values
-  (1, 'Rajpur Road',        'rajpur-road'),
-  (1, 'Sahastradhara Road', 'sahastradhara-road'),
-  (1, 'Mussoorie Road',     'mussoorie-road'),
-  (1, 'Prem Nagar',         'prem-nagar'),
-  (1, 'Ballupur',           'ballupur'),
-  (1, 'Dharampur',          'dharampur'),
-  (1, 'GMS Road',           'gms-road'),
-  (1, 'Karanpur',           'karanpur'),
-  (1, 'Vasant Vihar',       'vasant-vihar'),
-  (1, 'Niranjanpur',        'niranjanpur')
-on conflict (city_id, slug) do nothing;
-
--- Localities — Haridwar (city_id = 2)
-insert into localities (city_id, name, slug) values
-  (2, 'Jwalapur',      'jwalapur'),
-  (2, 'Shivalik Nagar','shivalik-nagar'),
-  (2, 'BHEL Township', 'bhel-township'),
-  (2, 'Kankhal',       'kankhal')
-on conflict (city_id, slug) do nothing;
-
--- Localities — Rishikesh (city_id = 3)
-insert into localities (city_id, name, slug) values
-  (3, 'Tapovan',       'tapovan'),
-  (3, 'Laxman Jhula',  'laxman-jhula'),
-  (3, 'Muni Ki Reti',  'muni-ki-reti'),
-  (3, 'Swarg Ashram',  'swarg-ashram')
+-- Localities — Haridwar
+insert into localities (city_id, name, slug)
+select id, l.name, l.slug from cities, (values
+  ('Jwalapur',      'jwalapur'),
+  ('Shivalik Nagar','shivalik-nagar'),
+  ('BHEL Township', 'bhel-township'),
+  ('Kankhal',       'kankhal')
+) as l(name, slug)
+where cities.slug = 'haridwar'
 on conflict (city_id, slug) do nothing;
 
 -- Property Categories
