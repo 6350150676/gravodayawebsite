@@ -18,8 +18,6 @@ const SETTING_KEYS = [
   "hero_image_url",
   "whyus_image_url",
   "company_tagline",
-  "rating_value",
-  "rating_count",
 ] as const;
 
 async function requireAdmin() {

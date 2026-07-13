@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const QUICK_LINKS = [
   { href: "/properties", label: "Buy Property" },
-  { href: "/properties?type=rent", label: "Rent Property" },
+  { href: "/projects", label: "Our Projects" },
   { href: "/contact", label: "Sell Property" },
   { href: "/about", label: "About Us" },
   { href: "/contact", label: "Contact Us" },
@@ -37,11 +37,11 @@ export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
               />
               <div>
                 <p className="font-bold text-base tracking-[0.18em] uppercase leading-tight">Garvoday</p>
-                <p className="text-[var(--color-gold)] text-[10px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>
+                <p className="text-[var(--color-gold)] text-[11px] font-extrabold tracking-[0.22em] uppercase">Realty</p>
               </div>
             </div>
             <p className="text-white/55 text-sm leading-relaxed max-w-xs">
-              Your trusted real estate partner in Uttarakhand — helping families find their dream homes since 2008.
+              Your trusted real estate partner in Haridwar — helping families find their dream homes.
             </p>
           </div>
 

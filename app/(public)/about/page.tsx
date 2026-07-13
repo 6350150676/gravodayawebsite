@@ -38,7 +38,7 @@ export default function AboutPage() {
             Garvoday Developers
           </h1>
           <p className="mt-3 text-white/60 text-sm max-w-lg mx-auto">
-            Haridwar's trusted name in real estate — helping families find their dream homes since 2008.
+            Garvoday Realty, by Garvoday Developers Pvt. Ltd. — committed to helping families find their dream homes.
           </p>
         </div>
       </div>
@@ -51,10 +51,9 @@ export default function AboutPage() {
             <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.2em] uppercase mb-3">Our Story</p>
             <h2 className="text-2xl sm:text-3xl font-bold text-[var(--color-brand)] mb-4">Rooted in Haridwar</h2>
             <p className="text-gray-600 leading-relaxed text-[15px]">
-              Garvoday Developers Pvt. Ltd. has spent over 15 years helping families and investors buy, rent, and sell
-              property in Uttarakhand. We are now focused entirely on Haridwar — a city we know intimately, from its
-              established neighborhoods to its fastest-growing pockets. That focus lets us give every client the kind
-              of hands-on, honest guidance that a wider, thinner spread of markets never could.
+              Garvoday Realty, by Garvoday Developers Pvt. Ltd., is built around a simple idea: know Haridwar deeply
+              and do right by every client. From established neighborhoods to fastest-growing pockets, we bring
+              hands-on, honest guidance to every stage of buying or selling a home.
             </p>
           </div>
           <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-sm order-first sm:order-last">

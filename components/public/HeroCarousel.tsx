@@ -70,7 +70,7 @@ export function HeroCarousel({ slides, children, interval = 6000 }: Props) {
           </h1>
 
           {slide.subtitle && (
-            <p className="mt-5 text-lg text-white/70 leading-relaxed max-w-xl transition-all duration-500">
+            <p className="mt-5 text-lg text-white/70 leading-relaxed max-w-xl whitespace-pre-line transition-all duration-500">
               {slide.subtitle}
             </p>
           )}

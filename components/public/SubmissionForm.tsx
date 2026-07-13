@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { createSubmissionAction, type SubmissionFormState } from "@/lib/actions/submission.actions";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
-const PROPERTY_TYPES = ["Apartment", "Villa / House", "Plot / Land", "Commercial Space", "New Project Unit", "Other"];
+const PROPERTY_TYPES = ["Apartment", "Villa / House", "Plot / Land", "New Project Unit", "Other"];
 const CITIES = ["Haridwar"];
 
 const initialState: SubmissionFormState = { ok: false };

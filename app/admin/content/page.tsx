@@ -54,10 +54,6 @@ export default async function AdminContentPage() {
             <Field name="contact_email" label="Email" defaultValue={content.settings.contact_email} />
             <Field name="contact_address" label="Address" defaultValue={content.settings.contact_address} className="sm:col-span-2" />
             <Field name="company_tagline" label="Company tagline" defaultValue={content.settings.company_tagline} />
-            <div className="grid grid-cols-2 gap-4">
-              <Field name="rating_value" label="Rating value" defaultValue={content.settings.rating_value} />
-              <Field name="rating_count" label="Rating count" defaultValue={content.settings.rating_count} />
-            </div>
           </div>
           <SaveButton />
         </form>

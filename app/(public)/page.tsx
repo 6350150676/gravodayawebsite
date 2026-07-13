@@ -17,7 +17,7 @@ import { Reveal } from "@/components/public/Reveal";
 export const metadata: Metadata = {
   title: "Garvoday Developers — Premium Properties in Uttarakhand",
   description:
-    "Find premium apartments, villas, plots and commercial spaces in Haridwar. Trusted by 500+ families across Uttarakhand.",
+    "Find premium villas, plots and residential properties in Haridwar. Trusted by families across Uttarakhand.",
   alternates: { canonical: "/" },
 };
 
@@ -67,11 +67,6 @@ export default async function HomePage() {
       "@type": "City",
       name: "Haridwar",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: settings.rating_value,
-      reviewCount: settings.rating_count.replace(/\D/g, "") || "1",
-    },
   };
 
   return (
@@ -90,8 +85,8 @@ export default async function HomePage() {
 
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-white/55 text-sm">
           <span>✓ RERA Registered</span>
-          <span>✓ 15+ Years in Business</span>
-          <span>✓ 500+ Happy Families</span>
+          <span>✓ Transparent Pricing</span>
+          <span>✓ Local Haridwar Experts</span>
           <Link href="/contact" className="text-[var(--color-gold)] font-semibold hover:underline">
             List your property →
           </Link>
@@ -212,7 +207,7 @@ export default async function HomePage() {
                 Where Trust Meets<br />Real Estate
               </h2>
               <p className="text-gray-500 leading-relaxed mb-8 text-[15px]">
-                With over 15 years serving families across Uttarakhand, we understand that buying or renting a home is one of the most important decisions of your life. We make it simple, transparent, and joyful.
+                We know that buying a home is one of the most important decisions of your life. Our team makes it simple, transparent, and joyful — with honest pricing and hands-on guidance at every step.
               </p>
               <ul className="space-y-3.5">
                 {features.map((item) => (
@@ -245,14 +240,6 @@ export default async function HomePage() {
                     <div>
                       <p className="font-bold text-[var(--color-brand)] text-sm">Garvoday Developers</p>
                       <p className="text-gray-500 text-xs mt-0.5">{settings.company_tagline}</p>
-                      <div className="flex gap-0.5 mt-1">
-                        {[1,2,3,4,5].map((i) => (
-                          <svg key={i} width="12" height="12" viewBox="0 0 20 20" fill="var(--color-gold)">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        ))}
-                        <span className="text-xs text-gray-500 ml-1">{settings.rating_value} ({settings.rating_count} reviews)</span>
-                      </div>
                     </div>
                   </div>
                 </div>

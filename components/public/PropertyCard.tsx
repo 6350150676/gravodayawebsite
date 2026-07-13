@@ -74,7 +74,6 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
             <div>
               <p className="text-xl sm:text-2xl font-bold text-[var(--color-royal)]">
                 {formatPrice(property.price)}
-                {property.is_for_rent && <span className="text-sm font-medium text-gray-400"> /mo</span>}
               </p>
               <p className="text-[11px] text-gray-400 mt-0.5 flex items-center gap-2">
                 {perSqft && <span>₹{perSqft.toLocaleString("en-IN")}/sq.ft</span>}
@@ -128,7 +127,6 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
         <div className="flex items-end justify-between">
           <div>
             <p className="text-xl font-bold text-[var(--color-royal)]">{formatPrice(property.price)}</p>
-            {property.is_for_rent && <p className="text-xs text-gray-400">per month</p>}
           </div>
           <span className="text-xs font-semibold text-[var(--color-royal)] bg-[var(--color-royal)]/10 px-3 py-1.5 rounded-full">
             {property.category.name}
@@ -164,9 +162,6 @@ function CoverImage({ src, alt, sizes }: { src: string | null; alt: string; size
 function Badges({ property }: { property: PropertyWithRelations }) {
   return (
     <div className="absolute top-3 left-3 flex gap-2">
-      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${property.is_for_rent ? "bg-[var(--color-royal)] text-white" : "bg-[var(--color-brand)] text-white"}`}>
-        {property.is_for_rent ? "RENT" : "SALE"}
-      </span>
       {property.is_featured && (
         <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[var(--color-gold)] text-[var(--color-brand)]">
           FEATURED

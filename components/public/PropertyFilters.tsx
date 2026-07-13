@@ -12,14 +12,6 @@ interface Props {
   total: number;
 }
 
-const TYPE_TABS = [
-  { label: "All",  value: ""     },
-  { label: "Buy",  value: "buy"  },
-  { label: "Rent", value: "rent" },
-];
-
-const TYPE_LABEL: Record<string, string> = { buy: "For Sale", rent: "For Rent" };
-
 export function PropertyFilters({ categories, cities, total }: Props) {
   const router   = useRouter();
   const pathname = usePathname();
@@ -37,11 +29,10 @@ export function PropertyFilters({ categories, cities, total }: Props) {
     startTransition(() => router.push(`${pathname}?${next.toString()}`));
   }
 
-  const hasFilters = ["type", "category", "city", "q", "min", "max", "sort"].some((k) => params.get(k));
+  const hasFilters = ["category", "city", "q", "min", "max", "sort"].some((k) => params.get(k));
 
   // Active filter chips
   const chips: { key: string; label: string }[] = [];
-  if (current("type"))     chips.push({ key: "type", label: TYPE_LABEL[current("type")] ?? current("type") });
   if (current("category")) {
     const name = categories.find((c) => String(c.id) === current("category"))?.name;
     if (name) chips.push({ key: "category", label: name });
@@ -118,27 +109,6 @@ export function PropertyFilters({ categories, cities, total }: Props) {
               onBlur={(e) => update("q", e.target.value.trim())}
               className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl outline-none focus:border-[var(--color-royal)] focus:ring-2 focus:ring-[var(--color-royal)]/15 bg-gray-50"
             />
-          </div>
-        </Section>
-
-        {/* Type tabs */}
-        <Section label="Looking to">
-          <div className="flex bg-gray-100 rounded-xl p-1 gap-0.5">
-            {TYPE_TABS.map((tab) => (
-              <button
-                type="button"
-                key={tab.value}
-                aria-pressed={current("type") === tab.value}
-                onClick={() => update("type", tab.value)}
-                className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-royal)] ${
-                  current("type") === tab.value
-                    ? "bg-[var(--color-royal)] text-white shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
           </div>
         </Section>
 

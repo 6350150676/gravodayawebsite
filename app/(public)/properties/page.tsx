@@ -8,7 +8,7 @@ import { SortSelect } from "@/components/public/SortSelect";
 
 export const metadata: Metadata = {
   title: "Properties — Garvoday Developers",
-  description: "Browse apartments, villas, plots and commercial spaces for sale and rent in Haridwar.",
+  description: "Browse villas, plots and residential properties for sale in Haridwar.",
   // Filter/search query strings shouldn't fragment ranking across near-duplicate
   // pages — always point search engines at the canonical unfiltered listing.
   alternates: { canonical: "/properties" },
@@ -68,11 +68,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
           <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-2">
             Explore Our Listings
           </p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white">
-            {sp.type === "rent" ? "Properties for Rent"
-              : sp.type === "buy" ? "Properties for Sale"
-              : "All Properties"}
-          </h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white">All Properties</h1>
           <p className="text-white/55 text-sm mt-2">
             Haridwar, Uttarakhand
           </p>

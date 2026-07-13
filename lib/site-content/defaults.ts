@@ -7,29 +7,27 @@
 import type { SiteSettings, SiteStat, IntentCard, HeroSlide } from "@/types";
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  phone_display: "+91 98765 43210",
-  phone_tel: "+919876543210",
-  whatsapp_number: "919876543210",
-  contact_email: "info@garvoday.com",
-  contact_address: "Kankhal, Haridwar, Uttarakhand",
+  phone_display: "+91 93684 46069",
+  phone_tel: "+919368446069",
+  whatsapp_number: "919368446069",
+  contact_email: "garvodaydevelopers@gmail.com",
+  contact_address: "Sumanagar, near Santosh Vatika Party Lawn, opp. Gali No. 3, Bhadrabad, Haridwar",
   hero_badge: "Uttarakhand's Most Trusted Real Estate",
   hero_title: "Find Your Dream Home in the Himalayas",
   hero_subtitle:
-    "Apartments, villas, plots & commercial spaces across Haridwar",
+    "Villas, plots & residential properties across Haridwar",
   hero_image_url:
     "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=85&auto=format&fit=crop",
   whyus_image_url:
     "https://images.unsplash.com/photo-1750301668797-f21fa5973d62?w=900&q=80&auto=format&fit=crop",
-  company_tagline: "Trusted Since 2008 · Haridwar",
-  rating_value: "5.0",
-  rating_count: "120+",
+  company_tagline: "Garvoday Realty · Haridwar",
 };
 
 export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
-    badge: "Uttarakhand's Most Trusted Real Estate",
-    title: "Find Your Dream Home in the Himalayas",
-    subtitle: "Apartments, villas, plots & commercial spaces across Haridwar.",
+    badge: "by Garvoday Developers Pvt. Ltd.",
+    title: "Garvoday Realty",
+    subtitle: "Villas, plots & residential properties across Haridwar.\nHonest pricing and hands-on guidance, from search to registration.",
     image_url: DEFAULT_SETTINGS.hero_image_url,
   },
   {
@@ -40,15 +38,19 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   },
   {
     badge: "About Us",
-    title: "Trusted Since 2008 — Haridwar's Local Experts",
+    title: "Haridwar's Real Estate Developer",
     subtitle: "RERA registered, family-owned, and committed to honest pricing with no hidden charges.",
     image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1800&q=85&auto=format&fit=crop",
+  },
+  {
+    badge: "Zero Brokerage",
+    title: "No Brokerage, No Hidden Fees",
+    subtitle: "Deal directly with the developer — what you see is what you pay, with nothing extra added on.",
+    image_url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1800&q=85&auto=format&fit=crop",
   },
 ];
 
 export const DEFAULT_STATS: SiteStat[] = [
-  { label: "Years of Experience", value: 15, suffix: "+" },
-  { label: "Happy Families", value: 500, suffix: "+" },
   { label: "Prime Location", value: 1, suffix: "" },
   { label: "Transparency", value: 100, suffix: "%" },
 ];
@@ -59,7 +61,6 @@ export const DEFAULT_FEATURES: string[] = [
   "Transparent pricing — no hidden charges",
   "Expert knowledge of the Haridwar real estate market",
   "End-to-end support from search to registration",
-  "Trusted by 500+ families across Uttarakhand",
 ];
 
 export const DEFAULT_INTENT_CARDS: IntentCard[] = [
@@ -73,17 +74,6 @@ export const DEFAULT_INTENT_CARDS: IntentCard[] = [
     image_url:
       "https://images.unsplash.com/photo-1642667670006-6b3059ccf96d?w=800&q=80&auto=format&fit=crop",
     accent: "var(--color-brand)",
-  },
-  {
-    title: "Rent a Property",
-    subtitle: "Comfortable living spaces",
-    description:
-      "Find fully furnished or semi-furnished homes & offices at fair monthly rentals.",
-    cta: "Browse Rentals →",
-    href: "/properties?type=rent",
-    image_url:
-      "https://images.unsplash.com/photo-1688653802629-5360086bf632?w=800&q=80&auto=format&fit=crop",
-    accent: "var(--color-gold)",
   },
   {
     title: "Sell Your Property",

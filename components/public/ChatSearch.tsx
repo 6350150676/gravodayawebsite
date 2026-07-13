@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Loader2, Sparkles, Mic, MicOff } from "lucide-react";
+import { Bot, X, Send, Loader2, Mic, MicOff } from "lucide-react";
 import { PropertyCard } from "@/components/public/PropertyCard";
 import type { PropertyWithRelations } from "@/types";
 
@@ -172,11 +172,11 @@ export function ChatSearch() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          aria-label="Open property assistant"
+          aria-label="Open chatbot property assistant"
           className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-[var(--color-brand)] px-5 py-3.5 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
         >
-          <MessageSquare size={20} />
-          <span className="hidden sm:inline text-sm font-semibold">Find a property</span>
+          <Bot size={20} />
+          <span className="text-sm font-semibold">Assistant</span>
         </button>
       )}
 
@@ -186,8 +186,8 @@ export function ChatSearch() {
           {/* Header */}
           <div className="flex items-center justify-between bg-[var(--color-brand)] px-4 py-3 text-white">
             <div className="flex items-center gap-2">
-              <Sparkles size={18} className="text-[var(--color-gold)]" />
-              <span className="font-semibold">Property Assistant</span>
+              <Bot size={18} className="text-[var(--color-gold)]" />
+              <span className="font-semibold">Property Chatbot</span>
             </div>
             <button onClick={() => setOpen(false)} aria-label="Close" className="rounded-full p-1 hover:bg-white/20">
               <X size={18} />

@@ -8,8 +8,7 @@ import { Menu, X, Phone } from "lucide-react";
 const NAV_LINKS = [
   { href: "/projects", label: "Projects" },
   { href: "/properties", label: "Properties" },
-  { href: "/properties?type=rent", label: "Rentals" },
-  { href: "/sell", label: "List Property" },
+  { href: "/sell", label: "Sell" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
@@ -37,21 +36,21 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
           />
           <div className="-ml-8">
             <p className="text-white font-bold text-base sm:text-lg tracking-[0.18em] uppercase leading-tight">Garvoday</p>
-            <p className="text-[var(--color-gold)] text-[10px] tracking-[0.22em] uppercase">Developers Pvt. Ltd.</p>
+            <p className="text-[var(--color-gold)] text-[11px] font-extrabold tracking-[0.22em] uppercase">Realty</p>
           </div>
         </Link>
 
         {/* Desktop nav — links + CTA pinned top-right */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-5 lg:gap-7">
           {NAV_LINKS.map((l) => (
             <Link key={l.href} href={l.href}
-              className="text-white/75 hover:text-white text-sm font-medium tracking-wide transition-colors">
+              className="text-white/75 hover:text-white text-xs lg:text-sm font-medium tracking-wide transition-colors whitespace-nowrap">
               {l.label}
             </Link>
           ))}
           <a
             href={`tel:${phoneTel}`}
-            className="flex items-center gap-2 bg-[var(--color-gold)] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-[var(--color-gold-light)] transition-colors shadow-sm"
+            className="flex items-center gap-2 bg-[var(--color-gold)] text-white px-4 lg:px-5 py-2.5 rounded-full text-xs lg:text-sm font-bold hover:bg-[var(--color-gold-light)] transition-colors shadow-sm whitespace-nowrap"
           >
             <Phone size={14} />
             {phoneDisplay}

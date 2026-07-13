@@ -116,7 +116,7 @@ export default async function PropertyDetailPage({ params }: Props) {
       price: property.price,
       priceCurrency: "INR",
       availability: "https://schema.org/InStock",
-      businessFunction: property.is_for_rent ? "https://schema.org/LeaseOut" : "https://schema.org/Sell",
+      businessFunction: "https://schema.org/Sell",
     },
   };
 
@@ -160,9 +160,6 @@ export default async function PropertyDetailPage({ params }: Props) {
               images={galleryImages}
               badges={
                 <>
-                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${property.is_for_rent ? "bg-[var(--color-royal)] text-white" : "bg-[var(--color-brand)] text-white"}`}>
-                    {property.is_for_rent ? "FOR RENT" : "FOR SALE"}
-                  </span>
                   {property.is_featured && (
                     <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[var(--color-gold)] text-[var(--color-brand)]">
                       FEATURED
@@ -190,7 +187,6 @@ export default async function PropertyDetailPage({ params }: Props) {
                 <span className="text-3xl font-bold text-[var(--color-royal)]">
                   {property.price_label || formatPrice(property.price)}
                 </span>
-                {property.is_for_rent && <span className="text-sm text-gray-400">/ month</span>}
               </div>
             </div>
 
@@ -256,14 +252,11 @@ export default async function PropertyDetailPage({ params }: Props) {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               {/* Price header */}
               <div className="bg-[var(--color-brand)] px-6 py-5">
-                <p className="text-white/55 text-xs uppercase tracking-wide mb-1">
-                  {property.is_for_rent ? "Monthly Rent" : "Price"}
-                </p>
+                <p className="text-white/55 text-xs uppercase tracking-wide mb-1">Price</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-white">
                     {property.price_label || formatPrice(property.price)}
                   </span>
-                  {property.is_for_rent && <span className="text-white/50 text-sm">/ month</span>}
                 </div>
               </div>
 
