@@ -3,21 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
-  /** Final numeric value to count up to */
   value: number;
-  /** Text shown after the number, e.g. "+" or "%" */
   suffix?: string;
-  /** Text shown before the number */
   prefix?: string;
-  /** Animation duration in ms */
   duration?: number;
   className?: string;
 }
 
-/**
- * Animates a number from 0 → value the first time it scrolls into view.
- * Used for the homepage stat counters.
- */
+// Counts from 0 to value the first time it scrolls into view.
 export function CountUp({ value, suffix = "", prefix = "", duration = 1600, className = "" }: Props) {
   const ref = useRef<HTMLSpanElement | null>(null);
   const [display, setDisplay] = useState(0);

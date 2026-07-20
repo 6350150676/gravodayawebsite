@@ -1,6 +1,5 @@
 import type { PropertyFilters } from "@/types";
 
-/** Lightweight {id,name} shape for the option lists we hand to the model. */
 export interface NamedOption {
   id: number;
   name: string;
@@ -8,7 +7,6 @@ export interface NamedOption {
 
 export interface ParsedSearch {
   filters: PropertyFilters;
-  /** A short, friendly sentence to show above the results. */
   reply: string;
 }
 
@@ -16,18 +14,10 @@ const GEMINI_MODEL = "gemini-2.0-flash";
 const GEMINI_URL = (key: string) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`;
 
-// Groq is free with no credit card. Model is overridable via env in case Groq
-// retires a name; default is a solid instruction-following open model.
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
 
-/**
- * Turn a natural-language property request into structured {@link PropertyFilters}.
- *
- * Tries LLM providers in order of preference — Groq (free, no card) first, then
- * Google Gemini — and degrades to a keyword parser if no key is set or every
- * call errors out, so search never breaks (it just becomes more literal).
- */
+// Tries Groq, then Gemini, then the keyword fallback so search always works.
 export async function parseSearch(
   prompt: string,
   cities: NamedOption[],
@@ -49,10 +39,6 @@ export async function parseSearch(
   return keywordFallback(prompt, cities, categories);
 }
 
-/**
- * The shared instruction given to every LLM provider: describes the JSON shape
- * and the mapping rules. Kept provider-agnostic so Groq and Gemini stay in sync.
- */
 function buildSystemPrompt(cities: NamedOption[], categories: NamedOption[]): string {
   const cityList = cities.map((c) => `${c.id}=${c.name}`).join(", ");
   const catList = categories.map((c) => `${c.id}=${c.name}`).join(", ");
@@ -71,8 +57,6 @@ function buildSystemPrompt(cities: NamedOption[], categories: NamedOption[]): st
     "- reply: one short, warm sentence confirming what you searched for.",
   ].join("\n");
 }
-
-/* ── Groq path (free, OpenAI-compatible) ─────────────────────────────── */
 
 async function parseWithGroq(
   prompt: string,
@@ -109,8 +93,6 @@ async function parseWithGroq(
         : "Here's what I found for you.",
   };
 }
-
-/* ── Gemini path ─────────────────────────────────────────────────────── */
 
 async function parseWithGemini(
   prompt: string,
@@ -167,7 +149,7 @@ async function parseWithGemini(
   };
 }
 
-/** Keep only valid filter values (guards against the model inventing ids). */
+// Drop anything the model invented (bad ids, junk values).
 function sanitizeFilters(
   raw: Record<string, unknown>,
   cities: NamedOption[],
@@ -201,14 +183,7 @@ function sanitizeFilters(
   return filters;
 }
 
-/* ── Free keyword fallback (no API key needed) ───────────────────────── */
-
-/**
- * Everyday words that map to each category (matched by slug). Lets the free
- * parser understand "plot", "shop", "flat" etc. instead of only the full
- * category name. Order matters: more specific categories are checked first so
- * "commercial"/"plot" win before the residential catch-all.
- */
+// Order matters: specific categories before the residential catch-all.
 const CATEGORY_KEYWORDS: { nameHint: string; words: string[] }[] = [
   { nameHint: "plot",        words: ["plot", "plots", "land", "parcel", "plotting"] },
   { nameHint: "commercial",  words: ["commercial", "shop", "showroom", "office", "retail", "cafe", "restaurant", "warehouse", "godown"] },
@@ -230,9 +205,7 @@ function keywordFallback(
   if (/\brent(al|ing)?\b|for rent|to rent|lease/.test(text)) filters.is_for_rent = true;
   else if (/\bbuy|purchase|for sale|to buy\b/.test(text)) filters.is_for_rent = false;
 
-  // Category: first try synonym keywords, then fall back to the full name.
-  // Skip the residential mapping when renting — rentals live in their own
-  // category, so forcing "residential" would exclude every rental.
+  // Rentals live in their own category, so skip the residential mapping when renting.
   const catMatch = CATEGORY_KEYWORDS.find(
     (c) => (c.nameHint !== "residential" || !filters.is_for_rent) &&
       c.words.some((w) => text.includes(w)),
@@ -256,7 +229,7 @@ function keywordFallback(
   return { filters, reply: "Here's what I found for you." };
 }
 
-/** Parse amounts like "50 lakh", "1.5 crore", "5000000" following a cue word. */
+// "under 50 lakh", "1.5 crore", plain rupee numbers
 function parseIndianAmount(text: string, cue: RegExp): number | undefined {
   const re = new RegExp(cue.source + /₹?\s*([\d.,]+)\s*(lakh|lac|crore|cr|k|thousand)?/.source, "i");
   const m = text.match(re);

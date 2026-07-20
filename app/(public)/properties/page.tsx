@@ -7,7 +7,7 @@ import { PropertyInfiniteList } from "@/components/public/PropertyInfiniteList";
 import { SortSelect } from "@/components/public/SortSelect";
 
 export const metadata: Metadata = {
-  title: "Properties — Garvoday Developers",
+  title: "Properties",
   description: "Browse villas, plots and residential properties for sale in Haridwar.",
   // Filter/search query strings shouldn't fragment ranking across near-duplicate
   // pages — always point search engines at the canonical unfiltered listing.

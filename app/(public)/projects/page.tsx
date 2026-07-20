@@ -4,7 +4,7 @@ import { MapPin, ArrowRight } from "lucide-react";
 import { getProjects } from "@/lib/queries/projects";
 
 export const metadata: Metadata = {
-  title: "Projects — Garvoday Developers",
+  title: "Projects",
   description: "Explore our residential colony and villa projects in Haridwar and around Uttarakhand.",
   alternates: { canonical: "/projects" },
 };

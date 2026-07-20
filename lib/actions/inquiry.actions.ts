@@ -5,8 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { inquirySchema } from "@/lib/validations/inquiry";
-import { sendInquiryNotification } from "@/lib/email/inquiry-notification";
-import { getSiteSettings } from "@/lib/queries/site-content";
+import { notifyTeam } from "@/lib/notifications/notify-team";
 import type { Database, InquiryStatus } from "@/types/database";
 
 type InquiryInsert = Database["public"]["Tables"]["inquiries"]["Insert"];
@@ -24,11 +23,6 @@ export type InquiryFormState = {
   fieldErrors?: Record<string, string>;
 };
 
-/**
- * Public-facing: a visitor submits an inquiry about a property (or a general
- * one when no property_id is given). Validated with Zod; the anon RLS policy
- * `inquiries_public_insert` permits the insert.
- */
 export async function createInquiryAction(
   _prev: InquiryFormState,
   formData: FormData,
@@ -39,7 +33,7 @@ export async function createInquiryAction(
     email: formData.get("email") ?? "",
     message: formData.get("message") ?? "",
     property_id: formData.get("property_id") || undefined,
-    honeypot: formData.get("company") ?? "", // bots fill the hidden "company" field
+    honeypot: formData.get("company") ?? "", // hidden field, bots fill it
   });
 
   if (!parsed.success) {
@@ -52,7 +46,7 @@ export async function createInquiryAction(
   }
 
   const { honeypot, name, phone, email, message, property_id } = parsed.data;
-  if (honeypot) return { ok: true }; // silently drop bots
+  if (honeypot) return { ok: true };
 
   const payload: InquiryInsert = {
     name,
@@ -62,9 +56,6 @@ export async function createInquiryAction(
     property_id: property_id ?? null,
   };
 
-  // Writes use the service-role client (server-side only), consistent with the
-  // rest of the codebase. Input is already validated above; RLS also permits
-  // anonymous inserts via the `inquiries_public_insert` policy.
   const supabase = createAdminClient();
   const { error } = await supabase.from("inquiries").insert(payload);
 
@@ -73,33 +64,28 @@ export async function createInquiryAction(
     return { ok: false, error: "Something went wrong. Please try again or call us." };
   }
 
-  // Send email notification — fire and forget, don't block the response
-  try {
-    let propertyTitle: string | null = null;
-    if (property_id) {
-      const { data: prop } = await supabase
-        .from("properties")
-        .select("title, slug")
-        .eq("id", property_id)
-        .single();
-      propertyTitle = prop?.title ?? null;
-    }
-    const settings = await getSiteSettings();
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-    await sendInquiryNotification({
-      name,
-      phone,
-      email: email || null,
-      message: message || null,
-      propertyTitle,
-      propertyUrl: propertyTitle && property_id
-        ? `${siteUrl}/properties/${(await supabase.from("properties").select("slug").eq("id", property_id).single()).data?.slug}`
-        : null,
-      toEmail: settings.contact_email,
-    });
-  } catch (emailErr) {
-    console.error("[createInquiryAction] email failed:", emailErr);
+  let propertyTitle: string | null = null;
+  let propertySlug: string | null = null;
+  if (property_id) {
+    const { data: prop } = await supabase
+      .from("properties")
+      .select("title, slug")
+      .eq("id", property_id)
+      .single();
+    propertyTitle = prop?.title ?? null;
+    propertySlug = prop?.slug ?? null;
   }
+  await notifyTeam({
+    name,
+    phone,
+    email,
+    message,
+    subject: propertyTitle ?? "General Inquiry",
+    propertyTitle,
+    propertyUrl: propertyTitle && propertySlug
+      ? `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/properties/${propertySlug}`
+      : null,
+  });
 
   return { ok: true };
 }

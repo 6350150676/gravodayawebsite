@@ -15,23 +15,21 @@ import { HeroCarousel } from "@/components/public/HeroCarousel";
 import { Reveal } from "@/components/public/Reveal";
 
 export const metadata: Metadata = {
-  title: "Garvoday Developers — Premium Properties in Uttarakhand",
+  title: { absolute: "Garvoday Developers — Premium Properties in Uttarakhand" },
   description:
     "Find premium villas, plots and residential properties in Haridwar. Trusted by families across Uttarakhand.",
   alternates: { canonical: "/" },
 };
 
-/* Map a category name to a representative icon for the quick-links strip */
 function categoryIcon(name: string) {
   const n = name.toLowerCase();
   if (/villa|house|independent|bungalow|duplex/.test(n)) return Home;
   if (/plot|land/.test(n)) return Map;
   if (/commercial|office|shop|retail|showroom/.test(n)) return Store;
   if (/farm|resort|retreat|cottage/.test(n)) return Trees;
-  return Building2; // apartments / flats / default
+  return Building2;
 }
 
-/* ─── page ───────────────────────────────────────────────────────────────── */
 export default async function HomePage() {
   const [featured, categories, cities, settings, features, intentCards] =
     await Promise.all([

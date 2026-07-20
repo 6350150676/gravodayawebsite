@@ -8,7 +8,7 @@ export const ratelimit = new Ratelimit({
   prefix: "garvoday:ratelimit",
 });
 
-/** Looser limit for the AI chat search — allows real back-and-forth browsing. */
+// looser limit for the chat search
 export const chatRatelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(20, "1 m"),

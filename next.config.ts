@@ -13,9 +13,7 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
-      // Allow any https host so admins can paste image URLs (hero, cities,
-      // intent cards) from any source. Property photos are served from Supabase
-      // storage (pattern above); these are admin-curated marketing images.
+      // admins paste marketing image URLs from anywhere
       { protocol: "https", hostname: "**" },
     ],
   },

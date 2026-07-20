@@ -22,11 +22,11 @@ function imageUrl(path: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
-  if (!project) return { title: "Project not found — Garvoday Developers" };
+  if (!project) return { title: "Project not found" };
 
   const cover = project.images.find((i) => i.is_cover) ?? project.images[0];
   return {
-    title: `${project.name} — Garvoday Developers`,
+    title: project.name,
     description: (project.tagline || project.description).slice(0, 155),
     alternates: { canonical: `/projects/${slug}` },
     openGraph: {
@@ -56,6 +56,22 @@ export default async function ProjectDetailPage({ params }: Props) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
   const projectUrl = `${siteUrl}/projects/${project.slug}`;
 
+  const projectJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Residence",
+    name: project.name,
+    url: projectUrl,
+    description: (project.tagline || project.description || "").slice(0, 300),
+    image: galleryImages.map((img) => img.url),
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: project.location || undefined,
+      addressLocality: project.city?.name ?? "Haridwar",
+      addressRegion: "Uttarakhand",
+      addressCountry: "IN",
+    },
+  };
+
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -68,6 +84,10 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   return (
     <div className="bg-[var(--color-sand)] min-h-screen pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

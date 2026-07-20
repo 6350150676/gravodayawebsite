@@ -4,7 +4,7 @@ import { ContactForm } from "@/components/public/ContactForm";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Us — Garvoday Developers",
+  title: "Contact Us",
   description: "Get in touch with Garvoday Developers for property inquiries, site visits, or any questions about real estate in Haridwar.",
   alternates: { canonical: "/contact" },
 };

@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-/** The settings keys the admin form is allowed to write. */
 const SETTING_KEYS = [
   "phone_display",
   "phone_tel",
@@ -26,9 +25,8 @@ async function requireAdmin() {
   if (!user) redirect("/admin/login");
 }
 
-/** Re-render the public surfaces that read site content. */
 function revalidatePublic() {
-  revalidatePath("/", "layout"); // layout (Navbar/Footer) + home
+  revalidatePath("/", "layout");
   revalidatePath("/properties");
   revalidatePath("/admin/content");
 }
@@ -37,8 +35,8 @@ export async function updateSettingsAction(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
 
-  // Only write the keys this particular form actually submitted, so saving one
-  // section (e.g. Contact) never blanks the fields of another (e.g. Hero).
+  // only write keys the submitted form actually contains, so saving one
+  // section doesn't blank another
   const rows = SETTING_KEYS.filter((key) => formData.has(key)).map((key) => ({
     key,
     value: (formData.get(key) as string | null)?.trim() ?? "",
@@ -76,7 +74,6 @@ export async function updateStatsAction(formData: FormData) {
   revalidatePublic();
 }
 
-/** Replace the full "why choose us" list from a textarea (one bullet per line). */
 export async function updateFeaturesAction(formData: FormData) {
   await requireAdmin();
   const supabase = createAdminClient();
@@ -86,7 +83,7 @@ export async function updateFeaturesAction(formData: FormData) {
     .map((l) => l.trim())
     .filter(Boolean);
 
-  // Wipe and re-insert so ordering + deletions are handled in one shot.
+  // wipe and re-insert to handle reordering and deletions in one go
   const del = await supabase.from("site_features").delete().neq("id", 0);
   if (del.error) throw new Error(del.error.message);
 

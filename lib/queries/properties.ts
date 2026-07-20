@@ -6,7 +6,6 @@ type CityRow = Database["public"]["Tables"]["cities"]["Row"];
 type LocalityRow = Database["public"]["Tables"]["localities"]["Row"];
 type CategoryRow = Database["public"]["Tables"]["property_categories"]["Row"];
 
-/** Number of property cards fetched per page / infinite-scroll batch. */
 export const PROPERTIES_PAGE_SIZE = 9;
 
 const CARD_SELECT = `
@@ -18,12 +17,6 @@ const CARD_SELECT = `
   images:property_images(id, storage_path, is_cover, sort_order)
 `;
 
-/**
- * Fetch one page of active properties matching the filters, plus the total
- * count of all matches (for "X found" + infinite scroll). Only the requested
- * page of rows is transferred — `range()` pushes the LIMIT/OFFSET to Postgres
- * and `{ count: "exact" }` returns the full total in the same round-trip.
- */
 export async function getProperties(
   filters: PropertyFilters = {},
   page = 1,
@@ -44,8 +37,7 @@ export async function getProperties(
   if (filters.min_bedrooms)  query = query.gte("bedrooms", filters.min_bedrooms);
   if (filters.min_bathrooms) query = query.gte("bathrooms", filters.min_bathrooms);
   if (filters.search) {
-    // Match across title, description and address. Strip characters that would
-    // break PostgREST's `or()` filter grammar (commas, parens, wildcards).
+    // strip chars that break PostgREST's or() grammar
     const q = filters.search.replace(/[,()%*]/g, " ").trim();
     if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%,address.ilike.%${q}%`);
   }
@@ -161,7 +153,7 @@ export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRela
   return (data ?? []) as unknown as PropertyWithRelations[];
 }
 
-/** Slug + last-updated for every active property, for the sitemap. */
+// for the sitemap
 export async function getAllPropertySlugs(): Promise<{ slug: string; updated_at: string }[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

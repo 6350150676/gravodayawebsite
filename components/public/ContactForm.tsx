@@ -3,11 +3,13 @@
 import { useActionState } from "react";
 import { createContactMessageAction, type ContactFormState } from "@/lib/actions/contact.actions";
 import { CheckCircle2, Loader2 } from "lucide-react";
+import { useLeadPixel } from "@/lib/meta-pixel";
 
 const initialState: ContactFormState = { ok: false };
 
 export function ContactForm() {
   const [state, action, pending] = useActionState(createContactMessageAction, initialState);
+  useLeadPixel(state.ok, { content_category: "Contact Form" });
 
   if (state.ok) {
     return (

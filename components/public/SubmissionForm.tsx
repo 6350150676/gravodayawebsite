@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { createSubmissionAction, type SubmissionFormState } from "@/lib/actions/submission.actions";
 import { CheckCircle2, Loader2 } from "lucide-react";
+import { useLeadPixel } from "@/lib/meta-pixel";
 
 const PROPERTY_TYPES = ["Apartment", "Villa / House", "Plot / Land", "New Project Unit", "Other"];
 const CITIES = ["Haridwar"];
@@ -11,6 +12,7 @@ const initialState: SubmissionFormState = { ok: false };
 
 export function SubmissionForm() {
   const [state, action, pending] = useActionState(createSubmissionAction, initialState);
+  useLeadPixel(state.ok, { content_category: "Seller Submission" });
 
   if (state.ok) {
     return (
