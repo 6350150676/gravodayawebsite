@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import { CheckCircle2, Send, Phone } from "lucide-react";
 import { createInquiryAction, type InquiryFormState } from "@/lib/actions/inquiry.actions";
 import { useLeadPixel } from "@/lib/meta-pixel";
+import { FeedbackForm } from "@/components/public/FeedbackForm";
 
 interface Props {
   propertyId: string;
@@ -34,6 +35,7 @@ export function InquiryForm({ propertyId, propertyTitle, phone = "+919876543210"
         >
           <Phone size={14} /> Or call us now
         </a>
+        <FeedbackForm source="inquiry" />
       </div>
     );
   }

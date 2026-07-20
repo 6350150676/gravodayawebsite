@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { createContactMessageAction, type ContactFormState } from "@/lib/actions/contact.actions";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useLeadPixel } from "@/lib/meta-pixel";
+import { FeedbackForm } from "@/components/public/FeedbackForm";
 
 const initialState: ContactFormState = { ok: false };
 
@@ -19,6 +20,7 @@ export function ContactForm() {
         <p className="text-sm text-gray-500 max-w-xs">
           Thank you for reaching out. We&apos;ll get back to you within a few hours.
         </p>
+        <FeedbackForm source="contact" />
       </div>
     );
   }
