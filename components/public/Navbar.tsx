@@ -27,7 +27,7 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
         {/* Logo — pinned top-left */}
         <Link href="/" className="group flex items-center gap-0 shrink-0" onClick={() => setOpen(false)}>
           <Image
-            src="/logo.png"
+            src="/logo-gold.png"
             alt="Garvoday Developers logo"
             width={96}
             height={64}

@@ -29,7 +29,7 @@ export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
           <div>
             <div className="group flex items-center gap-3 mb-5">
               <Image
-                src="/logo.png"
+                src="/logo-gold.png"
                 alt="Garvoday Developers logo"
                 width={96}
                 height={64}
