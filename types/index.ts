@@ -41,7 +41,7 @@ export interface ProjectWithRelations {
   images: { id: string; storage_path: string; is_cover: boolean; sort_order: number }[];
 }
 
-// "newest" is the implicit default (no `sort` param); only explicit sorts are typed.
+// newest is the implicit default (no sort param)
 export type PropertySort = "price_asc" | "price_desc";
 
 export interface PropertyFilters {
@@ -50,21 +50,18 @@ export interface PropertyFilters {
   is_for_rent?: boolean;
   min_price?: number;
   max_price?: number;
-  /** Minimum number of bedrooms (matches `bedrooms >= n`). */
   min_bedrooms?: number;
-  /** Minimum number of bathrooms (matches `bathrooms >= n`). */
   min_bathrooms?: number;
   search?: string;
   sort?: PropertySort;
 }
 
-/** A single page of results plus the total count (for pagination / infinite scroll). */
 export interface PaginatedProperties {
   items: PropertyWithRelations[];
   total: number;
 }
 
-/* ── Editable site content (see lib/site-content) ───────────────────────── */
+// editable site content (see lib/site-content)
 
 export type SiteSettings = Record<string, string>;
 

@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, X } from "lucide-react";
 import type { ProjectWithRelations } from "@/types";
 
-/** Compress an image file in the browser using Canvas before upload.
- *  Outputs a JPEG Blob capped at maxWidth × maxHeight, quality 0.85.
- *  Keeps aspect ratio. Falls back to original if Canvas isn't available. */
+// Downscale to JPEG via canvas before upload; falls back to the original file.
 async function compressImage(file: File, maxWidth = 1600, maxHeight = 1200, quality = 0.85): Promise<File> {
   return new Promise((resolve) => {
     const img = new Image();

@@ -24,7 +24,7 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
     year: "numeric",
   });
 
-  /* ── Horizontal (listing-page / portal) variant ─────────────────── */
+  // horizontal variant (listing page)
   if (layout === "horizontal") {
     return (
       <Link
@@ -89,7 +89,7 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
     );
   }
 
-  /* ── Vertical (homepage grid) variant ───────────────────────────── */
+  // vertical variant (homepage grid)
   return (
     <Link
       href={`/properties/${property.slug}`}
@@ -137,7 +137,6 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
   );
 }
 
-/* ── shared pieces ───────────────────────────────────────────────── */
 function CoverImage({ src, alt, sizes }: { src: string | null; alt: string; sizes: string }) {
   if (!src) {
     return (

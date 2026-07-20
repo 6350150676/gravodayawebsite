@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { RouteProgress } from "@/components/public/RouteProgress";
+import { MetaPixel } from "@/components/public/MetaPixel";
 
 const poppins = Poppins({
         subsets: ["latin"],
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
         metadataBase: new URL(SITE_URL),
         openGraph: {
                 type: "website",
+                locale: "en_IN",
                 url: SITE_URL,
                 siteName: "Garvoday Developers",
                 title: SITE_TITLE,
@@ -45,6 +47,21 @@ export const metadata: Metadata = {
         },
 };
 
+const websiteJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Garvoday Developers",
+        url: SITE_URL,
+        potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                        "@type": "EntryPoint",
+                        urlTemplate: `${SITE_URL}/properties?q={search_term_string}`,
+                },
+                "query-input": "required name=search_term_string",
+        },
+};
+
 export default function RootLayout({
         children,
 }: {
@@ -53,6 +70,11 @@ export default function RootLayout({
         return (
                 <html lang="en" className={`${poppins.variable} ${inter.variable}`} suppressHydrationWarning>
                         <body>
+                                <script
+                                        type="application/ld+json"
+                                        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+                                />
+                                <MetaPixel />
                                 <Suspense fallback={null}>
                                         <RouteProgress />
                                 </Suspense>

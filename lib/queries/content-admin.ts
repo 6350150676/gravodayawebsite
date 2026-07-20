@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import type { SiteSettings } from "@/types";
 import { DEFAULT_SETTINGS } from "@/lib/site-content/defaults";
 
-/** Raw content rows (with ids) for the admin editor forms. */
 export interface AdminStat { id: number; label: string; value: number; suffix: string; sort_order: number }
 export interface AdminFeature { id: number; text: string; sort_order: number }
 export interface AdminCity { id: number; name: string; slug: string; tagline: string | null; image_url: string | null }
@@ -17,7 +16,7 @@ export interface AdminIntentCard {
   accent: string;
 }
 export interface AdminContent {
-  /** False when the site-content migration hasn't been applied yet. */
+  // false until the site-content migration has run
   ready: boolean;
   settings: SiteSettings;
   stats: AdminStat[];
@@ -40,7 +39,6 @@ export async function getAdminContent(): Promise<AdminContent> {
       .order("sort_order"),
   ]);
 
-  // If the settings table is missing, the migration hasn't run yet.
   const ready = !settingsRes.error;
 
   const settings: SiteSettings = { ...DEFAULT_SETTINGS };

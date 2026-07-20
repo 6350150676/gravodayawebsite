@@ -8,11 +8,8 @@ import {
   DEFAULT_HERO_SLIDES,
 } from "@/lib/site-content/defaults";
 
-/**
- * Editable site content. Every getter is defensive: if the content tables do
- * not exist yet (migration not run) or a query fails, it falls back to the
- * in-code defaults so the public site keeps rendering. DB values always win.
- */
+// Every getter falls back to the in-code defaults if the tables don't exist
+// yet or a query fails, so the public site always renders.
 
 export async function getSiteSettings(): Promise<SiteSettings> {
   const supabase = await createClient();
@@ -52,7 +49,7 @@ export async function getSiteFeatures(): Promise<string[]> {
   return rows.map((r) => r.text);
 }
 
-/** Hero carousel slides are hard-coded — see lib/site-content/defaults.ts */
+// slides are hard-coded in defaults.ts
 export function getHeroSlides(): HeroSlide[] {
   return DEFAULT_HERO_SLIDES;
 }

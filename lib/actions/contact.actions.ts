@@ -2,8 +2,7 @@
 
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendInquiryNotification } from "@/lib/email/inquiry-notification";
-import { getSiteSettings } from "@/lib/queries/site-content";
+import { notifyTeam } from "@/lib/notifications/notify-team";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -51,20 +50,7 @@ export async function createContactMessageAction(
     return { ok: false, error: "Something went wrong. Please try again or call us directly." };
   }
 
-  try {
-    const settings = await getSiteSettings();
-    await sendInquiryNotification({
-      name,
-      phone,
-      email: email || null,
-      message,
-      propertyTitle: null,
-      propertyUrl: null,
-      toEmail: settings.contact_email,
-    });
-  } catch (emailErr) {
-    console.error("[createContactMessageAction] email failed:", emailErr);
-  }
+  await notifyTeam({ name, phone, email, message, subject: "Contact Form" });
 
   return { ok: true };
 }

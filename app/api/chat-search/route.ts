@@ -3,7 +3,6 @@ import { getProperties, getCities, getCategories } from "@/lib/queries/propertie
 import { parseSearch } from "@/lib/chat/parse-search";
 import { chatRatelimit } from "@/lib/ratelimit";
 
-/** How many property cards the chat returns per request. */
 const RESULT_LIMIT = 6;
 
 export async function POST(req: Request) {
@@ -22,7 +21,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "That message is a bit too long." }, { status: 400 });
   }
 
-  // Best-effort rate limit — never block search if Upstash isn't configured.
+  // rate limit is best-effort; search still works if Upstash isn't configured
   try {
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anon";
     const { success } = await chatRatelimit.limit(ip);
@@ -32,9 +31,7 @@ export async function POST(req: Request) {
         { status: 429 },
       );
     }
-  } catch {
-    /* rate limiting unavailable — continue */
-  }
+  } catch {}
 
   const [cities, categories] = await Promise.all([getCities(), getCategories()]);
 

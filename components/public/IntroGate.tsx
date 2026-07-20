@@ -1,31 +1,8 @@
-// Server component — no "use client". The overlay markup is rendered into the
-// initial HTML so it covers the page on the *very first paint*. A tiny
-// render-blocking inline script (below) decides — synchronously, before the
-// body paints — whether this is a genuine first visit and, if so, flips
-// <html data-intro="play"> so the CSS overlay shows. This is what kills the
-// old flash: the previous version was a client component that rendered nothing
-// on the server, so the browser painted the real site first and only mounted
-// the overlay 1-2 frames later, after React hydrated.
+// First-visit intro overlay. Must stay a server component so the overlay is in
+// the initial HTML — a client component would flash the real site before
+// hydration. Plays once per session; timing lives in globals.css.
 
-/**
- * First-visit intro: a simple house is sketched line-by-line, then its front
- * door swings open on its hinges and the "camera" dollies forward through the
- * doorway — so it feels like the gate opens and you step inside before the
- * site (visible through the open door) fills the screen.
- *
- * It is one SVG: a sand "wall" with the doorway punched out (transparent, via
- * a mask) so the real page shows through it; two terracotta leaves cover that
- * hole, swing open, then the whole group scales up about the doorway.
- *
- * - Pure CSS / SVG — no animation library; timing lives in globals.css.
- * - Plays once per browser session (sessionStorage).
- * - Skipped for users who prefer reduced motion (script + CSS guard).
- * - Visibility is driven entirely by <html data-intro="…">, set before paint,
- *   so the site is never visible before the overlay.
- */
-
-// Runs before the body paints. Keep the timeout in sync with the CSS timeline
-// in globals.css (.gd-camera / .gd-art end ~5.0s).
+// Keep the timeout in sync with the CSS timeline (.gd-camera / .gd-art end ~5.0s).
 const INTRO_SCRIPT = `(function(){try{
   var d=document.documentElement;
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -40,8 +17,7 @@ const INTRO_SCRIPT = `(function(){try{
 export function IntroGate() {
   return (
     <>
-      {/* Inline, non-src script → React renders it in place (not hoisted) and
-          it executes synchronously during HTML parse, before the page paints. */}
+      {/* Inline so it runs during HTML parse, before first paint */}
       <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
 
       <div aria-hidden="true" className="gd-intro">
@@ -52,16 +28,13 @@ export function IntroGate() {
           role="img"
         >
           <defs>
-            {/* White = keep the wall, black = punch the doorway through to the
-                page behind. Coords are the door interior in canvas units. */}
+            {/* black rect punches the doorway through to the page behind */}
             <mask id="gd-door-mask">
               <rect x="0" y="0" width="440" height="340" fill="#fff" />
               <rect x="210" y="197" width="20" height="38" fill="#000" />
             </mask>
           </defs>
 
-          {/* The wall scales forward on the walk-in (solid sand → clean reveal
-              as the doorway hole grows to engulf the screen). */}
           <g className="gd-camera">
             <rect
               x="0"
@@ -73,8 +46,7 @@ export function IntroGate() {
             />
           </g>
 
-          {/* The line drawing + door leaves sit on top and FADE on the walk-in
-              (they don't scale, so they never smear across the screen). */}
+          {/* line art fades (doesn't scale) on the walk-in */}
           <g className="gd-art" transform="translate(110, 85)">
             {STROKES.map((s, i) => (
               <path
@@ -86,7 +58,6 @@ export function IntroGate() {
               />
             ))}
 
-            {/* Door leaves — terracotta, swing open over the hole */}
             <g className="gd-leaf gd-leaf-left">
               <rect x="100" y="112" width="10" height="38" />
             </g>
@@ -113,8 +84,6 @@ export function IntroGate() {
   );
 }
 
-/* Stroke order + stagger (house-local coords). Each line draws over 0.65s;
-   the ~0.16s step lets you watch them appear one at a time. */
 const STROKES: { d: string; delay: number }[] = [
   { d: "M10 150 H210", delay: 0 }, // ground
   { d: "M55 150 V82", delay: 0.16 }, // left wall

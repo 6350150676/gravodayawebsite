@@ -22,6 +22,7 @@ import { PropertyGallery } from "@/components/public/PropertyGallery";
 import { InquiryForm } from "@/components/public/InquiryForm";
 import { PropertyCard } from "@/components/public/PropertyCard";
 import { Reveal } from "@/components/public/Reveal";
+import { PixelEvent } from "@/components/public/PixelEvent";
 
 export const revalidate = 3600;
 
@@ -38,11 +39,11 @@ function imageUrl(path: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const property = await getPropertyBySlug(slug);
-  if (!property) return { title: "Property not found — Garvoday Developers" };
+  if (!property) return { title: "Property not found" };
 
   const cover = property.images.find((i) => i.is_cover) ?? property.images[0];
   return {
-    title: `${property.title} — Garvoday Developers`,
+    title: property.title,
     description: property.description.slice(0, 155),
     alternates: { canonical: `/properties/${slug}` },
     openGraph: {
@@ -132,6 +133,17 @@ export default async function PropertyDetailPage({ params }: Props) {
 
   return (
     <div className="bg-[var(--color-sand)] min-h-screen pb-16">
+      <PixelEvent
+        event="ViewContent"
+        params={{
+          content_name: property.title,
+          content_ids: [property.id],
+          content_type: "product",
+          content_category: property.category.name,
+          currency: "INR",
+          value: property.price ?? undefined,
+        }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(listingJsonLd) }}

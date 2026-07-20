@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Garvoday Developers",
+  title: "Terms of Service",
   description: "The terms and conditions for using the Garvoday Developers website and services.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

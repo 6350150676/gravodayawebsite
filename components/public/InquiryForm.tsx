@@ -4,18 +4,19 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { CheckCircle2, Send, Phone } from "lucide-react";
 import { createInquiryAction, type InquiryFormState } from "@/lib/actions/inquiry.actions";
+import { useLeadPixel } from "@/lib/meta-pixel";
 
 interface Props {
   propertyId: string;
   propertyTitle: string;
-  /** Tel link target, e.g. +919876543210 */
-  phone?: string;
+  phone?: string; // tel: target, e.g. +919876543210
 }
 
 const initial: InquiryFormState = { ok: false };
 
 export function InquiryForm({ propertyId, propertyTitle, phone = "+919876543210" }: Props) {
   const [state, action] = useActionState(createInquiryAction, initial);
+  useLeadPixel(state.ok, { content_name: propertyTitle, content_category: "Property Inquiry" });
 
   if (state.ok) {
     return (

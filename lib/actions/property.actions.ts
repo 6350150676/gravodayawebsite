@@ -7,7 +7,6 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { propertySchema } from "@/lib/validations/property";
 import { slugify } from "@/lib/utils";
 
-/** Convert a FormData value to a finite number. Returns undefined for empty, NaN, or Infinity. */
 function toNum(value: FormDataEntryValue | null): number | undefined {
   if (!value || value === "") return undefined;
   const n = Number(value);

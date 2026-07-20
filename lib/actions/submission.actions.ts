@@ -5,11 +5,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendInquiryNotification } from "@/lib/email/inquiry-notification";
-import { getSiteSettings } from "@/lib/queries/site-content";
+import { notifyTeam } from "@/lib/notifications/notify-team";
 import type { SubmissionStatus } from "@/types/database";
-
-// ── Public: submit a property for listing ────────────────────────────────────
 
 const submissionSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -76,20 +73,16 @@ export async function createSubmissionAction(
     return { ok: false, error: "Something went wrong. Please try again or call us directly." };
   }
 
-  try {
-    const settings = await getSiteSettings();
-    await sendInquiryNotification({
-      name,
-      phone,
-      email: email || null,
-      message: `Property Type: ${property_type}\nCity: ${city}${locality ? `, ${locality}` : ""}\nAsking Price: ${asking_price || "Not specified"}\n\n${description}`,
-      propertyTitle: `New Property Listing — ${property_type} in ${city}`,
-      propertyUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/admin/submissions`,
-      toEmail: settings.contact_email,
-    });
-  } catch (emailErr) {
-    console.error("[createSubmissionAction] email failed:", emailErr);
-  }
+  const summary = `Property Type: ${property_type}\nCity: ${city}${locality ? `, ${locality}` : ""}\nAsking Price: ${asking_price || "Not specified"}\n\n${description}`;
+  await notifyTeam({
+    name,
+    phone,
+    email,
+    message: summary,
+    subject: `Seller Listing — ${property_type} in ${city}`,
+    propertyTitle: `New Property Listing — ${property_type} in ${city}`,
+    propertyUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/admin/submissions`,
+  });
 
   return { ok: true };
 }

@@ -6,13 +6,11 @@ import type { HeroSlide } from "@/types";
 
 interface Props {
   slides: HeroSlide[];
-  /** Fixed content rendered under the rotating text (e.g. search widget, trust line). */
   children?: React.ReactNode;
-  /** Milliseconds between auto-advances. */
   interval?: number;
 }
 
-/* Split a heading so the final word can be highlighted in gold */
+// last word gets the gold highlight
 function splitLastWord(title: string): [string, string] {
   const words = title.trim().split(/\s+/);
   if (words.length <= 1) return ["", title];

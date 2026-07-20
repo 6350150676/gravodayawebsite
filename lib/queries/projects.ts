@@ -46,7 +46,7 @@ export async function getProjectById(id: string): Promise<ProjectWithRelations |
   return data as unknown as ProjectWithRelations;
 }
 
-/** Slug + last-updated for every active project, for the sitemap. */
+// for the sitemap
 export async function getAllProjectSlugs(): Promise<{ slug: string; updated_at: string }[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -61,7 +61,6 @@ export async function getAllProjectSlugs(): Promise<{ slug: string; updated_at: 
   return data ?? [];
 }
 
-/** Active property listings (units) that belong to a given project. */
 export async function getPropertiesByProject(projectId: string): Promise<PropertyWithRelations[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

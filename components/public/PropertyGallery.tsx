@@ -6,7 +6,6 @@ import { ChevronLeft, ChevronRight, X, Expand, ImageIcon } from "lucide-react";
 
 interface Props {
   images: { url: string; alt: string }[];
-  /** Badges rendered over the top-left of the main image */
   badges?: React.ReactNode;
 }
 
@@ -29,7 +28,6 @@ export function PropertyGallery({ images, badges }: Props) {
     setLightbox(true);
   }
 
-  // Keyboard navigation, scroll-lock and focus management while open
   useEffect(() => {
     if (!lightbox) return;
 
@@ -37,7 +35,7 @@ export function PropertyGallery({ images, badges }: Props) {
       if (e.key === "Escape") { setLightbox(false); return; }
       if (e.key === "ArrowRight") go(1);
       if (e.key === "ArrowLeft") go(-1);
-      // Trap focus inside the dialog
+      // keep focus trapped in the dialog
       if (e.key === "Tab") {
         const focusables = dialogRef.current?.querySelectorAll<HTMLElement>("button");
         if (focusables && focusables.length) {
@@ -60,7 +58,6 @@ export function PropertyGallery({ images, badges }: Props) {
     };
   }, [lightbox, go]);
 
-  // ── Empty state ──────────────────────────────────────────────
   if (count === 0) {
     return (
       <div className="aspect-[16/10] w-full rounded-2xl bg-gray-100 flex flex-col items-center justify-center text-gray-300 gap-2">
@@ -72,7 +69,6 @@ export function PropertyGallery({ images, badges }: Props) {
 
   return (
     <>
-      {/* ── Main image ──────────────────────────────────────────── */}
       <div className="relative group">
         <button
           type="button"
@@ -94,17 +90,14 @@ export function PropertyGallery({ images, badges }: Props) {
           </span>
         </button>
 
-        {/* Badges */}
         {badges && <div className="absolute top-3 left-3 flex gap-2">{badges}</div>}
 
-        {/* Counter */}
         {count > 1 && (
           <span className="absolute top-3 right-3 bg-black/55 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
             {active + 1} / {count}
           </span>
         )}
 
-        {/* Arrows */}
         {count > 1 && (
           <>
             <GalleryArrow side="left" onClick={() => go(-1)} />
@@ -113,7 +106,6 @@ export function PropertyGallery({ images, badges }: Props) {
         )}
       </div>
 
-      {/* ── Thumbnails ──────────────────────────────────────────── */}
       {count > 1 && (
         <div className="mt-3 flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
           {images.map((img, i) => (
@@ -134,7 +126,6 @@ export function PropertyGallery({ images, badges }: Props) {
         </div>
       )}
 
-      {/* ── Lightbox ────────────────────────────────────────────── */}
       {lightbox && (
         <div
           ref={dialogRef}

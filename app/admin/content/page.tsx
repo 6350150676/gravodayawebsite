@@ -149,8 +149,6 @@ export default async function AdminContentPage() {
   );
 }
 
-/* ── presentational helpers (server) ───────────────────────────── */
-
 function Section({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
   return (
     <section className="bg-white rounded-xl shadow-sm p-6">

@@ -8,8 +8,8 @@ export const inquirySchema = z.object({
   email: z.string().email("Enter a valid email").optional().or(z.literal("")),
   message: z.string().max(1000).optional(),
   property_id: z.string().uuid().optional(),
-  // Honeypot: accept any value so validation never fails (which would reveal
-  // the trap). Bot submissions are silently dropped in the action instead.
+  // accepts anything so validation errors never reveal the trap; the action
+  // drops bot submissions silently
   honeypot: z.string().optional(),
 });
 

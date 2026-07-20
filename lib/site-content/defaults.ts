@@ -1,9 +1,5 @@
-﻿/**
- * Default site content. These mirror the values that used to be hard-coded on
- * the landing page. They are used as a fallback so the public site renders
- * identically *before* the `20240002000000_site_content.sql` migration is run,
- * and merged under any values the admin later sets in the database.
- */
+﻿// Fallback content used until the site_content migration runs; DB values
+// set by the admin override these.
 import type { SiteSettings, SiteStat, IntentCard, HeroSlide } from "@/types";
 
 export const DEFAULT_SETTINGS: SiteSettings = {

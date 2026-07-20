@@ -3,10 +3,6 @@
 import { useFormStatus } from "react-dom";
 import { Loader2, Check } from "lucide-react";
 
-/**
- * Submit button for the admin content forms. Shows a spinner while the server
- * action is running (via the enclosing <form>'s pending state).
- */
 export function SaveButton({ label = "Save changes" }: { label?: string }) {
   const { pending } = useFormStatus();
 

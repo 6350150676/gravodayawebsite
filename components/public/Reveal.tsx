@@ -4,18 +4,12 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
-  /** Delay in ms before the reveal animation kicks in */
   delay?: number;
   className?: string;
-  /** HTML tag to render. Defaults to a div. */
   as?: "div" | "section" | "li" | "span";
 }
 
-/**
- * Reveals its children with a fade-up animation the first time it scrolls
- * into view. Falls back to instantly-visible if IntersectionObserver is
- * unavailable or the user prefers reduced motion (handled in globals.css).
- */
+// Fade-up on first scroll into view. Reduced-motion fallback lives in globals.css.
 export function Reveal({ children, delay = 0, className = "", as = "div" }: Props) {
   const ref = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);

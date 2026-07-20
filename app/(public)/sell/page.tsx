@@ -3,7 +3,7 @@ import { SubmissionForm } from "@/components/public/SubmissionForm";
 import { ShieldCheck, Clock, BadgeCheck, TrendingUp } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "List Your Property — Garvoday Developers",
+  title: "List Your Property",
   description: "Want to sell or rent your property in Haridwar? List it free with Garvoday Developers and reach serious buyers.",
   alternates: { canonical: "/sell" },
 };
