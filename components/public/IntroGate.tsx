@@ -25,7 +25,7 @@
  */
 
 // Runs before the body paints. Keep the timeout in sync with the CSS timeline
-// in globals.css (.gd-camera / .gd-art end ~5.0s).
+// in globals.css (.gd-camera / .gd-art end ~4.25s).
 const INTRO_SCRIPT = `(function(){try{
   var d=document.documentElement;
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -34,7 +34,7 @@ const INTRO_SCRIPT = `(function(){try{
   setTimeout(function(){
     try{sessionStorage.setItem('gd-intro','1');}catch(e){}
     d.setAttribute('data-intro','done');
-  },5100);
+  },4350);
 }catch(e){}})();`;
 
 export function IntroGate() {
@@ -113,15 +113,15 @@ export function IntroGate() {
   );
 }
 
-/* Stroke order + stagger (house-local coords). Each line draws over 0.65s;
-   the ~0.16s step lets you watch them appear one at a time. */
+/* Stroke order + stagger (house-local coords). Each line draws over 0.58s;
+   the ~0.14s step lets you watch them appear one at a time. */
 const STROKES: { d: string; delay: number }[] = [
   { d: "M10 150 H210", delay: 0 }, // ground
-  { d: "M55 150 V82", delay: 0.16 }, // left wall
-  { d: "M165 150 V82", delay: 0.32 }, // right wall
-  { d: "M45 84 L110 36 L175 84", delay: 0.5 }, // roof
-  { d: "M140 60 V40 H152 V70", delay: 0.66 }, // chimney
-  { d: "M72 96 H98 V122 H72 Z M85 96 V122 M72 109 H98", delay: 0.82 }, // window L
-  { d: "M122 96 H148 V122 H122 Z M135 96 V122 M122 109 H148", delay: 0.98 }, // window R
-  { d: "M100 150 V112 H120 V150", delay: 1.14 }, // door frame
+  { d: "M55 150 V82", delay: 0.14 }, // left wall
+  { d: "M165 150 V82", delay: 0.28 }, // right wall
+  { d: "M45 84 L110 36 L175 84", delay: 0.44 }, // roof
+  { d: "M140 60 V40 H152 V70", delay: 0.58 }, // chimney
+  { d: "M72 96 H98 V122 H72 Z M85 96 V122 M72 109 H98", delay: 0.72 }, // window L
+  { d: "M122 96 H148 V122 H122 Z M135 96 V122 M122 109 H148", delay: 0.86 }, // window R
+  { d: "M100 150 V112 H120 V150", delay: 1.0 }, // door frame
 ];
