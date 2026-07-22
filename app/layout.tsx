@@ -17,7 +17,7 @@ const inter = Inter({
         display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.garvodayrealty.com";
 const SITE_TITLE = "Garvoday Developers — Premium Properties in Uttarakhand";
 const SITE_DESCRIPTION =
         "Premium villas, plots and residential properties in Haridwar.";

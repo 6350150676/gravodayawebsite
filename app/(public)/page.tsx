@@ -45,7 +45,7 @@ export default async function HomePage() {
   const heroSlides = getHeroSlides();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.garvodayrealty.com";
 
   const orgJsonLd = {
     "@context": "https://schema.org",
