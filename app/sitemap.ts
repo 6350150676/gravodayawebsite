@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllPropertySlugs } from "@/lib/queries/properties";
 import { getAllProjectSlugs } from "@/lib/queries/projects";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.garvodayrealty.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [properties, projects] = await Promise.all([getAllPropertySlugs(), getAllProjectSlugs()]);

@@ -94,7 +94,7 @@ export default async function PropertyDetailPage({ params }: Props) {
     { icon: Building2, label: "Type", value: property.category.name },
   ].filter(Boolean) as { icon: typeof BedDouble; label: string; value: string }[];
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.garvodayrealty.com";
   const propertyUrl = `${siteUrl}/properties/${property.slug}`;
 
   const listingJsonLd = {
