@@ -7,7 +7,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   phone_tel: "+919368446069",
   whatsapp_number: "919368446069",
   contact_email: "garvodaydevelopers@gmail.com",
-  contact_address: "Sumanagar, near Santosh Vatika Party Lawn, opp. Gali No. 3, Bhadrabad, Haridwar",
+  contact_address: "KH No. 2293, Suman Nagar Road, Salempur Mahdood-2, Haridwar, Uttarakhand 249402",
   hero_badge: "Uttarakhand's Most Trusted Real Estate",
   hero_title: "Find Your Dream Home in the Himalayas",
   hero_subtitle:
