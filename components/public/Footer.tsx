@@ -112,7 +112,17 @@ export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
             <ul className="space-y-3 text-sm text-white/60">
               <li className="flex items-start gap-2.5">
                 <span className="mt-0.5 flex-shrink-0">📍</span>
-                <span>{address}</span>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/map hover:text-[var(--color-gold)] transition-colors"
+                >
+                  <span>{address}</span>
+                  <span className="block text-[var(--color-gold)] text-xs font-semibold mt-1 group-hover/map:underline">
+                    View on Google Maps ↗
+                  </span>
+                </a>
               </li>
               <li>
                 <a href={`tel:${phoneTel}`} className="flex items-center gap-2.5 hover:text-[var(--color-gold)] transition-colors">
