@@ -53,7 +53,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     alt: project.name,
   }));
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.garvodayrealty.com";
   const projectUrl = `${siteUrl}/projects/${project.slug}`;
 
   const projectJsonLd = {

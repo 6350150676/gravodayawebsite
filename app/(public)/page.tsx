@@ -43,15 +43,15 @@ export default async function HomePage() {
   const heroSlides = getHeroSlides();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://garvoday.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.garvodayrealty.com";
 
   const orgJsonLd = {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
     name: "Garvoday Developers Pvt. Ltd.",
     url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
-    image: `${siteUrl}/logo.png`,
+    logo: `${siteUrl}/logo-square.png`,
+    image: `${siteUrl}/og-image.png`,
     telephone: settings.phone_tel,
     email: settings.contact_email,
     address: {
