@@ -294,6 +294,26 @@ export interface Database {
         };
         Relationships: [];
       };
+      feedback: {
+        Row: {
+          id: string;
+          source: string;
+          rating: number;
+          comment: string | null;
+          created_at: string;
+        };
+        Insert: {
+          source: string;
+          rating: number;
+          comment?: string | null;
+        };
+        Update: {
+          source?: string;
+          rating?: number;
+          comment?: string | null;
+        };
+        Relationships: [];
+      };
       site_settings: {
         Row: { key: string; value: string | null; updated_at: string };
         Insert: { key: string; value?: string | null };

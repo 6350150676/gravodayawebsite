@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { createSubmissionAction, type SubmissionFormState } from "@/lib/actions/submission.actions";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useLeadPixel } from "@/lib/meta-pixel";
+import { FeedbackForm } from "@/components/public/FeedbackForm";
 
 const PROPERTY_TYPES = ["Apartment", "Villa / House", "Plot / Land", "New Project Unit", "Other"];
 const CITIES = ["Haridwar"];
@@ -22,6 +23,7 @@ export function SubmissionForm() {
         <p className="text-sm text-gray-500 max-w-sm">
           Thank you for listing with Garvoday Developers. Our team will review your property and get in touch within 24 hours.
         </p>
+        <FeedbackForm source="submission" />
       </div>
     );
   }
