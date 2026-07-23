@@ -50,8 +50,8 @@ export default async function HomePage() {
     "@type": "RealEstateAgent",
     name: "Garvoday Developers Pvt. Ltd.",
     url: siteUrl,
-    logo: `${siteUrl}/logo-gold.png`,
-    image: `${siteUrl}/logo-gold.png`,
+    logo: `${siteUrl}/logo.png`,
+    image: `${siteUrl}/logo.png`,
     telephone: settings.phone_tel,
     email: settings.contact_email,
     address: {

@@ -37,13 +37,13 @@ export const metadata: Metadata = {
                 siteName: "Garvoday Developers",
                 title: SITE_TITLE,
                 description: SITE_DESCRIPTION,
-                images: ["/logo-gold.png"],
+                images: ["/logo.png"],
         },
         twitter: {
                 card: "summary_large_image",
                 title: SITE_TITLE,
                 description: SITE_DESCRIPTION,
-                images: ["/logo-gold.png"],
+                images: ["/logo.png"],
         },
 };
 
