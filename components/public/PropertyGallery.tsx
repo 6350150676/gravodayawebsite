@@ -17,6 +17,8 @@ export function PropertyGallery({ images, badges }: Props) {
   const lastFocusedRef = useRef<HTMLElement | null>(null);
 
   const count = images.length;
+  const touchStartX = useRef<number | null>(null);
+  const touchDeltaX = useRef(0);
 
   const go = useCallback(
     (dir: number) => setActive((i) => (i + dir + count) % count),
@@ -26,6 +28,22 @@ export function PropertyGallery({ images, badges }: Props) {
   function openLightbox(e: React.MouseEvent) {
     lastFocusedRef.current = e.currentTarget as HTMLElement;
     setLightbox(true);
+  }
+
+  function onTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  }
+
+  function onTouchMove(e: React.TouchEvent) {
+    if (touchStartX.current === null) return;
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  }
+
+  function onTouchEnd() {
+    if (Math.abs(touchDeltaX.current) > 40) go(touchDeltaX.current < 0 ? 1 : -1);
+    touchStartX.current = null;
+    touchDeltaX.current = 0;
   }
 
   useEffect(() => {
@@ -73,6 +91,9 @@ export function PropertyGallery({ images, badges }: Props) {
         <button
           type="button"
           onClick={openLightbox}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
           className="relative block w-full aspect-[16/10] overflow-hidden rounded-2xl bg-gray-100 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand)] focus-visible:ring-offset-2"
           aria-label="Open photo gallery"
         >
@@ -163,6 +184,9 @@ export function PropertyGallery({ images, badges }: Props) {
             decoding="async"
             className="max-h-[88vh] max-w-[92vw] object-contain select-none"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           />
         </div>
       )}
@@ -188,7 +212,7 @@ function GalleryArrow({
       className={`absolute top-1/2 -translate-y-1/2 focus-visible:outline-none ${side === "left" ? "left-3" : "right-3"} ${
         inLightbox
           ? "text-white/80 hover:text-white p-2 sm:p-3 rounded-full focus-visible:ring-2 focus-visible:ring-white"
-          : "bg-white/85 hover:bg-white text-[var(--color-brand)] w-9 h-9 rounded-full shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity focus-visible:ring-2 focus-visible:ring-[var(--color-brand)]"
+          : "bg-white/85 hover:bg-white text-[var(--color-brand)] w-9 h-9 rounded-full shadow-md flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity focus-visible:ring-2 focus-visible:ring-[var(--color-brand)]"
       }`}
     >
       <Icon size={inLightbox ? 40 : 20} />

@@ -100,6 +100,19 @@ export default async function AdminInquiriesPage({ searchParams }: Props) {
                     </p>
                   )}
 
+                  {/* Project */}
+                  {inq.project && (
+                    <p className="mt-1.5 text-sm">
+                      <span className="text-gray-400">Project: </span>
+                      <Link
+                        href={`/admin/projects/${inq.project.id}/edit`}
+                        className="text-[var(--color-brand)] font-medium hover:underline"
+                      >
+                        {inq.project.name}
+                      </Link>
+                    </p>
+                  )}
+
                   {/* Message */}
                   {inq.message && (
                     <p className="mt-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2">

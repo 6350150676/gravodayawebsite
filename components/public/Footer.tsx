@@ -23,6 +23,18 @@ function InstagramIcon() {
   );
 }
 
+function FacebookIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width={20} height={20} aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="5" fill="#1877F2" />
+      <path
+        d="M15.4 12.5h-2.1V19h-2.7v-6.5H9.1v-2.3h1.5V9.4c0-1.5.9-2.9 3.2-2.9.9 0 1.6.1 1.6.1v2.2h-1.1c-.9 0-1.2.6-1.2 1.2v1.2h2.2l-.3 2.3z"
+        fill="#fff"
+      />
+    </svg>
+  );
+}
+
 function XIcon() {
   return (
     <svg viewBox="0 0 24 24" width={20} height={20} aria-hidden="true">
@@ -36,6 +48,11 @@ function XIcon() {
 }
 
 const SOCIAL_LINKS = [
+  {
+    href: "https://www.facebook.com/share/18a2siY1Su/?mibextid=wwXIfr",
+    label: "Facebook",
+    Icon: FacebookIcon,
+  },
   {
     href: "https://www.instagram.com/garvodaydevelopers?igsh=MThlMzg4ZHFyZWNqbQ==",
     label: "Instagram",

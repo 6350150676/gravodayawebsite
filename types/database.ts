@@ -199,6 +199,7 @@ export interface Database {
         Row: {
           id: string;
           property_id: string | null;
+          project_id: string | null;
           name: string;
           phone: string;
           email: string | null;
@@ -208,6 +209,7 @@ export interface Database {
         };
         Insert: {
           property_id?: string | null;
+          project_id?: string | null;
           name: string;
           phone: string;
           email?: string | null;
@@ -216,6 +218,7 @@ export interface Database {
         };
         Update: {
           property_id?: string | null;
+          project_id?: string | null;
           name?: string;
           phone?: string;
           email?: string | null;

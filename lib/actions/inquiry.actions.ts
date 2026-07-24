@@ -33,8 +33,14 @@ export async function createInquiryAction(
     email: formData.get("email") ?? "",
     message: formData.get("message") ?? "",
     property_id: formData.get("property_id") || undefined,
+    project_id: formData.get("project_id") || undefined,
     honeypot: formData.get("company") ?? "", // hidden field, bots fill it
   });
+
+  // Not a DB column — only used to label/link the team notification when the
+  // inquiry is about a project rather than a single property unit.
+  const contextLabel = (formData.get("context_label") as string) || null;
+  const contextUrl = (formData.get("context_url") as string) || null;
 
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
@@ -45,7 +51,7 @@ export async function createInquiryAction(
     return { ok: false, error: "Please fix the highlighted fields.", fieldErrors };
   }
 
-  const { honeypot, name, phone, email, message, property_id } = parsed.data;
+  const { honeypot, name, phone, email, message, property_id, project_id } = parsed.data;
   if (honeypot) return { ok: true };
 
   const payload: InquiryInsert = {
@@ -54,6 +60,9 @@ export async function createInquiryAction(
     email: email || null,
     message: message || null,
     property_id: property_id ?? null,
+    // Omitted (not `null`) when absent so this insert still works before the
+    // inquiries.project_id migration has been applied to the database.
+    ...(project_id ? { project_id } : {}),
   };
 
   const supabase = createAdminClient();
@@ -80,11 +89,11 @@ export async function createInquiryAction(
     phone,
     email,
     message,
-    subject: propertyTitle ?? "General Inquiry",
-    propertyTitle,
+    subject: propertyTitle ?? contextLabel ?? "General Inquiry",
+    propertyTitle: propertyTitle ?? contextLabel,
     propertyUrl: propertyTitle && propertySlug
       ? `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/properties/${propertySlug}`
-      : null,
+      : contextUrl,
   });
 
   return { ok: true };

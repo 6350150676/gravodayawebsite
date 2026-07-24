@@ -8,16 +8,23 @@ import { useLeadPixel } from "@/lib/meta-pixel";
 import { FeedbackForm } from "@/components/public/FeedbackForm";
 
 interface Props {
-  propertyId: string;
-  propertyTitle: string;
+  /** Individual unit being enquired about. */
+  propertyId?: string;
+  /** Project/colony being enquired about (used when there's no single unit). */
+  projectId?: string;
+  projectUrl?: string;
+  title: string;
   phone?: string; // tel: target, e.g. +919876543210
 }
 
 const initial: InquiryFormState = { ok: false };
 
-export function InquiryForm({ propertyId, propertyTitle, phone = "+919876543210" }: Props) {
+export function InquiryForm({ propertyId, projectId, projectUrl, title, phone = "+919876543210" }: Props) {
   const [state, action] = useActionState(createInquiryAction, initial);
-  useLeadPixel(state.ok, { content_name: propertyTitle, content_category: "Property Inquiry" });
+  useLeadPixel(state.ok, {
+    content_name: title,
+    content_category: propertyId ? "Property Inquiry" : "Project Inquiry",
+  });
 
   if (state.ok) {
     return (
@@ -44,7 +51,14 @@ export function InquiryForm({ propertyId, propertyTitle, phone = "+919876543210"
 
   return (
     <form action={action} className="space-y-3.5">
-      <input type="hidden" name="property_id" value={propertyId} />
+      {propertyId && <input type="hidden" name="property_id" value={propertyId} />}
+      {projectId && (
+        <>
+          <input type="hidden" name="project_id" value={projectId} />
+          <input type="hidden" name="context_label" value={title} />
+          {projectUrl && <input type="hidden" name="context_url" value={projectUrl} />}
+        </>
+      )}
       {/* Honeypot — hidden from humans, bots tend to fill it */}
       <input
         type="text"
@@ -76,7 +90,7 @@ export function InquiryForm({ propertyId, propertyTitle, phone = "+919876543210"
           rows={3}
           aria-invalid={!!err.message}
           aria-describedby={err.message ? "message-error" : undefined}
-          defaultValue={`I'm interested in "${propertyTitle}". Please share more details.`}
+          defaultValue={`I'm interested in "${title}". Please share more details.`}
           className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 outline-none resize-none focus:border-[var(--color-royal)] focus:ring-2 focus:ring-[var(--color-royal)]/15"
         />
         {err.message && <p id="message-error" className="text-xs text-red-500 mt-1">{err.message}</p>}

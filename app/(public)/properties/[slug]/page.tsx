@@ -276,7 +276,7 @@ export default async function PropertyDetailPage({ params }: Props) {
               <div className="p-6">
                 <h3 className="text-base font-bold text-[var(--color-brand)] mb-1">Interested in this property?</h3>
                 <p className="text-xs text-gray-400 mb-4">Send us a message and we&apos;ll get back to you.</p>
-                <InquiryForm propertyId={property.id} propertyTitle={property.title} phone={PHONE_TEL} />
+                <InquiryForm propertyId={property.id} title={property.title} phone={PHONE_TEL} />
               </div>
 
               {/* Quick contact */}
