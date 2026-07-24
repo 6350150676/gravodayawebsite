@@ -125,7 +125,6 @@ export async function deletePropertyAction(id: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/properties");
-  redirect("/admin/properties");
 }
 
 export async function deletePropertyImageAction(imageId: string, storagePath: string, propertyId: string) {

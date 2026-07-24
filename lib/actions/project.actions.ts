@@ -119,7 +119,6 @@ export async function deleteProjectAction(id: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/projects");
-  redirect("/admin/projects");
 }
 
 export async function deleteProjectImageAction(imageId: string, storagePath: string, projectId: string) {
