@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Phone, Building2, Home, Map, Store, Trees, ArrowRight } from "lucide-react";
 import { getFeaturedProperties, getCategories, getCities } from "@/lib/queries/properties";
+import { getFeaturedProjects } from "@/lib/queries/projects";
 import {
   getSiteSettings,
   getSiteFeatures,
@@ -10,9 +11,14 @@ import {
   getHeroSlides,
 } from "@/lib/queries/site-content";
 import { PropertyCard } from "@/components/public/PropertyCard";
+import { ProjectCard } from "@/components/public/ProjectCard";
 import { HeroSearch } from "@/components/public/HeroSearch";
 import { HeroCarousel } from "@/components/public/HeroCarousel";
 import { Reveal } from "@/components/public/Reveal";
+
+// Content is admin-edited, and every admin write revalidates these paths, so
+// the window is a safety net rather than the freshness mechanism.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: { absolute: "Garvoday Developers — Premium Properties in Uttarakhand" },
@@ -31,9 +37,10 @@ function categoryIcon(name: string) {
 }
 
 export default async function HomePage() {
-  const [featured, categories, cities, settings, features, intentCards] =
+  const [featured, projects, categories, cities, settings, features, intentCards] =
     await Promise.all([
       getFeaturedProperties(6),
+      getFeaturedProjects(3),
       getCategories(),
       getCities(),
       getSiteSettings(),
@@ -166,6 +173,34 @@ export default async function HomePage() {
                 </Link>
               </Reveal>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── OUR PROJECTS ────────────────────────────────────────── */}
+      {projects.length > 0 && (
+        <section className="bg-white border-y border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+              <div>
+                <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-3">Built by Garvoday</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-brand)]">Our Projects</h2>
+                <div className="mt-3 w-16 h-1 bg-[var(--color-gold)] rounded-full" />
+                <p className="mt-4 text-gray-500 text-[15px] max-w-xl leading-relaxed">
+                  Gated colonies and villa developments planned, approved and delivered by our own team.
+                </p>
+              </div>
+              <Link href="/projects" className="text-sm font-semibold text-[var(--color-brand)] hover:text-[var(--color-gold)] transition-colors">
+                View All →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map((p, i) => (
+                <Reveal key={p.id} delay={(i % 3) * 110}>
+                  <ProjectCard project={p} supabaseUrl={supabaseUrl} />
+                </Reveal>
+              ))}
+            </div>
           </div>
         </section>
       )}

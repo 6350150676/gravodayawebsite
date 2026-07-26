@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight, MapPin, FileText, Home, Phone, MessageCircle, ShieldCheck, BadgeCheck } from "lucide-react";
-import { getProjectBySlug, getPropertiesByProject } from "@/lib/queries/projects";
+import { getProjectBySlug, getPropertiesByProject, getAllProjectSlugs } from "@/lib/queries/projects";
 import { getSiteSettings } from "@/lib/queries/site-content";
 import { PropertyGallery } from "@/components/public/PropertyGallery";
 import { PropertyCard } from "@/components/public/PropertyCard";
@@ -11,6 +11,10 @@ import { ProjectRichText } from "@/components/public/ProjectRichText";
 import { InquiryForm } from "@/components/public/InquiryForm";
 
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return (await getAllProjectSlugs()).map(({ slug }) => ({ slug }));
+}
 
 interface Props {
   params: Promise<{ slug: string }>;
