@@ -183,7 +183,7 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
               <div>
-                <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-3">Built by Garvoday</p>
+                <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-3">Featured Project</p>
                 <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-brand)]">Our Projects</h2>
                 <div className="mt-3 w-16 h-1 bg-[var(--color-gold)] rounded-full" />
                 <p className="mt-4 text-gray-500 text-[15px] max-w-xl leading-relaxed">
