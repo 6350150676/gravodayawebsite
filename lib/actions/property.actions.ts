@@ -50,6 +50,17 @@ function parseFormData(formData: FormData) {
   };
 }
 
+
+// Public pages are now statically cached, so every admin write has to bust them
+// explicitly — otherwise an edit wouldn't show up until the ISR window expires.
+function revalidatePublicProperties() {
+  revalidatePath("/");
+  revalidatePath("/properties");
+  revalidatePath("/properties/[slug]", "page");
+  revalidatePath("/projects/[slug]", "page"); // project pages list their units
+  revalidatePath("/sitemap.xml");
+}
+
 export async function createPropertyAction(
   _prev: string | null,
   formData: FormData,
@@ -74,6 +85,7 @@ export async function createPropertyAction(
   await uploadPropertyImages(property.id, images);
 
   revalidatePath("/admin/properties");
+  revalidatePublicProperties();
   redirect("/admin/properties");
 }
 
@@ -102,6 +114,7 @@ export async function updatePropertyAction(
   }
 
   revalidatePath("/admin/properties");
+  revalidatePublicProperties();
   revalidatePath(`/admin/properties/${id}/edit`);
   redirect("/admin/properties");
 }
@@ -125,6 +138,7 @@ export async function deletePropertyAction(id: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/properties");
+  revalidatePublicProperties();
 }
 
 export async function deletePropertyImageAction(imageId: string, storagePath: string, propertyId: string) {
@@ -135,6 +149,7 @@ export async function deletePropertyImageAction(imageId: string, storagePath: st
   await supabase.from("property_images").delete().eq("id", imageId);
 
   revalidatePath(`/admin/properties/${propertyId}/edit`);
+  revalidatePublicProperties();
 }
 
 export async function setCoverImageAction(imageId: string, propertyId: string) {
@@ -152,6 +167,7 @@ export async function setCoverImageAction(imageId: string, propertyId: string) {
     .eq("id", imageId);
 
   revalidatePath(`/admin/properties/${propertyId}/edit`);
+  revalidatePublicProperties();
 }
 
 async function uploadPropertyImages(propertyId: string, files: File[]) {

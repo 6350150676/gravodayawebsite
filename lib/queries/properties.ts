@@ -1,4 +1,7 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { PropertyWithRelations, PropertyFilters, PaginatedProperties } from "@/types";
 import type { Database } from "@/types/database";
 
@@ -22,7 +25,7 @@ export async function getProperties(
   page = 1,
   pageSize = PROPERTIES_PAGE_SIZE,
 ): Promise<PaginatedProperties> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   let query = supabase
     .from("properties")
@@ -62,8 +65,9 @@ export async function getProperties(
   };
 }
 
-export async function getPropertyBySlug(slug: string): Promise<PropertyWithRelations | null> {
-  const supabase = await createClient();
+// cache() dedupes the generateMetadata + page-body call into one round trip
+export const getPropertyBySlug = cache(async (slug: string): Promise<PropertyWithRelations | null> => {
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("properties")
     .select(`
@@ -79,7 +83,7 @@ export async function getPropertyBySlug(slug: string): Promise<PropertyWithRelat
 
   if (error) return null;
   return data as unknown as PropertyWithRelations;
-}
+});
 
 export async function getPropertyById(id: string): Promise<PropertyWithRelations | null> {
   const supabase = await createClient();
@@ -104,7 +108,7 @@ export async function getRelatedProperties(
   property: Pick<PropertyWithRelations, "id"> & { city: { id: number }; category: { id: number } },
   limit = 3,
 ): Promise<PropertyWithRelations[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("properties")
     .select(`
@@ -130,7 +134,7 @@ export async function getRelatedProperties(
 }
 
 export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRelations[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("properties")
     .select(`
@@ -155,7 +159,7 @@ export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRela
 
 // for the sitemap
 export async function getAllPropertySlugs(): Promise<{ slug: string; updated_at: string }[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("properties")
     .select("slug, updated_at")
@@ -168,24 +172,42 @@ export async function getAllPropertySlugs(): Promise<{ slug: string; updated_at:
   return data ?? [];
 }
 
-export async function getCities(): Promise<CityRow[]> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("cities").select("*").order("name");
-  return (data ?? []) as unknown as CityRow[];
-}
+// Lookup tables are tiny and change ~never, but every filter sidebar, hero
+// search and chat-search call re-read them. Cache across requests so the
+// still-dynamic routes (/properties, /api/chat-search) don't pay for them.
+export const LOOKUPS_TAG = "lookups";
+const LOOKUP_CACHE = { revalidate: 86400, tags: [LOOKUPS_TAG] };
 
-export async function getLocalitiesByCity(cityId: number): Promise<LocalityRow[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("localities")
-    .select("*")
-    .eq("city_id", cityId)
-    .order("name");
-  return (data ?? []) as unknown as LocalityRow[];
-}
+export const getCities = unstable_cache(
+  async (): Promise<CityRow[]> => {
+    const supabase = createPublicClient();
+    const { data } = await supabase.from("cities").select("*").order("name");
+    return (data ?? []) as unknown as CityRow[];
+  },
+  ["cities"],
+  LOOKUP_CACHE,
+);
 
-export async function getCategories(): Promise<CategoryRow[]> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("property_categories").select("*").order("id");
-  return (data ?? []) as unknown as CategoryRow[];
-}
+export const getLocalitiesByCity = unstable_cache(
+  async (cityId: number): Promise<LocalityRow[]> => {
+    const supabase = createPublicClient();
+    const { data } = await supabase
+      .from("localities")
+      .select("*")
+      .eq("city_id", cityId)
+      .order("name");
+    return (data ?? []) as unknown as LocalityRow[];
+  },
+  ["localities-by-city"],
+  LOOKUP_CACHE,
+);
+
+export const getCategories = unstable_cache(
+  async (): Promise<CategoryRow[]> => {
+    const supabase = createPublicClient();
+    const { data } = await supabase.from("property_categories").select("*").order("id");
+    return (data ?? []) as unknown as CategoryRow[];
+  },
+  ["property-categories"],
+  LOOKUP_CACHE,
+);

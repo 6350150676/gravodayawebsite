@@ -41,6 +41,17 @@ function parseFormData(formData: FormData) {
   };
 }
 
+
+// Public pages are now statically cached, so every admin write has to bust them
+// explicitly — otherwise an edit wouldn't show up until the ISR window expires.
+function revalidatePublicProjects() {
+  revalidatePath("/");
+  revalidatePath("/projects");
+  revalidatePath("/projects/[slug]", "page");
+  revalidatePath("/properties/[slug]", "page"); // unit pages link their project
+  revalidatePath("/sitemap.xml");
+}
+
 export async function createProjectAction(
   _prev: string | null,
   formData: FormData,
@@ -65,6 +76,7 @@ export async function createProjectAction(
   await uploadProjectImages(project.id, images);
 
   revalidatePath("/admin/projects");
+  revalidatePublicProjects();
   redirect("/admin/projects");
 }
 
@@ -93,6 +105,7 @@ export async function updateProjectAction(
   }
 
   revalidatePath("/admin/projects");
+  revalidatePublicProjects();
   revalidatePath(`/admin/projects/${id}/edit`);
   redirect("/admin/projects");
 }
@@ -119,6 +132,7 @@ export async function deleteProjectAction(id: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/projects");
+  revalidatePublicProjects();
 }
 
 export async function deleteProjectImageAction(imageId: string, storagePath: string, projectId: string) {
@@ -129,6 +143,7 @@ export async function deleteProjectImageAction(imageId: string, storagePath: str
   await supabase.from("project_images").delete().eq("id", imageId);
 
   revalidatePath(`/admin/projects/${projectId}/edit`);
+  revalidatePublicProjects();
 }
 
 export async function setProjectCoverImageAction(imageId: string, projectId: string) {
@@ -146,6 +161,7 @@ export async function setProjectCoverImageAction(imageId: string, projectId: str
     .eq("id", imageId);
 
   revalidatePath(`/admin/projects/${projectId}/edit`);
+  revalidatePublicProjects();
 }
 
 async function uploadProjectImages(projectId: string, files: File[]) {

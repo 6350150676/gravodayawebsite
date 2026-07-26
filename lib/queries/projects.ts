@@ -1,4 +1,6 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { ProjectWithRelations, PropertyWithRelations } from "@/types";
 
 const PROJECT_SELECT = `
@@ -8,7 +10,7 @@ const PROJECT_SELECT = `
 `;
 
 export async function getProjects(): Promise<ProjectWithRelations[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("projects")
     .select(PROJECT_SELECT)
@@ -22,8 +24,27 @@ export async function getProjects(): Promise<ProjectWithRelations[]> {
   return (data ?? []) as unknown as ProjectWithRelations[];
 }
 
-export async function getProjectBySlug(slug: string): Promise<ProjectWithRelations | null> {
-  const supabase = await createClient();
+// home page — featured first, newest next
+export async function getFeaturedProjects(limit = 3): Promise<ProjectWithRelations[]> {
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from("projects")
+    .select(PROJECT_SELECT)
+    .eq("status", "active")
+    .order("is_featured", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("[getFeaturedProjects]", error.message);
+    return [];
+  }
+  return (data ?? []) as unknown as ProjectWithRelations[];
+}
+
+// cache() dedupes the generateMetadata + page-body call into one round trip
+export const getProjectBySlug = cache(async (slug: string): Promise<ProjectWithRelations | null> => {
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("projects")
     .select(PROJECT_SELECT)
@@ -32,7 +53,7 @@ export async function getProjectBySlug(slug: string): Promise<ProjectWithRelatio
 
   if (error) return null;
   return data as unknown as ProjectWithRelations;
-}
+});
 
 export async function getProjectById(id: string): Promise<ProjectWithRelations | null> {
   const supabase = await createClient();
@@ -48,7 +69,7 @@ export async function getProjectById(id: string): Promise<ProjectWithRelations |
 
 // for the sitemap
 export async function getAllProjectSlugs(): Promise<{ slug: string; updated_at: string }[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("projects")
     .select("slug, updated_at")
@@ -62,7 +83,7 @@ export async function getAllProjectSlugs(): Promise<{ slug: string; updated_at: 
 }
 
 export async function getPropertiesByProject(projectId: string): Promise<PropertyWithRelations[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("properties")
     .select(`

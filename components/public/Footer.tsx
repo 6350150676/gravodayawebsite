@@ -47,6 +47,18 @@ function XIcon() {
   );
 }
 
+function LinkedInIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width={20} height={20} aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="5" fill="#0A66C2" />
+      <path
+        d="M8.34 9.9H6.1V18h2.24V9.9zM7.22 6.4a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zM18 13.36c0-2.15-1.15-3.15-2.68-3.15-1.24 0-1.79.68-2.1 1.16V9.9h-2.24c.03.63 0 8.1 0 8.1h2.24v-4.52c0-.2.01-.4.07-.55.17-.4.53-.81 1.15-.81.81 0 1.14.62 1.14 1.53V18H18v-4.64z"
+        fill="#fff"
+      />
+    </svg>
+  );
+}
+
 const SOCIAL_LINKS = [
   {
     href: "https://www.facebook.com/share/18a2siY1Su/?mibextid=wwXIfr",
@@ -62,6 +74,11 @@ const SOCIAL_LINKS = [
     href: "https://x.com/garvodaydevelop?s=11",
     label: "X (Twitter)",
     Icon: XIcon,
+  },
+  {
+    href: "https://www.linkedin.com/company/garvoday-developers/",
+    label: "LinkedIn",
+    Icon: LinkedInIcon,
   },
 ];
 

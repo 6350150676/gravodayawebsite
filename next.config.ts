@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    // Listing photos are immutable once uploaded (a new upload gets a new
+    // storage path), so re-optimising them every 60s — the default — is pure
+    // waste. 30 days keeps the optimiser cold for the whole ad campaign.
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: "https",

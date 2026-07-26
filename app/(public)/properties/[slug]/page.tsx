@@ -15,7 +15,7 @@ import {
   ShieldCheck,
   BadgeCheck,
 } from "lucide-react";
-import { getPropertyBySlug, getRelatedProperties } from "@/lib/queries/properties";
+import { getPropertyBySlug, getRelatedProperties, getAllPropertySlugs } from "@/lib/queries/properties";
 import { getSiteSettings } from "@/lib/queries/site-content";
 import { formatPrice } from "@/lib/utils";
 import { PropertyGallery } from "@/components/public/PropertyGallery";
@@ -25,6 +25,12 @@ import { Reveal } from "@/components/public/Reveal";
 import { PixelEvent } from "@/components/public/PixelEvent";
 
 export const revalidate = 3600;
+
+// Ad traffic lands straight on these — prerender them all at build so the
+// first click is a cache hit. Slugs added later still render on demand.
+export async function generateStaticParams() {
+  return (await getAllPropertySlugs()).map(({ slug }) => ({ slug }));
+}
 
 interface Props {
   params: Promise<{ slug: string }>;

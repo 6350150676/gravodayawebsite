@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { SITE_CONTENT_TAG } from "@/lib/queries/site-content";
 
 const SETTING_KEYS = [
   "phone_display",
@@ -26,6 +27,8 @@ async function requireAdmin() {
 }
 
 function revalidatePublic() {
+  // the page cache alone isn't enough — the getters are tag-cached as well
+  revalidateTag(SITE_CONTENT_TAG);
   revalidatePath("/", "layout");
   revalidatePath("/properties");
   revalidatePath("/admin/content");
