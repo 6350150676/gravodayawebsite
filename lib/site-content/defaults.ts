@@ -14,8 +14,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     "Villas, plots & residential properties across Haridwar",
   hero_image_url:
     "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=85&auto=format&fit=crop",
-  whyus_image_url:
-    "https://images.unsplash.com/photo-1750301668797-f21fa5973d62?w=900&q=80&auto=format&fit=crop",
+  // Har Ki Pauri, Haridwar — Wikimedia Commons, CC BY-SA 3.0 (see public/CREDITS.md)
+  whyus_image_url: "/har-ki-pauri-haridwar.jpg",
   company_tagline: "Garvoday Realty · Haridwar",
 };
 
