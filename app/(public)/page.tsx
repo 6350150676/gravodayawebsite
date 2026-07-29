@@ -265,7 +265,7 @@ export default async function HomePage() {
             {/* Right: photo */}
             <Reveal delay={150} className="relative">
               <div className="relative h-[480px] rounded-3xl overflow-hidden shadow-2xl">
-                <Image src={settings.whyus_image_url} alt="Beautiful property interior" fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" />
+                <Image src={settings.whyus_image_url} alt="Har Ki Pauri ghat on the Ganga in Haridwar" fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" />
                 {/* Gold accent card overlay */}
                 <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-lg">
                   <div className="flex items-center gap-4">
