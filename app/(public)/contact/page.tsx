@@ -13,10 +13,10 @@ export default async function ContactPage() {
   const settings = await getSiteSettings();
 
   return (
-    <main className="bg-[var(--color-sand)] min-h-screen">
+    <main className="bg-(--color-sand) min-h-screen">
       {/* Hero */}
-      <div className="bg-[var(--color-brand)] py-14 px-4 text-center">
-        <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.2em] uppercase mb-3">
+      <div className="bg-(--color-brand) py-14 px-4 text-center">
+        <p className="text-(--color-gold) text-xs font-bold tracking-[0.2em] uppercase mb-3">
           Get In Touch
         </p>
         <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
@@ -32,7 +32,7 @@ export default async function ContactPage() {
 
           {/* Contact Form */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
-            <h2 className="text-xl font-bold text-[var(--color-brand)] mb-1">Send us a message</h2>
+            <h2 className="text-xl font-bold text-(--color-brand) mb-1">Send us a message</h2>
             <p className="text-sm text-gray-400 mb-6">We typically respond within a few hours.</p>
             <ContactForm />
           </div>
@@ -40,16 +40,16 @@ export default async function ContactPage() {
           {/* Info sidebar */}
           <div className="space-y-4">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
-              <h3 className="text-base font-bold text-[var(--color-brand)]">Contact Details</h3>
+              <h3 className="text-base font-bold text-(--color-brand)">Contact Details</h3>
 
               <InfoRow icon={Phone} label="Phone">
-                <a href={`tel:${settings.phone_tel}`} className="text-[var(--color-royal)] font-semibold hover:underline">
+                <a href={`tel:${settings.phone_tel}`} className="text-(--color-royal) font-semibold hover:underline">
                   {settings.phone_display}
                 </a>
               </InfoRow>
 
               <InfoRow icon={Mail} label="Email">
-                <a href={`mailto:${settings.contact_email}`} className="text-[var(--color-royal)] font-semibold hover:underline break-all">
+                <a href={`mailto:${settings.contact_email}`} className="text-(--color-royal) font-semibold hover:underline break-all">
                   {settings.contact_email}
                 </a>
               </InfoRow>
@@ -94,8 +94,8 @@ function InfoRow({
 }) {
   return (
     <div className="flex gap-3">
-      <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[var(--color-brand)]/5 flex items-center justify-center mt-0.5">
-        <Icon size={16} className="text-[var(--color-brand)]" />
+      <span className="shrink-0 w-9 h-9 rounded-full bg-(--color-brand)/5 flex items-center justify-center mt-0.5">
+        <Icon size={16} className="text-(--color-brand)" />
       </span>
       <div>
         <p className="text-[11px] text-gray-400 uppercase tracking-wide mb-0.5">{label}</p>

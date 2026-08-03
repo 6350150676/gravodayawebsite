@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import type { ProjectWithRelations } from "@/types";
+import { formatPriceRange } from "@/lib/utils";
 
 export function ProjectCard({
   project,
@@ -10,6 +11,7 @@ export function ProjectCard({
   supabaseUrl: string;
 }) {
   const cover = project.images.find((i) => i.is_cover) ?? project.images[0];
+  const priceRange = formatPriceRange(project.price_min, project.price_max);
 
   return (
     <Link
@@ -32,13 +34,13 @@ export function ProjectCard({
           </div>
         )}
         {project.is_featured && (
-          <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full bg-[var(--color-gold)] text-[var(--color-brand)]">
+          <span className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full bg-(--color-gold) text-(--color-brand)">
             FEATURED
           </span>
         )}
       </div>
       <div className="p-5">
-        <p className="font-semibold text-gray-900 text-[15px] leading-snug line-clamp-2 group-hover:text-[var(--color-brand)] transition-colors mb-2">
+        <p className="font-semibold text-gray-900 text-[15px] leading-snug line-clamp-2 group-hover:text-(--color-brand) transition-colors mb-2">
           {project.name}
         </p>
         {project.tagline && (
@@ -46,11 +48,14 @@ export function ProjectCard({
         )}
         {(project.location || project.city) && (
           <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-3">
-            <MapPin size={12} className="flex-shrink-0" />
+            <MapPin size={12} className="shrink-0" />
             <span className="truncate">{[project.location, project.city?.name].filter(Boolean).join(", ")}</span>
           </div>
         )}
-        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-brand)]">
+        {priceRange && (
+          <p className="text-[15px] font-bold text-(--color-brand) mb-3">{priceRange}</p>
+        )}
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-(--color-brand)">
           View Project <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
         </span>
       </div>

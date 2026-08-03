@@ -11,6 +11,8 @@ interface Props {
   categories: Lookup[];
 }
 
+// Brackets span the live inventory (roughly ₹30 L to ₹2.1 Cr), so every option
+// here can return something rather than dead-ending the buyer.
 const BUDGETS = [
   { label: "Budget (any)",      min: "",         max: ""         },
   { label: "Under ₹50 L",       min: "",         max: "5000000"  },
@@ -49,7 +51,7 @@ export function HeroSearch({ cities, categories }: Props) {
             aria-label="Location"
             className="w-full appearance-none bg-transparent pl-9 pr-8 py-3 text-sm font-medium text-gray-800 outline-none cursor-pointer"
           >
-            <option value="">All of Uttarakhand</option>
+            <option value="">Any location</option>
             {cities.map((c) => (
               <option key={c.id} value={String(c.id)}>{c.name}</option>
             ))}
@@ -89,7 +91,7 @@ export function HeroSearch({ cities, categories }: Props) {
         <button
           type="button"
           onClick={handleSearch}
-          className="flex items-center justify-center gap-2 bg-[var(--color-royal)] text-white font-bold text-sm px-6 py-3 rounded-xl hover:bg-[var(--color-royal-dark)] transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-(--color-royal) text-white font-bold text-sm px-6 py-3 rounded-xl hover:bg-(--color-royal-dark) transition-colors shadow-sm"
         >
           <Search size={17} /> Search
         </button>
@@ -100,8 +102,8 @@ export function HeroSearch({ cities, categories }: Props) {
 
 function Field({ icon: Icon, children }: { icon: typeof MapPin; children: React.ReactNode }) {
   return (
-    <div className="relative rounded-xl border border-gray-200 bg-gray-50 focus-within:border-[var(--color-royal)] focus-within:ring-2 focus-within:ring-[var(--color-royal)]/15 transition-colors">
-      <Icon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-gold)] pointer-events-none" />
+    <div className="relative rounded-xl border border-gray-200 bg-gray-50 focus-within:border-(--color-royal) focus-within:ring-2 focus-within:ring-(--color-royal)/15 transition-colors">
+      <Icon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-gold) pointer-events-none" />
       {children}
       <ChevronDown size={15} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
     </div>

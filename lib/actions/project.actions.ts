@@ -33,6 +33,12 @@ function parseFormData(formData: FormData) {
     tagline: (formData.get("tagline") as string) || undefined,
     location: (formData.get("location") as string) || undefined,
     city_id: toNum(formData.get("city_id")),
+    price_min: toNum(formData.get("price_min")),
+    price_max: toNum(formData.get("price_max")),
+    category_ids: formData
+      .getAll("category_ids")
+      .map((v) => Number(v))
+      .filter((n) => Number.isInteger(n) && n > 0),
     description: formData.get("description") as string,
     payment_plan: (formData.get("payment_plan") as string) || undefined,
     brochure_url: (formData.get("brochure_url") as string) || undefined,
@@ -93,7 +99,13 @@ export async function updateProjectAction(
 
   const { error } = await supabase
     .from("projects")
-    .update(parsed.data)
+    .update({
+      ...parsed.data,
+      // undefined is dropped from the JSON payload, which would leave the old
+      // price sitting there when an admin clears the field — send null instead.
+      price_min: parsed.data.price_min ?? null,
+      price_max: parsed.data.price_max ?? null,
+    })
     .eq("id", id);
 
   if (error) return error.message;

@@ -31,6 +31,9 @@ export interface ProjectWithRelations {
   name: string;
   tagline: string | null;
   location: string | null;
+  price_min: number | null;
+  price_max: number | null;
+  category_ids: number[];
   description: string;
   payment_plan: string | null;
   brochure_url: string | null;
@@ -58,6 +61,16 @@ export interface PropertyFilters {
 
 export interface PaginatedProperties {
   items: PropertyWithRelations[];
+  total: number;
+}
+
+// A search hits both tables: projects are whole developments, properties are
+// individual units. The same filter set applies to both — see getSearchResults.
+export interface SearchResults {
+  projects: ProjectWithRelations[];
+  properties: PropertyWithRelations[];
+  propertyTotal: number;
+  /** projects + properties, i.e. what the "N results" counters should show */
   total: number;
 }
 

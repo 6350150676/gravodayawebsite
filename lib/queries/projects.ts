@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { createPublicClient } from "@/lib/supabase/public";
-import type { ProjectWithRelations, PropertyWithRelations } from "@/types";
+import type { ProjectWithRelations, PropertyWithRelations, PropertyFilters } from "@/types";
 
 const PROJECT_SELECT = `
   *,
@@ -9,14 +9,64 @@ const PROJECT_SELECT = `
   images:project_images(id, storage_path, is_cover, sort_order)
 `;
 
-export async function getProjects(): Promise<ProjectWithRelations[]> {
+// Projects answer the same filters as properties, with three differences that
+// fall out of what a project is — a whole development rather than one unit:
+//
+//   • price is a range, so a budget filter is an overlap test, not a comparison;
+//   • bedroom/bathroom counts vary per unit within the project, so those
+//     filters are ignored rather than used to exclude an otherwise-good match;
+//   • projects are sold, never rented.
+//
+// Every project is returned when no filters are set, so callers can use this
+// as a plain listing query too.
+export async function getProjects(
+  filters: PropertyFilters = {},
+): Promise<ProjectWithRelations[]> {
+  // Nothing in a project is available to rent — don't pad rental results.
+  if (filters.is_for_rent === true) return [];
+
   const supabase = createPublicClient();
-  const { data, error } = await supabase
+
+  let query = supabase
     .from("projects")
     .select(PROJECT_SELECT)
-    .eq("status", "active")
-    .order("created_at", { ascending: false });
+    .eq("status", "active");
 
+  if (filters.city_id) query = query.eq("city_id", filters.city_id);
+  if (filters.category_id) query = query.contains("category_ids", [filters.category_id]);
+
+  // Budget overlap: keep a project whose range could still contain something
+  // the buyer can afford. An open-ended range (null) always overlaps.
+  if (filters.min_price)
+    query = query.or(`price_max.is.null,price_max.gte.${filters.min_price}`);
+  if (filters.max_price)
+    query = query.or(`price_min.is.null,price_min.lte.${filters.max_price}`);
+
+  if (filters.search) {
+    // strip chars that break PostgREST's or() grammar
+    const q = filters.search.replace(/[,()%*]/g, " ").trim();
+    if (q)
+      query = query.or(
+        `name.ilike.%${q}%,tagline.ilike.%${q}%,location.ilike.%${q}%,description.ilike.%${q}%`,
+      );
+  }
+
+  switch (filters.sort) {
+    // Sort by the end of the range the buyer is anchored on: cheapest entry
+    // price first when ascending, richest ceiling first when descending.
+    case "price_asc":
+      query = query.order("price_min", { ascending: true, nullsFirst: false });
+      break;
+    case "price_desc":
+      query = query.order("price_max", { ascending: false, nullsFirst: false });
+      break;
+    default:
+      query = query
+        .order("is_featured", { ascending: false })
+        .order("created_at", { ascending: false });
+  }
+
+  const { data, error } = await query;
   if (error) {
     console.error("[getProjects]", error.message);
     return [];

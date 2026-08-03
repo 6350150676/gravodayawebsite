@@ -71,7 +71,7 @@ export function PropertyInfiniteList({ initial, total, filters, supabaseUrl }: P
         <div ref={sentinelRef} className="flex flex-col items-center gap-3 py-10">
           {loading && (
             <span className="flex items-center gap-2 text-sm text-gray-400">
-              <Loader2 size={16} className="animate-spin text-[var(--color-royal)]" />
+              <Loader2 size={16} className="animate-spin text-(--color-royal)" />
               Loading more…
             </span>
           )}
@@ -79,7 +79,7 @@ export function PropertyInfiniteList({ initial, total, filters, supabaseUrl }: P
             <button
               type="button"
               onClick={loadMore}
-              className="text-sm font-semibold text-[var(--color-royal)] hover:underline"
+              className="text-sm font-semibold text-(--color-royal) hover:underline"
             >
               Couldn&apos;t load more — tap to retry
             </button>

@@ -1,9 +1,12 @@
 ﻿import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getProperties, getCategories, getCities } from "@/lib/queries/properties";
+import { getCategories, getCities } from "@/lib/queries/properties";
+import { getSearchResults } from "@/lib/queries/search";
 import type { PropertySort, PropertyFilters as Filters } from "@/types";
 import { PropertyFilters } from "@/components/public/PropertyFilters";
 import { PropertyInfiniteList } from "@/components/public/PropertyInfiniteList";
+import { ProjectCard } from "@/components/public/ProjectCard";
+import { Reveal } from "@/components/public/Reveal";
 import { SortSelect } from "@/components/public/SortSelect";
 
 export const metadata: Metadata = {
@@ -49,23 +52,20 @@ export default async function PropertiesPage({ searchParams }: Props) {
     sort,
   };
 
-  const [{ items: properties, total }, categories, cities] = await Promise.all([
-    getProperties(filters, 1),
-    getCategories(),
-    getCities(),
-  ]);
+  const [{ projects, properties, propertyTotal, total }, categories, cities] =
+    await Promise.all([getSearchResults(filters), getCategories(), getCities()]);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   // Remount the infinite list whenever the filters change so it resets to page 1.
   const filterKey = JSON.stringify(filters);
 
   return (
-    <div className="bg-[var(--color-sand)] min-h-screen">
+    <div className="bg-(--color-sand) min-h-screen">
 
       {/* ── Page header ────────────────────────────────────── */}
-      <div className="bg-[var(--color-brand)]">
+      <div className="bg-(--color-brand)">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.22em] uppercase mb-2">
+          <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-2">
             Explore Our Listings
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold text-white">All Properties</h1>
@@ -95,8 +95,8 @@ export default async function PropertiesPage({ searchParams }: Props) {
             {/* Results toolbar */}
             <div className="flex items-center justify-between gap-3 bg-white rounded-2xl shadow-sm border border-gray-100 px-4 sm:px-5 py-3 mb-5">
               <p className="text-sm text-gray-500">
-                <strong className="text-[var(--color-brand)]">{total}</strong>{" "}
-                {total === 1 ? "property" : "properties"} found
+                <strong className="text-(--color-brand)">{total}</strong>{" "}
+                {total === 1 ? "listing" : "listings"} found
               </p>
               <Suspense>
                 <SortSelect />
@@ -107,17 +107,44 @@ export default async function PropertiesPage({ searchParams }: Props) {
             {total === 0 ? (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 py-20 text-center">
                 <p className="text-5xl mb-4">🏠</p>
-                <p className="text-lg font-semibold text-gray-800 mb-2">No properties found</p>
-                <p className="text-gray-400 text-sm">Try adjusting your filters or check back soon.</p>
+                <p className="text-lg font-semibold text-gray-800 mb-2">Nothing matched those filters</p>
+                <p className="text-gray-400 text-sm">Try a wider budget or clear a filter to see everything we have.</p>
               </div>
             ) : (
-              <PropertyInfiniteList
-                key={filterKey}
-                initial={properties}
-                total={total}
-                filters={filters}
-                supabaseUrl={supabaseUrl}
-              />
+              <div className="space-y-8">
+                {/* Projects — whole developments, shown ahead of single units */}
+                {projects.length > 0 && (
+                  <section>
+                    <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 mb-4">
+                      {projects.length === 1 ? "Project" : "Projects"}
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {projects.map((p, i) => (
+                        <Reveal key={p.id} delay={(i % 2) * 110}>
+                          <ProjectCard project={p} supabaseUrl={supabaseUrl} />
+                        </Reveal>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {propertyTotal > 0 && (
+                  <section>
+                    {projects.length > 0 && (
+                      <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 mb-4">
+                        Individual Properties
+                      </h2>
+                    )}
+                    <PropertyInfiniteList
+                      key={filterKey}
+                      initial={properties}
+                      total={propertyTotal}
+                      filters={filters}
+                      supabaseUrl={supabaseUrl}
+                    />
+                  </section>
+                )}
+              </div>
             )}
           </section>
         </div>

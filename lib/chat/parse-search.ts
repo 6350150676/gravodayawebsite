@@ -48,12 +48,14 @@ function buildSystemPrompt(cities: NamedOption[], categories: NamedOption[]): st
     "Prices are in Indian Rupees. Understand Indian number words: 1 lakh = 100000, 1 crore = 10000000.",
     `Available cities (id=name): ${cityList}.`,
     `Available property categories (id=name): ${catList}.`,
+    "The catalogue covers Haridwar only, and it is sale inventory — mostly new residential developments and plotted colonies. There are no rentals.",
     "Rules:",
     "- Only set city_id / category_id if the request clearly matches one from the lists above; otherwise omit it.",
-    "- is_for_rent: true if they want to rent, false if they want to buy, omit if unclear.",
+    "- is_for_rent: set false when they want to buy. Only set true if they explicitly ask to rent or lease; otherwise omit it.",
     "- min_bedrooms / min_bathrooms: whole numbers when a count is mentioned (e.g. '3 bhk' -> min_bedrooms 3).",
     "- min_price / max_price: integers in rupees ('under 50 lakh' -> max_price 5000000).",
-    "- search: ONLY a specific proper place NAME that is NOT already in the city list (e.g. 'Tapovan', 'Rajpur Road'). Do NOT put property types (villa, flat, house), adjectives (luxury, cozy, spacious, modern, cheap), amenities (pool, garden), or VAGUE location phrases ('near the river', 'near market', 'in the hills', 'peaceful area', 'quiet neighbourhood') here — omit all of those and rely on the structured fields. When unsure, omit search.",
+    "- search: ONLY a specific proper place NAME that is NOT already in the city list (e.g. 'Kankhal', 'Jwalapur', 'Har Ki Pauri', 'Roorkee'). Do NOT put property types (villa, flat, house), adjectives (luxury, cozy, spacious, modern, cheap), amenities (pool, garden), or VAGUE location phrases ('near the river', 'near market', 'in the hills', 'peaceful area', 'quiet neighbourhood') here — omit all of those and rely on the structured fields. When unsure, omit search.",
+    "- Prefer fewer filters. Every filter you add can empty the result set, and a broad match the buyer can narrow beats no match at all.",
     "- reply: one short, warm sentence confirming what you searched for.",
   ].join("\n");
 }
@@ -184,11 +186,13 @@ function sanitizeFilters(
 }
 
 // Order matters: specific categories before the residential catch-all.
+// nameHint is matched against the live category names, so a hint whose category
+// has been removed from the DB simply falls through to the next one.
 const CATEGORY_KEYWORDS: { nameHint: string; words: string[] }[] = [
   { nameHint: "plot",        words: ["plot", "plots", "land", "parcel", "plotting"] },
   { nameHint: "commercial",  words: ["commercial", "shop", "showroom", "office", "retail", "cafe", "restaurant", "warehouse", "godown"] },
-  { nameHint: "new",         words: ["new project", "upcoming", "under construction", "pre-launch", "prelaunch", "launch"] },
-  { nameHint: "residential", words: ["apartment", "flat", "villa", "bungalow", "kothi", "residential", "duplex", "penthouse"] },
+  { nameHint: "new",         words: ["new project", "new projects", "project", "upcoming", "under construction", "pre-launch", "prelaunch", "launch"] },
+  { nameHint: "residential", words: ["apartment", "flat", "villa", "bungalow", "kothi", "residential", "duplex", "penthouse", "bhk", "house", "home"] },
 ];
 
 function keywordFallback(

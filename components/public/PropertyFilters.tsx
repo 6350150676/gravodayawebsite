@@ -54,8 +54,8 @@ export function PropertyFilters({ categories, cities, total }: Props) {
         className="lg:hidden w-full flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 mb-3 text-sm font-semibold text-gray-700 shadow-sm"
       >
         <span className="flex items-center gap-2">
-          <SlidersHorizontal size={16} className="text-[var(--color-royal)]" />
-          Filters{chips.length > 0 && <span className="text-[var(--color-royal)]">· {chips.length}</span>}
+          <SlidersHorizontal size={16} className="text-(--color-royal)" />
+          Filters{chips.length > 0 && <span className="text-(--color-royal)">· {chips.length}</span>}
         </span>
         <ChevronDown size={16} className={`text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -64,7 +64,7 @@ export function PropertyFilters({ categories, cities, total }: Props) {
 
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-sm font-bold text-[var(--color-brand)]">
+          <h2 className="flex items-center gap-2 text-sm font-bold text-(--color-brand)">
             <SlidersHorizontal size={15} /> Filters
           </h2>
           {hasFilters && (
@@ -87,7 +87,7 @@ export function PropertyFilters({ categories, cities, total }: Props) {
                 key={chip.key}
                 aria-label={`Remove filter ${chip.label}`}
                 onClick={() => update(chip.key, "")}
-                className="group inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-royal)] bg-[var(--color-royal)]/10 hover:bg-[var(--color-royal)]/20 px-2.5 py-1 rounded-full transition-colors"
+                className="group inline-flex items-center gap-1.5 text-xs font-medium text-(--color-royal) bg-(--color-royal)/10 hover:bg-(--color-royal)/20 px-2.5 py-1 rounded-full transition-colors"
               >
                 {chip.label}
                 <X size={12} className="text-gray-400 group-hover:text-red-500 transition-colors" />
@@ -107,7 +107,7 @@ export function PropertyFilters({ categories, cities, total }: Props) {
               defaultValue={current("q")}
               onKeyDown={(e) => { if (e.key === "Enter") update("q", (e.target as HTMLInputElement).value.trim()); }}
               onBlur={(e) => update("q", e.target.value.trim())}
-              className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl outline-none focus:border-[var(--color-royal)] focus:ring-2 focus:ring-[var(--color-royal)]/15 bg-gray-50"
+              className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl outline-none focus:border-(--color-royal) focus:ring-2 focus:ring-(--color-royal)/15 bg-gray-50"
             />
           </div>
         </Section>
@@ -146,7 +146,7 @@ export function PropertyFilters({ categories, cities, total }: Props) {
               defaultValue={current("min")}
               onBlur={(e) => update("min", e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") update("min", (e.target as HTMLInputElement).value); }}
-              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50 outline-none focus:border-[var(--color-royal)] focus:ring-2 focus:ring-[var(--color-royal)]/15"
+              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50 outline-none focus:border-(--color-royal) focus:ring-2 focus:ring-(--color-royal)/15"
             />
             <span className="text-gray-300">–</span>
             <input
@@ -158,13 +158,13 @@ export function PropertyFilters({ categories, cities, total }: Props) {
               defaultValue={current("max")}
               onBlur={(e) => update("max", e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") update("max", (e.target as HTMLInputElement).value); }}
-              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50 outline-none focus:border-[var(--color-royal)] focus:ring-2 focus:ring-[var(--color-royal)]/15"
+              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50 outline-none focus:border-(--color-royal) focus:ring-2 focus:ring-(--color-royal)/15"
             />
           </div>
         </Section>
 
         <p className="text-xs text-gray-400 pt-1 border-t border-gray-100">
-          <strong className="text-gray-700">{total}</strong> {total === 1 ? "property" : "properties"} match
+          <strong className="text-gray-700">{total}</strong> {total === 1 ? "listing" : "listings"} match
         </p>
       </div>
     </div>
@@ -195,7 +195,7 @@ function SelectField({
         value={value}
         aria-label={ariaLabel}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full appearance-none text-sm border border-gray-200 rounded-xl pl-3 pr-9 py-2.5 bg-gray-50 outline-none focus:border-[var(--color-royal)] focus:ring-2 focus:ring-[var(--color-royal)]/15 cursor-pointer"
+        className="w-full appearance-none text-sm border border-gray-200 rounded-xl pl-3 pr-9 py-2.5 bg-gray-50 outline-none focus:border-(--color-royal) focus:ring-2 focus:ring-(--color-royal)/15 cursor-pointer"
       >
         <option value="">{placeholder}</option>
         {options.map((o) => (

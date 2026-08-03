@@ -115,6 +115,9 @@ export interface Database {
           tagline: string | null;
           location: string | null;
           city_id: number | null;
+          price_min: number | null;
+          price_max: number | null;
+          category_ids: number[];
           description: string;
           payment_plan: string | null;
           brochure_url: string | null;
@@ -129,6 +132,9 @@ export interface Database {
           tagline?: string | null;
           location?: string | null;
           city_id?: number | null;
+          price_min?: number | null;
+          price_max?: number | null;
+          category_ids?: number[];
           description: string;
           payment_plan?: string | null;
           brochure_url?: string | null;
@@ -141,6 +147,9 @@ export interface Database {
           tagline?: string | null;
           location?: string | null;
           city_id?: number | null;
+          price_min?: number | null;
+          price_max?: number | null;
+          category_ids?: number[];
           description?: string;
           payment_plan?: string | null;
           brochure_url?: string | null;

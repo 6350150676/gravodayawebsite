@@ -9,6 +9,7 @@ import { PropertyCard } from "@/components/public/PropertyCard";
 import { Reveal } from "@/components/public/Reveal";
 import { ProjectRichText } from "@/components/public/ProjectRichText";
 import { InquiryForm } from "@/components/public/InquiryForm";
+import { formatPriceRange } from "@/lib/utils";
 
 export const revalidate = 3600;
 
@@ -68,6 +69,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.garvodayrealty.com";
   const projectUrl = `${siteUrl}/projects/${project.slug}`;
+  const priceRange = formatPriceRange(project.price_min, project.price_max);
 
   const projectJsonLd = {
     "@context": "https://schema.org",
@@ -83,6 +85,16 @@ export default async function ProjectDetailPage({ params }: Props) {
       addressRegion: "Uttarakhand",
       addressCountry: "IN",
     },
+    ...(project.price_min || project.price_max
+      ? {
+          offers: {
+            "@type": "AggregateOffer",
+            priceCurrency: "INR",
+            lowPrice: project.price_min ?? undefined,
+            highPrice: project.price_max ?? undefined,
+          },
+        }
+      : {}),
   };
 
   const breadcrumbJsonLd = {
@@ -96,7 +108,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   };
 
   return (
-    <div className="bg-[var(--color-sand)] min-h-screen pb-16">
+    <div className="bg-(--color-sand) min-h-screen pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd) }}
@@ -109,9 +121,9 @@ export default async function ProjectDetailPage({ params }: Props) {
       {/* ── Breadcrumb ──────────────────────────────────────────── */}
       <div className="border-b border-gray-200 bg-white">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-1.5 text-xs text-gray-400 overflow-x-auto no-scrollbar">
-          <Link href="/" className="hover:text-[var(--color-brand)] whitespace-nowrap">Home</Link>
+          <Link href="/" className="hover:text-(--color-brand) whitespace-nowrap">Home</Link>
           <ChevronRight size={13} />
-          <Link href="/projects" className="hover:text-[var(--color-brand)] whitespace-nowrap">Projects</Link>
+          <Link href="/projects" className="hover:text-(--color-brand) whitespace-nowrap">Projects</Link>
           <ChevronRight size={13} />
           <span className="text-gray-600 font-medium truncate">{project.name}</span>
         </nav>
@@ -127,11 +139,11 @@ export default async function ProjectDetailPage({ params }: Props) {
             {/* Title block */}
             <div className="mt-6">
               {project.is_featured && (
-                <span className="inline-block text-[11px] font-bold px-2.5 py-1 rounded-full bg-[var(--color-gold)] text-[var(--color-brand)] mb-3">
+                <span className="inline-block text-[11px] font-bold px-2.5 py-1 rounded-full bg-(--color-gold) text-(--color-brand) mb-3">
                   FEATURED PROJECT
                 </span>
               )}
-              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--color-brand)] leading-tight break-words">
+              <h1 className="text-2xl sm:text-3xl font-bold text-(--color-brand) leading-tight wrap-break-word">
                 {project.name}
               </h1>
               {project.tagline && (
@@ -139,16 +151,23 @@ export default async function ProjectDetailPage({ params }: Props) {
               )}
               {(project.location || project.city) && (
                 <p className="mt-2 flex items-center gap-1.5 text-gray-500 text-sm">
-                  <MapPin size={15} className="text-[var(--color-gold)]" />
+                  <MapPin size={15} className="text-(--color-gold)" />
                   {[project.location, project.city?.name].filter(Boolean).join(", ")}
                 </p>
+              )}
+              {priceRange && (
+                <div className="mt-4">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Price Range</p>
+                  <p className="mt-1 text-2xl font-bold text-(--color-brand)">{priceRange}</p>
+                  <p className="mt-1 text-xs text-gray-400">Indicative, varies by unit size and plan.</p>
+                </div>
               )}
               {project.brochure_url && (
                 <a
                   href={project.brochure_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-brand)] bg-[var(--color-brand)]/5 hover:bg-[var(--color-brand)] hover:text-white px-4 py-2.5 rounded-xl transition-colors"
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-(--color-brand) bg-(--color-brand)/5 hover:bg-(--color-brand) hover:text-white px-4 py-2.5 rounded-xl transition-colors"
                 >
                   <FileText size={15} /> Download Brochure
                 </a>
@@ -157,14 +176,14 @@ export default async function ProjectDetailPage({ params }: Props) {
 
             {/* Description */}
             <Reveal as="section" className="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h2 className="text-lg font-bold text-[var(--color-brand)] mb-3">About this project</h2>
+              <h2 className="text-lg font-bold text-(--color-brand) mb-3">About this project</h2>
               <ProjectRichText text={project.description} />
             </Reveal>
 
             {/* Payment plan */}
             {project.payment_plan && (
               <Reveal as="section" className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="text-lg font-bold text-[var(--color-brand)] mb-3">Payment Plan</h2>
+                <h2 className="text-lg font-bold text-(--color-brand) mb-3">Payment Plan</h2>
                 <ProjectRichText text={project.payment_plan} />
               </Reveal>
             )}
@@ -174,10 +193,10 @@ export default async function ProjectDetailPage({ params }: Props) {
               <section className="mt-14">
                 <div className="flex items-end justify-between mb-6">
                   <div>
-                    <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.2em] uppercase mb-1 flex items-center gap-1.5">
+                    <p className="text-(--color-gold) text-xs font-bold tracking-[0.2em] uppercase mb-1 flex items-center gap-1.5">
                       <Home size={13} /> Available Options
                     </p>
-                    <h2 className="text-2xl font-bold text-[var(--color-brand)]">
+                    <h2 className="text-2xl font-bold text-(--color-brand)">
                       Units in {project.name}
                     </h2>
                   </div>
@@ -196,7 +215,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               {/* Form */}
               <div className="p-6">
-                <h3 className="text-base font-bold text-[var(--color-brand)] mb-1">Interested in {project.name}?</h3>
+                <h3 className="text-base font-bold text-(--color-brand) mb-1">Interested in {project.name}?</h3>
                 <p className="text-xs text-gray-400 mb-4">Send us a message and we&apos;ll get back to you.</p>
                 <InquiryForm projectId={project.id} projectUrl={projectUrl} title={project.name} phone={PHONE_TEL} />
               </div>
@@ -205,7 +224,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               <div className="px-6 pb-6 grid grid-cols-2 gap-3">
                 <a
                   href={`tel:${PHONE_TEL}`}
-                  className="flex items-center justify-center gap-2 border border-[var(--color-royal)]/40 text-[var(--color-royal)] font-semibold text-sm px-3 py-2.5 rounded-xl hover:bg-[var(--color-royal)]/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-royal)] focus-visible:ring-offset-1"
+                  className="flex items-center justify-center gap-2 border border-(--color-royal)/40 text-(--color-royal) font-semibold text-sm px-3 py-2.5 rounded-xl hover:bg-(--color-royal)/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-royal) focus-visible:ring-offset-1"
                 >
                   <Phone size={15} /> Call
                 </a>
@@ -236,8 +255,8 @@ export default async function ProjectDetailPage({ params }: Props) {
 function TrustRow({ icon: Icon, text }: { icon: typeof ShieldCheck; text: string }) {
   return (
     <div className="flex items-center gap-3 text-sm text-gray-600">
-      <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--color-brand)]/5 flex items-center justify-center">
-        <Icon size={16} className="text-[var(--color-brand)]" />
+      <span className="shrink-0 w-8 h-8 rounded-full bg-(--color-brand)/5 flex items-center justify-center">
+        <Icon size={16} className="text-(--color-brand)" />
       </span>
       {text}
     </div>

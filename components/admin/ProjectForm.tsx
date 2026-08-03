@@ -44,6 +44,7 @@ interface Props {
   action: (prev: string | null, formData: FormData) => Promise<string | null>;
   project?: ProjectWithRelations;
   cities: Lookup[];
+  categories: Lookup[];
 }
 
 const STATUS_OPTIONS = [
@@ -51,7 +52,7 @@ const STATUS_OPTIONS = [
   { value: "inactive", label: "Inactive" },
 ];
 
-export function ProjectForm({ action, project, cities }: Props) {
+export function ProjectForm({ action, project, cities, categories }: Props) {
   const [error, formAction, isPending] = useActionState(action, null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [compressing, setCompressing] = useState(false);
@@ -118,6 +119,42 @@ export function ProjectForm({ action, project, cities }: Props) {
           </Field>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Price from (₹)">
+            <input name="price_min" type="number" min="0" step="1" defaultValue={project?.price_min ?? ""}
+              className={input} placeholder="e.g. 3500000 for ₹35 L" />
+          </Field>
+          <Field label="Price up to (₹)">
+            <input name="price_max" type="number" min="0" step="1" defaultValue={project?.price_max ?? ""}
+              className={input} placeholder="e.g. 10000000 for ₹1 Cr" />
+          </Field>
+        </div>
+        <p className="text-xs text-gray-400 -mt-2">
+          Enter full rupees — the site formats them as lakh/crore. Leave both blank to hide the price.
+        </p>
+
+        <fieldset>
+          <legend className="block text-sm font-medium text-gray-700 mb-1">Property types</legend>
+          <p className="text-xs text-gray-400 mb-2">
+            Tick every type this project sells — these are the filters it shows up under on the
+            site. A project with none ticked is hidden whenever a buyer filters by type.
+          </p>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            {categories.map((c) => (
+              <label key={c.id} className="inline-flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  name="category_ids"
+                  value={c.id}
+                  defaultChecked={project?.category_ids?.includes(c.id) ?? false}
+                  className="rounded border-gray-300"
+                />
+                {c.name}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
         <Field label="Description *">
           <textarea name="description" required rows={10} defaultValue={project?.description}
             className={input} placeholder="Colony overview, layout details, specs, amenities..." />
@@ -169,7 +206,7 @@ export function ProjectForm({ action, project, cities }: Props) {
               — first image becomes cover. You can add more after selecting.
             </span>
           </p>
-          <label className={`inline-flex items-center gap-2 cursor-pointer bg-[var(--color-brand)] text-white text-sm font-semibold px-4 py-2 rounded-full transition-opacity ${compressing ? "opacity-60 pointer-events-none" : "hover:opacity-90"}`}>
+          <label className={`inline-flex items-center gap-2 cursor-pointer bg-(--color-brand) text-white text-sm font-semibold px-4 py-2 rounded-full transition-opacity ${compressing ? "opacity-60 pointer-events-none" : "hover:opacity-90"}`}>
             {compressing ? <><Loader2 size={14} className="animate-spin" /> Compressing…</> : "+ Add Images"}
             <input
               ref={fileRef}
@@ -234,7 +271,7 @@ export function ProjectForm({ action, project, cities }: Props) {
       </section>
 
       <div className="flex gap-3">
-        <Button type="submit" disabled={isPending} className="min-w-[140px]">
+        <Button type="submit" disabled={isPending} className="min-w-35">
           {isPending ? <><Loader2 size={16} className="animate-spin" /> Saving…</> : project ? "Update Project" : "Create Project"}
         </Button>
         <Button type="button" variant="outline" onClick={() => history.back()}>
@@ -254,4 +291,4 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-const input = "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand)]/20 bg-white";
+const input = "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-(--color-brand) focus:ring-2 focus:ring-(--color-brand)/20 bg-white";

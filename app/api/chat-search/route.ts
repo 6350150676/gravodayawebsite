@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getProperties, getCities, getCategories } from "@/lib/queries/properties";
+import { getCities, getCategories } from "@/lib/queries/properties";
+import { getSearchResults } from "@/lib/queries/search";
 import { parseSearch } from "@/lib/chat/parse-search";
 import { chatRatelimit } from "@/lib/ratelimit";
 
@@ -41,12 +42,15 @@ export async function POST(req: Request) {
     categories.map((c) => ({ id: c.id, name: c.name })),
   );
 
-  const { items, total } = await getProperties(filters, 1, RESULT_LIMIT);
+  // Same search the filter sidebar runs, so the assistant can never claim
+  // there's nothing available while the listing page shows matches.
+  const { projects, properties, total } = await getSearchResults(filters, 1, RESULT_LIMIT);
 
   return NextResponse.json({
     reply,
     filters,
     total,
-    properties: items,
+    projects,
+    properties,
   });
 }

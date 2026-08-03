@@ -4,7 +4,7 @@ import { ProjectForm } from "@/components/admin/ProjectForm";
 import { ProjectImageManager } from "@/components/admin/ProjectImageManager";
 import { updateProjectAction } from "@/lib/actions/project.actions";
 import { getProjectById } from "@/lib/queries/projects";
-import { getCities } from "@/lib/queries/properties";
+import { getCities, getCategories } from "@/lib/queries/properties";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Edit Project — Admin" };
@@ -18,9 +18,10 @@ export default async function EditProjectPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/admin/login");
 
-  const [project, cities] = await Promise.all([
+  const [project, cities, categories] = await Promise.all([
     getProjectById(id),
     getCities(),
+    getCategories(),
   ]);
 
   if (!project) notFound();
@@ -41,6 +42,7 @@ export default async function EditProjectPage({ params }: Props) {
         action={boundUpdate}
         project={project}
         cities={cities}
+        categories={categories}
       />
     </div>
   );
