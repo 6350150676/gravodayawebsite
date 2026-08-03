@@ -102,9 +102,15 @@ export async function updateProjectAction(
     .update({
       ...parsed.data,
       // undefined is dropped from the JSON payload, which would leave the old
-      // price sitting there when an admin clears the field — send null instead.
+      // value sitting there when an admin clears the field — send null so every
+      // optional field can actually be emptied from the form.
+      tagline: parsed.data.tagline ?? null,
+      location: parsed.data.location ?? null,
+      city_id: parsed.data.city_id ?? null,
       price_min: parsed.data.price_min ?? null,
       price_max: parsed.data.price_max ?? null,
+      payment_plan: parsed.data.payment_plan ?? null,
+      brochure_url: parsed.data.brochure_url || null,
     })
     .eq("id", id);
 
