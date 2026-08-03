@@ -117,6 +117,30 @@ export async function getProjectById(id: string): Promise<ProjectWithRelations |
   return data as unknown as ProjectWithRelations;
 }
 
+// Renaming a project moves its URL, so a slug that matches nothing today may
+// still be a slug the project used to live at. Returns where it moved to, or
+// null for a genuinely unknown slug. cache()d because the detail page checks it
+// from both generateMetadata and the page body on every miss.
+export const getProjectSlugRedirect = cache(async (oldSlug: string): Promise<string | null> => {
+  const supabase = createPublicClient();
+  const { data: retired } = await supabase
+    .from("project_slug_history")
+    .select("project_id")
+    .eq("slug", oldSlug)
+    .maybeSingle();
+
+  if (!retired) return null;
+
+  const { data: project } = await supabase
+    .from("projects")
+    .select("slug")
+    .eq("id", retired.project_id)
+    .eq("status", "active")
+    .maybeSingle();
+
+  return project?.slug ?? null;
+});
+
 // for the sitemap
 export async function getAllProjectSlugs(): Promise<{ slug: string; updated_at: string }[]> {
   const supabase = createPublicClient();

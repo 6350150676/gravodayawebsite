@@ -48,6 +48,36 @@ function parseFormData(formData: FormData) {
 }
 
 
+// A project's URL is its name, so a rename has to move the URL too — otherwise
+// "Luxury Property" keeps living at /projects/ganga-vista-…. Slugs must stay
+// unique across both live projects and retired slugs (which still redirect), so
+// a taken slug gets a numeric suffix rather than a timestamp.
+async function uniqueProjectSlug(name: string, excludeId?: string): Promise<string> {
+  const supabase = createAdminClient();
+  const base = slugify(name) || "project";
+
+  for (let n = 1; n < 50; n++) {
+    const candidate = n === 1 ? base : `${base}-${n}`;
+
+    let taken = supabase.from("projects").select("id").eq("slug", candidate);
+    if (excludeId) taken = taken.neq("id", excludeId);
+    const [{ data: live }, { data: retired }] = await Promise.all([
+      taken.limit(1),
+      supabase
+        .from("project_slug_history")
+        .select("project_id")
+        .eq("slug", candidate)
+        .neq("project_id", excludeId ?? "00000000-0000-0000-0000-000000000000")
+        .limit(1),
+    ]);
+
+    if (!live?.length && !retired?.length) return candidate;
+  }
+
+  // Absurdly unlikely; fall back to the old timestamp scheme rather than fail.
+  return `${base}-${Date.now()}`;
+}
+
 // Public pages are now statically cached, so every admin write has to bust them
 // explicitly — otherwise an edit wouldn't show up until the ISR window expires.
 function revalidatePublicProjects() {
@@ -68,7 +98,7 @@ export async function createProjectAction(
   const parsed = projectSchema.safeParse(parseFormData(formData));
   if (!parsed.success) return validationError(parsed);
 
-  const slug = slugify(parsed.data.name) + "-" + Date.now();
+  const slug = await uniqueProjectSlug(parsed.data.name);
 
   const { data: project, error } = await supabase
     .from("projects")
@@ -97,10 +127,24 @@ export async function updateProjectAction(
   const parsed = projectSchema.safeParse(parseFormData(formData));
   if (!parsed.success) return validationError(parsed);
 
+  const { data: current } = await supabase
+    .from("projects")
+    .select("name, slug")
+    .eq("id", id)
+    .single();
+  if (!current) return "Project not found";
+
+  // Renaming moves the URL; the old one is kept alive as a redirect below.
+  const slug =
+    parsed.data.name === current.name
+      ? current.slug
+      : await uniqueProjectSlug(parsed.data.name, id);
+
   const { error } = await supabase
     .from("projects")
     .update({
       ...parsed.data,
+      slug,
       // undefined is dropped from the JSON payload, which would leave the old
       // value sitting there when an admin clears the field — send null so every
       // optional field can actually be emptied from the form.
@@ -115,6 +159,15 @@ export async function updateProjectAction(
     .eq("id", id);
 
   if (error) return error.message;
+
+  if (slug !== current.slug) {
+    // Retire the old URL into the redirect table, and make sure the slug we just
+    // moved onto isn't still listed as a redirect from an earlier rename.
+    await supabase
+      .from("project_slug_history")
+      .upsert({ slug: current.slug, project_id: id }, { onConflict: "slug" });
+    await supabase.from("project_slug_history").delete().eq("slug", slug);
+  }
 
   const images = formData.getAll("images") as File[];
   const validImages = images.filter((f) => f.size > 0);

@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ChevronRight, MapPin, FileText, Home, Phone, MessageCircle, ShieldCheck, BadgeCheck } from "lucide-react";
-import { getProjectBySlug, getPropertiesByProject, getAllProjectSlugs } from "@/lib/queries/projects";
+import {
+  getProjectBySlug,
+  getProjectSlugRedirect,
+  getPropertiesByProject,
+  getAllProjectSlugs,
+} from "@/lib/queries/projects";
 import { getSiteSettings } from "@/lib/queries/site-content";
 import { PropertyGallery } from "@/components/public/PropertyGallery";
 import { PropertyCard } from "@/components/public/PropertyCard";
@@ -48,6 +53,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
+
+  // A slug that matches nothing may be one this project was renamed away from —
+  // send those to the current URL (301) rather than 404ing an already-shared link.
+  if (!project) {
+    const movedTo = await getProjectSlugRedirect(slug);
+    if (movedTo) permanentRedirect(`/projects/${movedTo}`);
+  }
+
   if (!project || project.status !== "active") notFound();
 
   const [units, settings] = await Promise.all([

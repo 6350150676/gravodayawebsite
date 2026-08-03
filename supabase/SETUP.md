@@ -36,6 +36,8 @@ you bring an existing database up to date after pulling new code.
 7. `20260729000000_whyus_image.sql` — swaps the seeded stock photo for a local one
 8. `20260803000000_project_price_range.sql` — `price_min` / `price_max` on projects
 9. `20260803000001_project_categories.sql` — `category_ids` on projects
+10. `20260803000002_project_slug_history.sql` — keeps a renamed project's old
+    URL alive as a 301 redirect
 
 > **Skipping a migration breaks the admin portal, not just the feature.** The
 > project edit form always submits every column, so a database missing (say)

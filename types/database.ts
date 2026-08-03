@@ -181,6 +181,22 @@ export interface Database {
         };
         Relationships: [];
       };
+      project_slug_history: {
+        Row: {
+          slug: string;
+          project_id: string;
+          created_at: string;
+        };
+        Insert: {
+          slug: string;
+          project_id: string;
+        };
+        Update: {
+          slug?: string;
+          project_id?: string;
+        };
+        Relationships: [];
+      };
       property_images: {
         Row: {
           id: string;
