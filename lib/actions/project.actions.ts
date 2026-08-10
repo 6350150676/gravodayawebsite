@@ -1,9 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { INVENTORY_TAG } from "@/lib/queries/tags";
 import { projectSchema } from "@/lib/validations/project";
 import { slugify } from "@/lib/utils";
 
@@ -80,7 +81,12 @@ async function uniqueProjectSlug(name: string, excludeId?: string): Promise<stri
 
 // Public pages are now statically cached, so every admin write has to bust them
 // explicitly — otherwise an edit wouldn't show up until the ISR window expires.
+//
+// revalidatePath only discards rendered HTML. The home page's featured lists
+// are cached data as well, so they need the tag too — without it the page
+// regenerates straight back onto the same stale copy.
 function revalidatePublicProjects() {
+  revalidateTag(INVENTORY_TAG);
   revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath("/projects/[slug]", "page");

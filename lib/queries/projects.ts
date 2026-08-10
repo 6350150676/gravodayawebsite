@@ -1,6 +1,8 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createPublicClient } from "@/lib/supabase/public";
+import { createPublicClient, createUncachedPublicClient } from "@/lib/supabase/public";
+import { INVENTORY_TAG } from "@/lib/queries/tags";
 import type { ProjectWithRelations, PropertyWithRelations, PropertyFilters } from "@/types";
 
 const PROJECT_SELECT = `
@@ -75,22 +77,32 @@ export async function getProjects(
 }
 
 // home page — featured first, newest next
-export async function getFeaturedProjects(limit = 3): Promise<ProjectWithRelations[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("projects")
-    .select(PROJECT_SELECT)
-    .eq("status", "active")
-    .order("is_featured", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(limit);
+//
+// Cached by tag rather than by request URL so an admin write can actually clear
+// it, and read through the uncached client so this is the only layer holding a
+// copy. See lib/supabase/public.ts for why the default one won't do here.
+export const getFeaturedProjects = unstable_cache(
+  async (limit = 3): Promise<ProjectWithRelations[]> => {
+    const supabase = createUncachedPublicClient();
+    const { data, error } = await supabase
+      .from("projects")
+      .select(PROJECT_SELECT)
+      .eq("status", "active")
+      .order("is_featured", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
-  if (error) {
-    console.error("[getFeaturedProjects]", error.message);
-    return [];
-  }
-  return (data ?? []) as unknown as ProjectWithRelations[];
-}
+    // Throw instead of falling back to []. The home page hides the projects
+    // section when the list is empty and is a cached static page, so returning
+    // [] on a transient Supabase failure bakes "we have no projects" into the
+    // HTML for the whole revalidate window. Throwing leaves the last good
+    // render in place and lets Next retry.
+    if (error) throw new Error(`[getFeaturedProjects] ${error.message}`);
+    return (data ?? []) as unknown as ProjectWithRelations[];
+  },
+  ["featured-projects"],
+  { revalidate: 3600, tags: [INVENTORY_TAG] },
+);
 
 // cache() dedupes the generateMetadata + page-body call into one round trip
 export const getProjectBySlug = cache(async (slug: string): Promise<ProjectWithRelations | null> => {

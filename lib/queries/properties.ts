@@ -1,7 +1,8 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createPublicClient } from "@/lib/supabase/public";
+import { createPublicClient, createUncachedPublicClient } from "@/lib/supabase/public";
+import { INVENTORY_TAG } from "@/lib/queries/tags";
 import type { PropertyWithRelations, PropertyFilters, PaginatedProperties } from "@/types";
 import type { Database } from "@/types/database";
 
@@ -133,29 +134,26 @@ export async function getRelatedProperties(
   return (data ?? []) as unknown as PropertyWithRelations[];
 }
 
-export async function getFeaturedProperties(limit = 6): Promise<PropertyWithRelations[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("properties")
-    .select(`
-      *,
-      category:property_categories(id, name, slug),
-      city:cities(id, name, slug),
-      locality:localities(id, name, slug),
-  project:projects(id, name, slug),
-      images:property_images(id, storage_path, is_cover, sort_order)
-    `)
-    .eq("status", "active")
-    .eq("is_featured", true)
-    .order("created_at", { ascending: false })
-    .limit(limit);
+// Same caching contract as getFeaturedProjects — tagged so admin writes bust
+// it, uncached client underneath, and a throw rather than [] on failure so a
+// bad round trip can't cache the section out of the home page.
+export const getFeaturedProperties = unstable_cache(
+  async (limit = 6): Promise<PropertyWithRelations[]> => {
+    const supabase = createUncachedPublicClient();
+    const { data, error } = await supabase
+      .from("properties")
+      .select(CARD_SELECT)
+      .eq("status", "active")
+      .eq("is_featured", true)
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
-  if (error) {
-    console.error("[getFeaturedProperties]", error.message);
-    return [];
-  }
-  return (data ?? []) as unknown as PropertyWithRelations[];
-}
+    if (error) throw new Error(`[getFeaturedProperties] ${error.message}`);
+    return (data ?? []) as unknown as PropertyWithRelations[];
+  },
+  ["featured-properties"],
+  { revalidate: 3600, tags: [INVENTORY_TAG] },
+);
 
 // for the sitemap
 export async function getAllPropertySlugs(): Promise<{ slug: string; updated_at: string }[]> {

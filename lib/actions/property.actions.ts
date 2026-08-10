@@ -1,9 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { INVENTORY_TAG } from "@/lib/queries/tags";
 import { propertySchema } from "@/lib/validations/property";
 import { slugify } from "@/lib/utils";
 
@@ -54,6 +55,7 @@ function parseFormData(formData: FormData) {
 // Public pages are now statically cached, so every admin write has to bust them
 // explicitly — otherwise an edit wouldn't show up until the ISR window expires.
 function revalidatePublicProperties() {
+  revalidateTag(INVENTORY_TAG); // the home page's featured list is cached data, not just HTML
   revalidatePath("/");
   revalidatePath("/properties");
   revalidatePath("/properties/[slug]", "page");

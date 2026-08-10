@@ -24,3 +24,34 @@ export function createPublicClient() {
   }
   return cached;
 }
+
+// Same client, but with Next's fetch data cache switched off.
+//
+// A page that declares `revalidate` hands that value down to every fetch it
+// makes, so supabase-js responses get stored in the data cache keyed by request
+// URL. That layer is invisible: revalidatePath() throws away the rendered HTML
+// but not those entries, so the page regenerates and reads the very same
+// snapshot back. It also survives redeploys. The home page sat on a snapshot
+// with no projects in it for exactly that reason.
+//
+// Only for callers that do their own caching via unstable_cache with a tag we
+// can bust — a no-store fetch anywhere else would force the route dynamic and
+// undo ISR. Inside unstable_cache it stays static.
+let uncached: ReturnType<typeof createSupabaseClient<Database>> | null = null;
+
+export function createUncachedPublicClient() {
+  if (!uncached) {
+    uncached = createSupabaseClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        auth: { persistSession: false, autoRefreshToken: false },
+        global: {
+          fetch: (input: RequestInfo | URL, init?: RequestInit) =>
+            fetch(input, { ...init, cache: "no-store" }),
+        },
+      },
+    );
+  }
+  return uncached;
+}
