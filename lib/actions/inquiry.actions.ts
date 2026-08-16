@@ -42,6 +42,10 @@ export async function createInquiryAction(
   const contextLabel = (formData.get("context_label") as string) || null;
   const contextUrl = (formData.get("context_url") as string) || null;
 
+  // Also not a DB column — the site-visit checkbox. Folded into the message and
+  // the notification subject so the team sees the request without a migration.
+  const wantsVisit = formData.get("visit_intent") === "1";
+
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
     for (const issue of parsed.error.issues) {
@@ -54,11 +58,14 @@ export async function createInquiryAction(
   const { honeypot, name, phone, email, message, property_id, project_id } = parsed.data;
   if (honeypot) return { ok: true };
 
+  const fullMessage =
+    [message, wantsVisit ? "Requested a site visit." : null].filter(Boolean).join("\n\n") || null;
+
   const payload: InquiryInsert = {
     name,
     phone,
     email: email || null,
-    message: message || null,
+    message: fullMessage,
     property_id: property_id ?? null,
     // Omitted (not `null`) when absent so this insert still works before the
     // inquiries.project_id migration has been applied to the database.
@@ -84,12 +91,13 @@ export async function createInquiryAction(
     propertyTitle = prop?.title ?? null;
     propertySlug = prop?.slug ?? null;
   }
+  const subject = propertyTitle ?? contextLabel ?? "General Inquiry";
   await notifyTeam({
     name,
     phone,
     email,
-    message,
-    subject: propertyTitle ?? contextLabel ?? "General Inquiry",
+    message: fullMessage,
+    subject: wantsVisit ? `Site Visit — ${subject}` : subject,
     propertyTitle: propertyTitle ?? contextLabel,
     propertyUrl: propertyTitle && propertySlug
       ? `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/properties/${propertySlug}`

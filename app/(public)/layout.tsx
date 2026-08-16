@@ -4,6 +4,7 @@ import { Footer } from "@/components/public/Footer";
 import { IntroGate } from "@/components/public/IntroGate";
 import { ChatSearch } from "@/components/public/ChatSearch";
 import { WhatsAppButton } from "@/components/public/WhatsAppButton";
+import { MetaPixelContactTracker } from "@/components/public/MetaPixelContactTracker";
 import { getSiteSettings } from "@/lib/queries/site-content";
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
@@ -22,6 +23,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       />
       <ChatSearch />
       <WhatsAppButton number={settings.whatsapp_number} />
+      <MetaPixelContactTracker />
     </>
   );
 }

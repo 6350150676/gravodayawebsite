@@ -1,10 +1,10 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { CheckCircle2, Send, Phone } from "lucide-react";
 import { createInquiryAction, type InquiryFormState } from "@/lib/actions/inquiry.actions";
-import { useLeadPixel } from "@/lib/meta-pixel";
+import { usePixelOnce } from "@/lib/meta-pixel";
 import { FeedbackForm } from "@/components/public/FeedbackForm";
 
 interface Props {
@@ -21,9 +21,18 @@ const initial: InquiryFormState = { ok: false };
 
 export function InquiryForm({ propertyId, projectId, projectUrl, title, phone = "+919876543210" }: Props) {
   const [state, action] = useActionState(createInquiryAction, initial);
-  useLeadPixel(state.ok, {
+  const [siteVisit, setSiteVisit] = useState(false);
+  const kind = propertyId ? "Property" : "Project";
+
+  usePixelOnce(state.ok, "Lead", {
     content_name: title,
-    content_category: propertyId ? "Property Inquiry" : "Project Inquiry",
+    content_category: `${kind} Inquiry`,
+  });
+  // A visit request is also a booked appointment — a distinct event, still one
+  // send each, so the submit can't be counted twice under either name.
+  usePixelOnce(state.ok && siteVisit, "Schedule", {
+    content_name: title,
+    content_category: `${kind} Site Visit`,
   });
 
   if (state.ok) {
@@ -95,6 +104,20 @@ export function InquiryForm({ propertyId, projectId, projectUrl, title, phone = 
         />
         {err.message && <p id="message-error" className="text-xs text-red-500 mt-1">{err.message}</p>}
       </div>
+
+      <label className="flex items-start gap-2.5 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          name="visit_intent"
+          value="1"
+          checked={siteVisit}
+          onChange={(e) => setSiteVisit(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 accent-[var(--color-royal)]"
+        />
+        <span className="text-xs text-gray-600 leading-relaxed">
+          I&apos;d like to schedule a site visit
+        </span>
+      </label>
 
       {state.error && (
         <p role="alert" aria-live="assertive" className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
