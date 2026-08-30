@@ -40,11 +40,19 @@ export function formatPriceRange(
   return null;
 }
 
-export function slugify(text: string): string {
-  return text
+// A slug is the URL people paste into WhatsApp and the line Google prints under
+// a result, so it's capped at a readable length — cut back to a word boundary
+// rather than mid-word, and never left ending on a dash.
+export function slugify(text: string, maxLength = 50): string {
+  const slug = text
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, "")
     .replace(/[\s_-]+/g, "-")
     .replace(/^-+|-+$/g, "");
+
+  if (slug.length <= maxLength) return slug;
+  const cut = slug.slice(0, maxLength);
+  const lastDash = cut.lastIndexOf("-");
+  return (lastDash > 0 ? cut.slice(0, lastDash) : cut).replace(/-+$/, "");
 }

@@ -3,6 +3,7 @@
 import { useRef, useState, useActionState, startTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, X } from "lucide-react";
+import { ProjectContentEditor } from "@/components/admin/ProjectContentEditor";
 import type { ProjectWithRelations } from "@/types";
 
 // Downscale to JPEG via canvas before upload; falls back to the original file.
@@ -104,6 +105,15 @@ export function ProjectForm({ action, project, cities, categories }: Props) {
             className={input} placeholder="e.g. Gated colony with plots &amp; villas near Roorkee" />
         </Field>
 
+        <Field label="Short overview">
+          <textarea name="overview" rows={3} defaultValue={project?.overview ?? ""}
+            className={input}
+            placeholder="Two or three lines shown beside the gallery at the top of the page." />
+        </Field>
+        <p className="text-xs text-gray-400 -mt-2">
+          Leave blank and the site falls back to the tagline, then the first lines of the description.
+        </p>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="City">
             <select name="city_id" defaultValue={project?.city?.id ?? ""} className={input}>
@@ -160,14 +170,57 @@ export function ProjectForm({ action, project, cities, categories }: Props) {
             className={input} placeholder="Colony overview, layout details, specs, amenities..." />
         </Field>
 
-        <Field label="Payment Plan">
-          <textarea name="payment_plan" rows={8} defaultValue={project?.payment_plan ?? ""}
-            className={input} placeholder="Price breakup, booking amount, construction milestones..." />
+        <Field label="Payment Plan — notes">
+          <textarea name="payment_plan" rows={6} defaultValue={project?.payment_plan ?? ""}
+            className={input} placeholder="Booking amount, construction milestones, bank tie-ups..." />
         </Field>
+        <p className="text-xs text-gray-400 -mt-2">
+          Free-text block shown under the payment table. The table itself is built from the
+          Payment Plan rows further down this page.
+        </p>
 
         <Field label="Brochure URL">
           <input name="brochure_url" type="url" defaultValue={project?.brochure_url ?? ""}
             className={input} placeholder="https://..." />
+        </Field>
+      </section>
+
+      {/* Contact & compliance — CTA overrides for this project */}
+      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <h2 className="font-semibold text-gray-800">Contact &amp; Compliance</h2>
+        <p className="text-xs text-gray-400 -mt-2">
+          Leave the numbers blank to use the site-wide contact details from Site Content.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Project phone">
+            <input name="contact_phone" defaultValue={project?.contact_phone ?? ""}
+              className={input} placeholder="+919876543210" />
+          </Field>
+          <Field label="Project WhatsApp">
+            <input name="contact_whatsapp" defaultValue={project?.contact_whatsapp ?? ""}
+              className={input} placeholder="919876543210 (digits + country code)" />
+          </Field>
+        </div>
+
+        <Field label="RERA number">
+          <input name="rera_number" defaultValue={project?.rera_number ?? ""}
+            className={input} placeholder="e.g. UKREP03240000123" />
+        </Field>
+        <p className="text-xs text-gray-400 -mt-2">
+          The page only claims the project is RERA registered when this is filled in.
+        </p>
+      </section>
+
+      {/* Detail-page sections — every one adapts to however many entries exist */}
+      <ProjectContentEditor project={project} />
+
+      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+        <h2 className="font-semibold text-gray-800">Payment Plan — fine print</h2>
+        <Field label="Note under the payment table">
+          <textarea name="payment_note" rows={3} defaultValue={project?.payment_note ?? ""}
+            className={input}
+            placeholder="e.g. Prices exclusive of GST and registry. Subject to change without notice." />
         </Field>
       </section>
 

@@ -25,6 +25,61 @@ export interface PropertyWithRelations {
   images: { id: string; storage_path: string; is_cover: boolean; sort_order: number }[];
 }
 
+// ── Project page content ────────────────────────────────────────────
+// Stored as jsonb arrays on `projects` (see the project_page_content
+// migration) and read back through lib/project-content.ts, which
+// coerces whatever is in the column into these shapes.
+
+/** One card in the "Key Highlights" grid. */
+export interface ProjectHighlight {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+/** One amenity category card, e.g. "Signature Amenities". */
+export interface ProjectAmenityGroup {
+  icon: string;
+  title: string;
+  items: string[];
+}
+
+/** One nearby place in the "Location Advantage" list. */
+export interface ProjectLocationAdvantage {
+  icon: string;
+  place: string;
+  /** Free text — "2 mins", "1.4 km", "25 min drive". */
+  distance: string;
+}
+
+/**
+ * One row of the payment plan. Every field is free text: projects price in
+ * wildly different units ("₹85 L onwards", "On request", "1,245 sq.ft."), and
+ * forcing numbers here would make half of them unenterable.
+ */
+export interface ProjectPaymentRow {
+  unit_type: string;
+  tower: string;
+  area: string;
+  price: string;
+  availability: string;
+  charges: string;
+  notes: string;
+}
+
+/** A charge on top of the base price — PLC, floor rise, club membership. */
+export interface ProjectCharge {
+  label: string;
+  value: string;
+  note: string;
+}
+
+/** A quick fact shown in the overview strip, e.g. "Possession · Dec 2026". */
+export interface ProjectSpec {
+  label: string;
+  value: string;
+}
+
 export interface ProjectWithRelations {
   id: string;
   slug: string;
@@ -37,6 +92,22 @@ export interface ProjectWithRelations {
   description: string;
   payment_plan: string | null;
   brochure_url: string | null;
+
+  // Structured detail-page content. Optional on the type because a database
+  // that hasn't run the project_page_content migration simply won't return
+  // them — the parsers in lib/project-content.ts turn undefined into [].
+  overview?: string | null;
+  highlights?: unknown;
+  amenity_groups?: unknown;
+  location_advantages?: unknown;
+  payment_plans?: unknown;
+  additional_charges?: unknown;
+  key_specs?: unknown;
+  payment_note?: string | null;
+  rera_number?: string | null;
+  contact_phone?: string | null;
+  contact_whatsapp?: string | null;
+
   is_featured: boolean;
   status: import("./database").ProjectStatus;
   created_at: string;

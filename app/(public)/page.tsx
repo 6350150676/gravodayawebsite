@@ -132,6 +132,34 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* ── OUR PROJECTS ────────────────────────────────────────── */}
+      {projects.length > 0 && (
+        <section className="bg-white border-y border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+              <div>
+                <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-3">Featured Project</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-(--color-brand)">Our Projects</h2>
+                <div className="mt-3 w-16 h-1 bg-(--color-gold) rounded-full" />
+                <p className="mt-4 text-gray-500 text-[15px] max-w-xl leading-relaxed">
+                  Gated colonies and villa developments planned, approved and delivered by our own team.
+                </p>
+              </div>
+              <Link href="/projects" className="text-sm font-semibold text-(--color-brand) hover:text-(--color-gold) transition-colors">
+                View All →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map((p, i) => (
+                <Reveal key={p.id} delay={(i % 3) * 110}>
+                  <ProjectCard project={p} supabaseUrl={supabaseUrl} />
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── WHAT ARE YOU LOOKING FOR ─────────────────────────────── */}
       {intentCards.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20">
@@ -173,34 +201,6 @@ export default async function HomePage() {
                 </Link>
               </Reveal>
             ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── OUR PROJECTS ────────────────────────────────────────── */}
-      {projects.length > 0 && (
-        <section className="bg-white border-y border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-              <div>
-                <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-3">Featured Project</p>
-                <h2 className="text-3xl sm:text-4xl font-bold text-(--color-brand)">Our Projects</h2>
-                <div className="mt-3 w-16 h-1 bg-(--color-gold) rounded-full" />
-                <p className="mt-4 text-gray-500 text-[15px] max-w-xl leading-relaxed">
-                  Gated colonies and villa developments planned, approved and delivered by our own team.
-                </p>
-              </div>
-              <Link href="/projects" className="text-sm font-semibold text-(--color-brand) hover:text-(--color-gold) transition-colors">
-                View All →
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((p, i) => (
-                <Reveal key={p.id} delay={(i % 3) * 110}>
-                  <ProjectCard project={p} supabaseUrl={supabaseUrl} />
-                </Reveal>
-              ))}
-            </div>
           </div>
         </section>
       )}

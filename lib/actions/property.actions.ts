@@ -52,6 +52,27 @@ function parseFormData(formData: FormData) {
 }
 
 
+// A property's URL is its title. Slugs used to get a Date.now() suffix purely to
+// guarantee uniqueness, which left every link 13 digits of noise longer than it
+// needed to be — an actual collision now takes a small numeric suffix instead.
+async function uniquePropertySlug(title: string): Promise<string> {
+  const supabase = createAdminClient();
+  const base = slugify(title) || "property";
+
+  for (let n = 1; n < 50; n++) {
+    const candidate = n === 1 ? base : `${base}-${n}`;
+    const { data } = await supabase
+      .from("properties")
+      .select("id")
+      .eq("slug", candidate)
+      .limit(1);
+    if (!data?.length) return candidate;
+  }
+
+  // Absurdly unlikely; fall back to the old timestamp scheme rather than fail.
+  return `${base}-${Date.now()}`;
+}
+
 // Public pages are now statically cached, so every admin write has to bust them
 // explicitly — otherwise an edit wouldn't show up until the ISR window expires.
 function revalidatePublicProperties() {
@@ -73,7 +94,7 @@ export async function createPropertyAction(
   const parsed = propertySchema.safeParse(parseFormData(formData));
   if (!parsed.success) return validationError(parsed);
 
-  const slug = slugify(parsed.data.title) + "-" + Date.now();
+  const slug = await uniquePropertySlug(parsed.data.title);
 
   const { data: property, error } = await supabase
     .from("properties")

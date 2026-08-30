@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useId, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { CheckCircle2, Send, Phone } from "lucide-react";
 import { createInquiryAction, type InquiryFormState } from "@/lib/actions/inquiry.actions";
@@ -15,13 +15,29 @@ interface Props {
   projectUrl?: string;
   title: string;
   phone?: string; // tel: target, e.g. +919876543210
+  /** Pre-tick "schedule a site visit" — used by the Schedule CTA's dialog. */
+  defaultVisitIntent?: boolean;
+  /** Label for the submit button, e.g. "Request Site Visit". */
+  submitLabel?: string;
 }
 
 const initial: InquiryFormState = { ok: false };
 
-export function InquiryForm({ propertyId, projectId, projectUrl, title, phone = "+919876543210" }: Props) {
+export function InquiryForm({
+  propertyId,
+  projectId,
+  projectUrl,
+  title,
+  phone = "+919876543210",
+  defaultVisitIntent = false,
+  submitLabel = "Send Inquiry",
+}: Props) {
   const [state, action] = useActionState(createInquiryAction, initial);
-  const [siteVisit, setSiteVisit] = useState(false);
+  const [siteVisit, setSiteVisit] = useState(defaultVisitIntent);
+  // The page can hold more than one of these at once (the inline section and
+  // the schedule dialog), so field ids have to be per-instance or a label would
+  // focus the other form's input.
+  const uid = useId();
   const kind = propertyId ? "Property" : "Project";
 
   usePixelOnce(state.ok, "Lead", {
@@ -78,8 +94,9 @@ export function InquiryForm({ propertyId, projectId, projectUrl, title, phone = 
         aria-hidden="true"
       />
 
-      <Field label="Your Name" name="name" placeholder="e.g. Rahul Sharma" error={err.name} required />
+      <Field uid={uid} label="Your Name" name="name" placeholder="e.g. Rahul Sharma" error={err.name} required />
       <Field
+        uid={uid}
         label="Phone Number"
         name="phone"
         type="tel"
@@ -87,22 +104,26 @@ export function InquiryForm({ propertyId, projectId, projectUrl, title, phone = 
         error={err.phone}
         required
       />
-      <Field label="Email (optional)" name="email" type="email" placeholder="you@example.com" error={err.email} />
+      <Field uid={uid} label="Email (optional)" name="email" type="email" placeholder="you@example.com" error={err.email} />
 
       <div>
-        <label htmlFor="message" className="block text-xs font-semibold text-gray-600 mb-1.5">
+        <label htmlFor={`${uid}-message`} className="block text-xs font-semibold text-gray-600 mb-1.5">
           Message
         </label>
         <textarea
-          id="message"
+          id={`${uid}-message`}
           name="message"
           rows={3}
           aria-invalid={!!err.message}
-          aria-describedby={err.message ? "message-error" : undefined}
-          defaultValue={`I'm interested in "${title}". Please share more details.`}
+          aria-describedby={err.message ? `${uid}-message-error` : undefined}
+          defaultValue={
+            defaultVisitIntent
+              ? `I'd like to schedule a site visit to "${title}". Please suggest a convenient time.`
+              : `I'm interested in "${title}". Please share more details.`
+          }
           className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 outline-none resize-none focus:border-[var(--color-royal)] focus:ring-2 focus:ring-[var(--color-royal)]/15"
         />
-        {err.message && <p id="message-error" className="text-xs text-red-500 mt-1">{err.message}</p>}
+        {err.message && <p id={`${uid}-message-error`} className="text-xs text-red-500 mt-1">{err.message}</p>}
       </div>
 
       <label className="flex items-start gap-2.5 cursor-pointer select-none">
@@ -125,7 +146,7 @@ export function InquiryForm({ propertyId, projectId, projectUrl, title, phone = 
         </p>
       )}
 
-      <SubmitButton />
+      <SubmitButton label={submitLabel} />
 
       <p className="text-[11px] text-gray-400 text-center leading-relaxed">
         By submitting, you agree to be contacted about this property. We never share your details.
@@ -135,6 +156,7 @@ export function InquiryForm({ propertyId, projectId, projectUrl, title, phone = 
 }
 
 function Field({
+  uid,
   label,
   name,
   type = "text",
@@ -142,6 +164,7 @@ function Field({
   error,
   required,
 }: {
+  uid: string;
   label: string;
   name: string;
   type?: string;
@@ -151,26 +174,26 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={name} className="block text-xs font-semibold text-gray-600 mb-1.5">
+      <label htmlFor={`${uid}-${name}`} className="block text-xs font-semibold text-gray-600 mb-1.5">
         {label} {required && <span className="text-red-400">*</span>}
       </label>
       <input
-        id={name}
+        id={`${uid}-${name}`}
         name={name}
         type={type}
         placeholder={placeholder}
         aria-invalid={!!error}
-        aria-describedby={error ? `${name}-error` : undefined}
+        aria-describedby={error ? `${uid}-${name}-error` : undefined}
         className={`w-full px-3.5 py-2.5 text-sm border rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-[var(--color-royal)]/15 ${
           error ? "border-red-300 focus:border-red-400" : "border-gray-200 focus:border-[var(--color-royal)]"
         }`}
       />
-      {error && <p id={`${name}-error`} className="text-xs text-red-500 mt-1">{error}</p>}
+      {error && <p id={`${uid}-${name}-error`} className="text-xs text-red-500 mt-1">{error}</p>}
     </div>
   );
 }
 
-function SubmitButton() {
+function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -185,7 +208,7 @@ function SubmitButton() {
         </>
       ) : (
         <>
-          <Send size={15} /> Send Inquiry
+          <Send size={15} /> {label}
         </>
       )}
     </button>

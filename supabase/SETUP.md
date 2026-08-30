@@ -38,6 +38,15 @@ you bring an existing database up to date after pulling new code.
 9. `20260803000001_project_categories.sql` — `category_ids` on projects
 10. `20260803000002_project_slug_history.sql` — keeps a renamed project's old
     URL alive as a 301 redirect
+11. `20260830000000_project_page_content.sql` — the structured project detail
+    page: highlights, amenity categories, location advantages, the payment
+    table, additional charges, key specs, plus per-project contact/RERA fields.
+    **Required for the redesigned project page.** Until you run it the page
+    still works — every new section simply stays hidden — but saving a project
+    from the admin panel will fail with a "missing column" message.
+12. `20260830000001_short_slugs.sql` — drops the `-1784899386197` timestamp
+    suffix from slugs created under the old scheme, retiring each old project
+    slug as a 301 redirect
 
 > **Skipping a migration breaks the admin portal, not just the feature.** The
 > project edit form always submits every column, so a database missing (say)

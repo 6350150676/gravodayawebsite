@@ -50,11 +50,11 @@ comment on column projects.category_ids is
 
 -- Nine-storey apartment development, 1/2/3 BHK units.
 update projects set category_ids = '{1,5}'
-  where slug = 'ganga-vista-1785413584091';
+  where slug in ('ganga-vista-1785413584091', 'luxury-property');
 
 -- Apartment development, 1/2/3 BHK + penthouses.
 update projects set category_ids = '{1,5}'
-  where slug = 'divine-touch-1784899386197';
+  where slug in ('divine-touch-1784899386197', 'divine-touch');
 
 -- Plotted colony that also delivers ready-to-build villas.
 update projects set category_ids = '{1,4,5}'

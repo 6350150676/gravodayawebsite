@@ -1,19 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { ChevronRight, MapPin, FileText, Home, Phone, MessageCircle, ShieldCheck, BadgeCheck } from "lucide-react";
+import { ChevronRight, Home } from "lucide-react";
 import {
   getProjectBySlug,
   getProjectSlugRedirect,
   getPropertiesByProject,
   getAllProjectSlugs,
 } from "@/lib/queries/projects";
+import { getCategories } from "@/lib/queries/properties";
 import { getSiteSettings } from "@/lib/queries/site-content";
 import { PropertyGallery } from "@/components/public/PropertyGallery";
 import { PropertyCard } from "@/components/public/PropertyCard";
-import { Reveal } from "@/components/public/Reveal";
-import { ProjectRichText } from "@/components/public/ProjectRichText";
-import { InquiryForm } from "@/components/public/InquiryForm";
+import { ProjectAbout } from "@/components/public/project/ProjectAbout";
+import { ProjectAmenities } from "@/components/public/project/ProjectAmenities";
+import { ProjectCTA } from "@/components/public/project/ProjectCTA";
+import { ProjectHighlights } from "@/components/public/project/ProjectHighlights";
+import { ProjectHeroCard } from "@/components/public/project/ProjectHeroCard";
+import { ProjectInquirySection } from "@/components/public/project/ProjectInquirySection";
+import { ProjectKeySpecs } from "@/components/public/project/ProjectKeySpecs";
+import { ProjectLocationAdvantages } from "@/components/public/project/ProjectLocationAdvantages";
+import { ProjectPaymentPlan } from "@/components/public/project/ProjectPaymentPlan";
+import { ProjectSectionNav } from "@/components/public/project/ProjectSectionNav";
+import { SectionHeading } from "@/components/public/project/SectionHeading";
+import { parseProjectContent } from "@/lib/project-content";
 import { formatPriceRange } from "@/lib/utils";
 
 export const revalidate = 3600;
@@ -32,20 +42,64 @@ function imageUrl(path: string) {
   return `${SUPABASE_URL}/storage/v1/object/public/project-images/${path}`;
 }
 
+// One short paragraph for the hero and for meta descriptions. The admin's
+// dedicated overview wins; failing that we fall back through the fields that
+// have always existed, so a project written before this page existed still
+// reads like it was written for it.
+function summarise(project: {
+  overview?: string | null;
+  tagline: string | null;
+  description: string;
+}): string {
+  const overview = project.overview?.trim();
+  if (overview) return overview;
+  if (project.tagline?.trim()) return project.tagline.trim();
+
+  // Skip the ALL-CAPS section headers and bullet lines the description often
+  // opens with — they make a terrible summary.
+  const prose = project.description
+    .split("\n")
+    .map((l) => l.trim())
+    .find((l) => l.length > 60 && !l.startsWith("- ") && l !== l.toUpperCase());
+
+  return prose ?? project.description.slice(0, 200);
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) return { title: "Project not found" };
 
-  const cover = project.images.find((i) => i.is_cover) ?? project.images[0];
+  const sorted = [...project.images].sort(
+    (a, b) => Number(b.is_cover) - Number(a.is_cover) || a.sort_order - b.sort_order,
+  );
+  const images = sorted.slice(0, 4).map((i) => imageUrl(i.storage_path));
+
+  const place = [project.location, project.city?.name].filter(Boolean).join(", ");
+  const price = formatPriceRange(project.price_min, project.price_max);
+  const description = [summarise(project), place && `Located in ${place}.`, price && `Price: ${price}.`]
+    .filter(Boolean)
+    .join(" ")
+    .slice(0, 158);
+
+  const title = place ? `${project.name} — ${place}` : project.name;
+
   return {
-    title: project.name,
-    description: (project.tagline || project.description).slice(0, 155),
+    title,
+    description,
     alternates: { canonical: `/projects/${slug}` },
     openGraph: {
-      title: project.name,
-      description: (project.tagline || project.description).slice(0, 155),
-      images: cover ? [imageUrl(cover.storage_path)] : [],
+      type: "website",
+      title,
+      description,
+      url: `/projects/${slug}`,
+      images,
+    },
+    twitter: {
+      card: images.length ? "summary_large_image" : "summary",
+      title,
+      description,
+      images,
     },
   };
 }
@@ -63,33 +117,64 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   if (!project || project.status !== "active") notFound();
 
-  const [units, settings] = await Promise.all([
+  const [units, settings, allCategories] = await Promise.all([
     getPropertiesByProject(project.id),
     getSiteSettings(),
+    getCategories(),
   ]);
-  const PHONE_DISPLAY = settings.phone_display;
-  const PHONE_TEL = settings.phone_tel;
-  const WHATSAPP = settings.whatsapp_number;
 
-  const sorted = [...project.images].sort((a, b) => {
-    if (a.is_cover !== b.is_cover) return a.is_cover ? -1 : 1;
-    return a.sort_order - b.sort_order;
-  });
-  const galleryImages = sorted.map((img) => ({
+  // Per-project contact details win; otherwise the site-wide ones.
+  const phoneDisplay = project.contact_phone?.trim() || settings.phone_display;
+  const phoneTel = project.contact_phone?.trim() || settings.phone_tel;
+  const whatsapp = project.contact_whatsapp?.trim() || settings.whatsapp_number;
+
+  const sorted = [...project.images].sort(
+    (a, b) => Number(b.is_cover) - Number(a.is_cover) || a.sort_order - b.sort_order,
+  );
+  const galleryImages = sorted.map((img, i) => ({
     url: imageUrl(img.storage_path),
-    alt: project.name,
+    alt: `${project.name} — photo ${i + 1}`,
   }));
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.garvodayrealty.com";
   const projectUrl = `${siteUrl}/projects/${project.slug}`;
   const priceRange = formatPriceRange(project.price_min, project.price_max);
+  const address = [project.location, project.city?.name].filter(Boolean).join(", ");
+
+  const categoryNames = allCategories
+    .filter((c) => project.category_ids?.includes(c.id))
+    .map((c) => c.name);
+
+  // Every variable-length section of the page, in one place. Each one renders
+  // nothing when its list is empty, which is how a project with four highlights
+  // and no payment plan lays itself out correctly with no special-casing.
+  const { highlights, amenityGroups, locationAdvantages, paymentRows, additionalCharges, keySpecs } =
+    parseProjectContent(project);
+
+  // The nav only lists sections that will actually render, so a sparse project
+  // gets a short nav instead of links that jump nowhere.
+  const navSections = [
+    { id: "about", label: "Overview", show: true },
+    { id: "highlights", label: "Highlights", show: highlights.length > 0 },
+    { id: "amenities", label: "Amenities", show: amenityGroups.length > 0 },
+    { id: "location", label: "Location", show: locationAdvantages.length > 0 },
+    {
+      id: "payment-plan",
+      label: "Pricing",
+      show: paymentRows.length > 0 || additionalCharges.length > 0 || !!project.payment_plan?.trim(),
+    },
+    { id: "units", label: "Units", show: units.length > 0 },
+    { id: "enquire", label: "Enquire", show: true },
+  ]
+    .filter((s) => s.show)
+    .map(({ id, label }) => ({ id, label }));
 
   const projectJsonLd = {
     "@context": "https://schema.org",
     "@type": "Residence",
     name: project.name,
     url: projectUrl,
-    description: (project.tagline || project.description || "").slice(0, 300),
+    description: summarise(project).slice(0, 300),
     image: galleryImages.map((img) => img.url),
     address: {
       "@type": "PostalAddress",
@@ -98,6 +183,13 @@ export default async function ProjectDetailPage({ params }: Props) {
       addressRegion: "Uttarakhand",
       addressCountry: "IN",
     },
+    ...(amenityGroups.length
+      ? {
+          amenityFeature: amenityGroups.flatMap((g) =>
+            g.items.map((item) => ({ "@type": "LocationFeatureSpecification", name: item })),
+          ),
+        }
+      : {}),
     ...(project.price_min || project.price_max
       ? {
           offers: {
@@ -121,7 +213,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   };
 
   return (
-    <div className="bg-(--color-sand) min-h-screen pb-16">
+    <div className="min-h-screen bg-(--color-sand) pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd) }}
@@ -133,145 +225,101 @@ export default async function ProjectDetailPage({ params }: Props) {
 
       {/* ── Breadcrumb ──────────────────────────────────────────── */}
       <div className="border-b border-gray-200 bg-white">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-1.5 text-xs text-gray-400 overflow-x-auto no-scrollbar">
-          <Link href="/" className="hover:text-(--color-brand) whitespace-nowrap">Home</Link>
+        <nav className="no-scrollbar mx-auto flex max-w-7xl items-center gap-1.5 overflow-x-auto px-4 py-3.5 text-xs text-gray-400 sm:px-6 lg:px-8">
+          <Link href="/" className="whitespace-nowrap hover:text-(--color-brand)">
+            Home
+          </Link>
           <ChevronRight size={13} />
-          <Link href="/projects" className="hover:text-(--color-brand) whitespace-nowrap">Projects</Link>
+          <Link href="/projects" className="whitespace-nowrap hover:text-(--color-brand)">
+            Projects
+          </Link>
           <ChevronRight size={13} />
-          <span className="text-gray-600 font-medium truncate">{project.name}</span>
+          <span className="truncate font-medium text-gray-600">{project.name}</span>
         </nav>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8">
-
-          {/* ════════════ LEFT COLUMN ════════════ */}
+      {/* ════════════ HERO ════════════
+          Two columns that end level: the gallery sets the height and the card
+          stretches to it. Nothing else on the page is columned, so there is no
+          rail left over to sit empty. */}
+      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[1.55fr_1fr] lg:gap-8">
           <div className="min-w-0">
             <PropertyGallery images={galleryImages} />
-
-            {/* Title block */}
-            <div className="mt-6">
-              {project.is_featured && (
-                <span className="inline-block text-[11px] font-bold px-2.5 py-1 rounded-full bg-(--color-gold) text-(--color-brand) mb-3">
-                  FEATURED PROJECT
-                </span>
-              )}
-              <h1 className="text-2xl sm:text-3xl font-bold text-(--color-brand) leading-tight wrap-break-word">
-                {project.name}
-              </h1>
-              {project.tagline && (
-                <p className="mt-2 text-gray-600 text-base">{project.tagline}</p>
-              )}
-              {(project.location || project.city) && (
-                <p className="mt-2 flex items-center gap-1.5 text-gray-500 text-sm">
-                  <MapPin size={15} className="text-(--color-gold)" />
-                  {[project.location, project.city?.name].filter(Boolean).join(", ")}
-                </p>
-              )}
-              {priceRange && (
-                <div className="mt-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Price Range</p>
-                  <p className="mt-1 text-2xl font-bold text-(--color-brand)">{priceRange}</p>
-                  <p className="mt-1 text-xs text-gray-400">Indicative, varies by unit size and plan.</p>
-                </div>
-              )}
-              {project.brochure_url && (
-                <a
-                  href={project.brochure_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-(--color-brand) bg-(--color-brand)/5 hover:bg-(--color-brand) hover:text-white px-4 py-2.5 rounded-xl transition-colors"
-                >
-                  <FileText size={15} /> Download Brochure
-                </a>
-              )}
-            </div>
-
-            {/* Description */}
-            <Reveal as="section" className="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h2 className="text-lg font-bold text-(--color-brand) mb-3">About this project</h2>
-              <ProjectRichText text={project.description} />
-            </Reveal>
-
-            {/* Payment plan */}
-            {project.payment_plan && (
-              <Reveal as="section" className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="text-lg font-bold text-(--color-brand) mb-3">Payment Plan</h2>
-                <ProjectRichText text={project.payment_plan} />
-              </Reveal>
-            )}
-
-            {/* Available units */}
-            {units.length > 0 && (
-              <section className="mt-14">
-                <div className="flex items-end justify-between mb-6">
-                  <div>
-                    <p className="text-(--color-gold) text-xs font-bold tracking-[0.2em] uppercase mb-1 flex items-center gap-1.5">
-                      <Home size={13} /> Available Options
-                    </p>
-                    <h2 className="text-2xl font-bold text-(--color-brand)">
-                      Units in {project.name}
-                    </h2>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {units.map((p) => (
-                    <PropertyCard key={p.id} property={p} supabaseUrl={SUPABASE_URL} />
-                  ))}
-                </div>
-              </section>
-            )}
           </div>
 
-          {/* ════════════ RIGHT SIDEBAR ════════════ */}
-          <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              {/* Form */}
-              <div className="p-6">
-                <h3 className="text-base font-bold text-(--color-brand) mb-1">Interested in {project.name}?</h3>
-                <p className="text-xs text-gray-400 mb-4">Send us a message and we&apos;ll get back to you.</p>
-                <InquiryForm projectId={project.id} projectUrl={projectUrl} title={project.name} phone={PHONE_TEL} />
-              </div>
+          <ProjectHeroCard
+            project={project}
+            projectUrl={projectUrl}
+            priceRange={priceRange}
+            categories={categoryNames}
+            phoneDisplay={phoneDisplay}
+            phoneTel={phoneTel}
+            whatsapp={whatsapp}
+          />
+        </div>
 
-              {/* Quick contact */}
-              <div className="px-6 pb-6 grid grid-cols-2 gap-3">
-                <a
-                  href={`tel:${PHONE_TEL}`}
-                  className="flex items-center justify-center gap-2 border border-(--color-royal)/40 text-(--color-royal) font-semibold text-sm px-3 py-2.5 rounded-xl hover:bg-(--color-royal)/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-royal) focus-visible:ring-offset-1"
-                >
-                  <Phone size={15} /> Call
-                </a>
-                <a
-                  href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hi, I'm interested in "${project.name}"`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 bg-green-600 text-white font-semibold text-sm px-3 py-2.5 rounded-xl hover:bg-green-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-1"
-                >
-                  <MessageCircle size={15} /> WhatsApp
-                </a>
-              </div>
-            </div>
+        <ProjectKeySpecs specs={keySpecs} />
 
-            {/* Trust badges */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
-              <TrustRow icon={ShieldCheck} text="RERA registered & verified project" />
-              <TrustRow icon={BadgeCheck} text="No brokerage, transparent pricing" />
-              <TrustRow icon={Phone} text={`Talk to an expert: ${PHONE_DISPLAY}`} />
-            </div>
-          </aside>
+        <ProjectSectionNav sections={navSections} />
+
+        {/* ════════════ SECTIONS — full width ════════════ */}
+        <div className="mt-12 space-y-16 sm:space-y-20">
+          <ProjectAbout
+            projectName={project.name}
+            overview={project.overview?.trim() || null}
+            description={project.description}
+            brochureUrl={project.brochure_url}
+          />
+
+          <ProjectHighlights highlights={highlights} projectName={project.name} />
+
+          <ProjectAmenities groups={amenityGroups} />
+
+          <ProjectLocationAdvantages items={locationAdvantages} address={address || null} />
+
+          <ProjectPaymentPlan
+            rows={paymentRows}
+            charges={additionalCharges}
+            note={project.payment_note}
+            legacyText={project.payment_plan}
+          />
+
+          {units.length > 0 && (
+            <section className="scroll-mt-44" id="units">
+              <SectionHeading
+                eyebrow="Available options"
+                title={`Units in ${project.name}`}
+                lead="Individual homes and plots currently listed in this project."
+                icon={Home}
+              />
+              <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {units.map((p) => (
+                  <PropertyCard key={p.id} property={p} supabaseUrl={SUPABASE_URL} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          <ProjectInquirySection
+            projectId={project.id}
+            projectUrl={projectUrl}
+            projectName={project.name}
+            phoneDisplay={phoneDisplay}
+            phoneTel={phoneTel}
+            whatsapp={whatsapp}
+          />
+
+          <ProjectCTA
+            projectId={project.id}
+            projectName={project.name}
+            projectUrl={projectUrl}
+            phoneDisplay={phoneDisplay}
+            phoneTel={phoneTel}
+            whatsapp={whatsapp}
+          />
         </div>
       </div>
-    </div>
-  );
-}
-
-function TrustRow({ icon: Icon, text }: { icon: typeof ShieldCheck; text: string }) {
-  return (
-    <div className="flex items-center gap-3 text-sm text-gray-600">
-      <span className="shrink-0 w-8 h-8 rounded-full bg-(--color-brand)/5 flex items-center justify-center">
-        <Icon size={16} className="text-(--color-brand)" />
-      </span>
-      {text}
     </div>
   );
 }

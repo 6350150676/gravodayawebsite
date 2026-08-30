@@ -6,6 +6,14 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { INVENTORY_TAG } from "@/lib/queries/tags";
 import { projectSchema } from "@/lib/validations/project";
+import {
+  parseAmenityGroups,
+  parseCharges,
+  parseHighlights,
+  parseLocationAdvantages,
+  parsePaymentRows,
+  parseSpecs,
+} from "@/lib/project-content";
 import { slugify } from "@/lib/utils";
 
 function toNum(value: FormDataEntryValue | null): number | undefined {
@@ -41,11 +49,40 @@ function parseFormData(formData: FormData) {
       .map((v) => Number(v))
       .filter((n) => Number.isInteger(n) && n > 0),
     description: formData.get("description") as string,
+    overview: (formData.get("overview") as string) || undefined,
     payment_plan: (formData.get("payment_plan") as string) || undefined,
+    payment_note: (formData.get("payment_note") as string) || undefined,
     brochure_url: (formData.get("brochure_url") as string) || undefined,
+    rera_number: (formData.get("rera_number") as string) || undefined,
+    contact_phone: (formData.get("contact_phone") as string) || undefined,
+    contact_whatsapp: (formData.get("contact_whatsapp") as string) || undefined,
+
+    // The structured sections arrive as one JSON string per section, built by
+    // the repeater UI in ProjectContentEditor. Run them through the same
+    // parsers the public page uses, so a hand-edited or half-filled entry is
+    // dropped here rather than blowing up at render time.
+    highlights: parseHighlights(formData.get("highlights")),
+    amenity_groups: parseAmenityGroups(formData.get("amenity_groups")),
+    location_advantages: parseLocationAdvantages(formData.get("location_advantages")),
+    payment_plans: parsePaymentRows(formData.get("payment_plans")),
+    additional_charges: parseCharges(formData.get("additional_charges")),
+    key_specs: parseSpecs(formData.get("key_specs")),
+
     is_featured: formData.get("is_featured") === "true",
     status: (formData.get("status") as string) || "active",
   };
+}
+
+// The project form always submits every column, so a database that hasn't had
+// the newest migration applied rejects the whole save — including the name.
+// Turn Postgres's terse complaint into the instruction that actually fixes it.
+function friendlyDbError(message: string): string {
+  const missing = /column "?(?:projects\.)?([a-z_]+)"? of relation|column projects\.([a-z_]+) does not exist|column "([a-z_]+)" of relation "projects"/i.exec(message);
+  if (missing) {
+    const column = missing[1] ?? missing[2] ?? missing[3];
+    return `Your database is missing the "${column}" column on projects. Run the migrations in supabase/migrations/ (SQL Editor, in filename order) and try again.`;
+  }
+  return message;
 }
 
 
@@ -112,7 +149,7 @@ export async function createProjectAction(
     .select("id")
     .single();
 
-  if (error) return error.message;
+  if (error) return friendlyDbError(error.message);
 
   const images = formData.getAll("images") as File[];
   await uploadProjectImages(project.id, images);
@@ -161,10 +198,15 @@ export async function updateProjectAction(
       price_max: parsed.data.price_max ?? null,
       payment_plan: parsed.data.payment_plan ?? null,
       brochure_url: parsed.data.brochure_url || null,
+      overview: parsed.data.overview ?? null,
+      payment_note: parsed.data.payment_note ?? null,
+      rera_number: parsed.data.rera_number ?? null,
+      contact_phone: parsed.data.contact_phone || null,
+      contact_whatsapp: parsed.data.contact_whatsapp || null,
     })
     .eq("id", id);
 
-  if (error) return error.message;
+  if (error) return friendlyDbError(error.message);
 
   if (slug !== current.slug) {
     // Retire the old URL into the redirect table, and make sure the slug we just
