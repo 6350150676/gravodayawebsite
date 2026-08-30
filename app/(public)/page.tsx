@@ -14,6 +14,7 @@ import { PropertyCard } from "@/components/public/PropertyCard";
 import { ProjectCard } from "@/components/public/ProjectCard";
 import { HeroSearch } from "@/components/public/HeroSearch";
 import { HeroCarousel } from "@/components/public/HeroCarousel";
+import { InquiryForm } from "@/components/public/InquiryForm";
 import { Reveal } from "@/components/public/Reveal";
 
 // Content is admin-edited, and every admin write revalidates these paths, so
@@ -156,6 +157,39 @@ export default async function HomePage() {
                 </Reveal>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── PROJECT ENQUIRY ─────────────────────────────────────── */}
+      {projects.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+            <Reveal>
+              <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-3">Enquire Now</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-(--color-brand) leading-snug">
+                Interested in one of our projects?
+              </h2>
+              <div className="mt-3 w-16 h-1 bg-(--color-gold) rounded-full" />
+              <p className="mt-5 text-gray-500 text-[15px] leading-relaxed max-w-md">
+                Leave your details and our team will call you back with layouts, availability and
+                exact pricing — or talk to us right away.
+              </p>
+              <a href={`tel:${settings.phone_tel}`}
+                className="mt-8 inline-flex items-center gap-2.5 bg-(--color-royal) text-white font-bold px-7 py-3.5 rounded-full hover:bg-(--color-royal-dark) transition-colors shadow-lg">
+                <Phone size={15} /> {settings.phone_display}
+              </a>
+            </Reveal>
+
+            <Reveal delay={150}>
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                <h3 className="text-base font-bold text-(--color-brand)">Send us your enquiry</h3>
+                <p className="mb-5 mt-1 text-xs text-gray-400">
+                  We usually get back within a few hours.
+                </p>
+                <InquiryForm title="Garvoday Projects" phone={settings.phone_tel} />
+              </div>
+            </Reveal>
           </div>
         </section>
       )}

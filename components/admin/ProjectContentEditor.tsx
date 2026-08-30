@@ -54,6 +54,22 @@ export function ProjectContentEditor({ project }: Props) {
 
   return (
     <>
+      <section className="rounded-xl border border-dashed border-(--color-brand)/25 bg-(--color-brand)/5 p-5">
+        <h2 className="font-semibold text-gray-800">Detail page sections</h2>
+        <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+          Everything below is optional, and every list grows to whatever this project needs — the
+          page lays out four highlights or nine, two amenity categories or five, and hides any
+          section you leave empty.
+        </p>
+        <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+          <strong className="font-semibold">Leave the highlights, amenities and location lists
+          empty</strong> and the site reads them out of the description above — its ALL-CAPS
+          headings and bullet lists — so an older project still gets the full layout. Fill in any
+          one of the three and this panel takes over for all three. The payment plan works the same
+          way, on its own.
+        </p>
+      </section>
+
       {/* ── Key specs ────────────────────────────────────────────── */}
       <Section
         title="Key Specifications"

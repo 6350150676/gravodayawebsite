@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import {
   getProjectBySlug,
   getProjectSlugRedirect,
@@ -12,18 +12,17 @@ import { getCategories } from "@/lib/queries/properties";
 import { getSiteSettings } from "@/lib/queries/site-content";
 import { PropertyGallery } from "@/components/public/PropertyGallery";
 import { PropertyCard } from "@/components/public/PropertyCard";
-import { ProjectAbout } from "@/components/public/project/ProjectAbout";
+import { ProjectRichText } from "@/components/public/ProjectRichText";
 import { ProjectAmenities } from "@/components/public/project/ProjectAmenities";
-import { ProjectCTA } from "@/components/public/project/ProjectCTA";
-import { ProjectHighlights } from "@/components/public/project/ProjectHighlights";
-import { ProjectHeroCard } from "@/components/public/project/ProjectHeroCard";
-import { ProjectInquirySection } from "@/components/public/project/ProjectInquirySection";
-import { ProjectKeySpecs } from "@/components/public/project/ProjectKeySpecs";
+import { ProjectHighlightStrip } from "@/components/public/project/ProjectHighlightStrip";
+import { ProjectInquiryPanel } from "@/components/public/project/ProjectInquiryPanel";
 import { ProjectLocationAdvantages } from "@/components/public/project/ProjectLocationAdvantages";
 import { ProjectPaymentPlan } from "@/components/public/project/ProjectPaymentPlan";
-import { ProjectSectionNav } from "@/components/public/project/ProjectSectionNav";
-import { SectionHeading } from "@/components/public/project/SectionHeading";
-import { parseProjectContent } from "@/lib/project-content";
+import { ProjectPromoCard } from "@/components/public/project/ProjectPromoCard";
+import { ProjectTitleBlock } from "@/components/public/project/ProjectTitleBlock";
+import { SubHeading } from "@/components/public/project/SubHeading";
+import { parseProjectContent, splitDescription } from "@/lib/project-content";
+import { deriveLegacyContent } from "@/lib/project-legacy-content";
 import { formatPriceRange } from "@/lib/utils";
 
 export const revalidate = 3600;
@@ -139,7 +138,6 @@ export default async function ProjectDetailPage({ params }: Props) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.garvodayrealty.com";
   const projectUrl = `${siteUrl}/projects/${project.slug}`;
   const priceRange = formatPriceRange(project.price_min, project.price_max);
-  const address = [project.location, project.city?.name].filter(Boolean).join(", ");
 
   const categoryNames = allCategories
     .filter((c) => project.category_ids?.includes(c.id))
@@ -148,26 +146,45 @@ export default async function ProjectDetailPage({ params }: Props) {
   // Every variable-length section of the page, in one place. Each one renders
   // nothing when its list is empty, which is how a project with four highlights
   // and no payment plan lays itself out correctly with no special-casing.
-  const { highlights, amenityGroups, locationAdvantages, paymentRows, additionalCharges, keySpecs } =
-    parseProjectContent(project);
+  const structured = parseProjectContent(project);
 
-  // The nav only lists sections that will actually render, so a sparse project
-  // gets a short nav instead of links that jump nowhere.
-  const navSections = [
-    { id: "about", label: "Overview", show: true },
-    { id: "highlights", label: "Highlights", show: highlights.length > 0 },
-    { id: "amenities", label: "Amenities", show: amenityGroups.length > 0 },
-    { id: "location", label: "Location", show: locationAdvantages.length > 0 },
-    {
-      id: "payment-plan",
-      label: "Pricing",
-      show: paymentRows.length > 0 || additionalCharges.length > 0 || !!project.payment_plan?.trim(),
-    },
-    { id: "units", label: "Units", show: units.length > 0 },
-    { id: "enquire", label: "Enquire", show: true },
-  ]
-    .filter((s) => s.show)
-    .map(({ id, label }) => ({ id, label }));
+  // A project entered before these sections existed has all of them empty, and
+  // its content sitting in the two free-text fields instead. Rather than show
+  // that project a plain wall of text, read the sections out of the text it
+  // already has — the same rules scripts/backfill-project-content.mjs uses to
+  // write them into the database permanently.
+  //
+  // The admin panel stays the source of truth: fill in any of the description
+  // sections and this stops deriving them, and the same goes separately for the
+  // payment plan, so structuring one doesn't disturb the other.
+  const legacy = deriveLegacyContent(project);
+
+  const usesLegacyText =
+    structured.highlights.length === 0 &&
+    structured.amenityGroups.length === 0 &&
+    structured.locationAdvantages.length === 0;
+  const usesLegacyPlan =
+    structured.paymentRows.length === 0 && structured.additionalCharges.length === 0;
+
+  const { keySpecs } = structured;
+  const highlights = usesLegacyText ? legacy.highlights : structured.highlights;
+  const amenityGroups = usesLegacyText ? legacy.amenityGroups : structured.amenityGroups;
+  const locationAdvantages = usesLegacyText ? legacy.locationAdvantages : structured.locationAdvantages;
+  const paymentRows = usesLegacyPlan ? legacy.paymentRows : structured.paymentRows;
+  const additionalCharges = usesLegacyPlan ? legacy.additionalCharges : structured.additionalCharges;
+  const paymentNote = project.payment_note?.trim() || (usesLegacyPlan ? legacy.paymentNote : "") || null;
+  const paymentPlanText = usesLegacyPlan ? legacy.paymentPlanText : project.payment_plan;
+
+  // The description is written as a lead paragraph followed by ALL-CAPS
+  // sections. Splitting it lets the highlight strip sit between the two,
+  // matching the layout, without asking admins to re-enter anything.
+  const split = splitDescription(project.description);
+  const lead = (usesLegacyText ? legacy.overview : split.lead) || project.overview?.trim() || "";
+  // Whatever was lifted into a section above must not also run as body text.
+  const body = usesLegacyText ? legacy.description : split.body;
+
+  // The closing card's photo: prefer one that isn't already the hero cover.
+  const promoImage = galleryImages[1]?.url ?? galleryImages[0]?.url ?? null;
 
   const projectJsonLd = {
     "@context": "https://schema.org",
@@ -238,87 +255,94 @@ export default async function ProjectDetailPage({ params }: Props) {
         </nav>
       </div>
 
-      {/* ════════════ HERO ════════════
-          Two columns that end level: the gallery sets the height and the card
-          stretches to it. Nothing else on the page is columned, so there is no
-          rail left over to sit empty. */}
-      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[1.55fr_1fr] lg:gap-8">
+      <div className="mx-auto max-w-7xl space-y-6 px-4 pt-6 sm:px-6 lg:px-8">
+        {/* ════════════ HERO ════════════
+            Gallery + identity on the left, inquiry + trust on the right. The
+            two columns come out level because the title block balances the
+            trust card — neither side ends early and leaves a hole. On a phone
+            the grid collapses to one column, so it reads gallery → name and
+            price → inquiry form, which is the order a buyer wants them in. */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-7">
           <div className="min-w-0">
             <PropertyGallery images={galleryImages} />
+            <ProjectTitleBlock
+              project={project}
+              priceRange={priceRange}
+              specs={keySpecs}
+              categories={categoryNames}
+            />
           </div>
 
-          <ProjectHeroCard
+          <ProjectInquiryPanel
             project={project}
             projectUrl={projectUrl}
-            priceRange={priceRange}
-            categories={categoryNames}
             phoneDisplay={phoneDisplay}
             phoneTel={phoneTel}
             whatsapp={whatsapp}
           />
         </div>
 
-        <ProjectKeySpecs specs={keySpecs} />
+        {/* ════════════ ONE CONTENT CARD ════════════
+            Description, highlights, amenities and distances read as a single
+            document rather than a stack of separately-titled pages. Each block
+            returns null when the admin hasn't filled it in, so the card is as
+            long as the project has content and no longer. */}
+        <div className="space-y-8 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-7">
+          <section id="about" className="scroll-mt-32">
+            <h2 className="text-lg font-bold text-(--color-brand)">About this project</h2>
+            {lead && (
+              <div className="mt-3">
+                <ProjectRichText text={lead} />
+              </div>
+            )}
+          </section>
 
-        <ProjectSectionNav sections={navSections} />
+          <ProjectHighlightStrip highlights={highlights} />
 
-        {/* ════════════ SECTIONS — full width ════════════ */}
-        <div className="mt-12 space-y-16 sm:space-y-20">
-          <ProjectAbout
-            projectName={project.name}
-            overview={project.overview?.trim() || null}
-            description={project.description}
-            brochureUrl={project.brochure_url}
-          />
-
-          <ProjectHighlights highlights={highlights} projectName={project.name} />
+          {body && (
+            <div>
+              <ProjectRichText text={body} />
+            </div>
+          )}
 
           <ProjectAmenities groups={amenityGroups} />
 
-          <ProjectLocationAdvantages items={locationAdvantages} address={address || null} />
-
-          <ProjectPaymentPlan
-            rows={paymentRows}
-            charges={additionalCharges}
-            note={project.payment_note}
-            legacyText={project.payment_plan}
-          />
-
-          {units.length > 0 && (
-            <section className="scroll-mt-44" id="units">
-              <SectionHeading
-                eyebrow="Available options"
-                title={`Units in ${project.name}`}
-                lead="Individual homes and plots currently listed in this project."
-                icon={Home}
-              />
-              <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {units.map((p) => (
-                  <PropertyCard key={p.id} property={p} supabaseUrl={SUPABASE_URL} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          <ProjectInquirySection
-            projectId={project.id}
-            projectUrl={projectUrl}
-            projectName={project.name}
-            phoneDisplay={phoneDisplay}
-            phoneTel={phoneTel}
-            whatsapp={whatsapp}
-          />
-
-          <ProjectCTA
-            projectId={project.id}
-            projectName={project.name}
-            projectUrl={projectUrl}
-            phoneDisplay={phoneDisplay}
-            phoneTel={phoneTel}
-            whatsapp={whatsapp}
-          />
+          <ProjectLocationAdvantages items={locationAdvantages} />
         </div>
+
+        {units.length > 0 && (
+          <section id="units" className="scroll-mt-32 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-7">
+            <SubHeading>Available Units</SubHeading>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {units.map((p) => (
+                <PropertyCard key={p.id} property={p} supabaseUrl={SUPABASE_URL} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ════════════ PAYMENT PLAN ════════════
+            A section in its own right rather than a column beside the CTA:
+            configurations, the charges that sit on top of them and the fine
+            print all need the full width to stay readable, and the block
+            removes itself when the admin hasn't entered a plan. */}
+        <ProjectPaymentPlan
+          rows={paymentRows}
+          charges={additionalCharges}
+          note={paymentNote}
+          legacyText={paymentPlanText}
+          phoneDisplay={phoneDisplay}
+          phoneTel={phoneTel}
+        />
+
+        {/* ════════════ CLOSING CTA ════════════ */}
+        <ProjectPromoCard
+          project={project}
+          projectUrl={projectUrl}
+          imageUrl={promoImage}
+          subline={project.tagline}
+          phoneTel={phoneTel}
+        />
       </div>
     </div>
   );

@@ -119,3 +119,99 @@ export function parseProjectContent(project: {
     keySpecs: parseSpecs(project.key_specs),
   };
 }
+
+/**
+ * Splits a description into the opening prose and everything after it.
+ *
+ * These descriptions are written as a lead paragraph followed by ALL-CAPS
+ * sections ("PROJECT HIGHLIGHTS", "UNIT MIX", …). The detail page shows the
+ * lead on its own, drops the highlight strip underneath it, and only then runs
+ * the rest — so the two parts have to come back separately. Splitting here
+ * rather than asking admins to fill a second field means every existing
+ * project gets the layout without being re-entered.
+ */
+export function splitDescription(text: string): { lead: string; body: string } {
+  const lines = text.split("\n");
+
+  const isHeading = (line: string) => {
+    const bare = line.replace(/\*\*/g, "").trim();
+    const letters = bare.replace(/[^A-Za-z]/g, "");
+    return letters.length >= 4 && letters === letters.toUpperCase();
+  };
+
+  const at = lines.findIndex(isHeading);
+  if (at > 0) {
+    return {
+      lead: lines.slice(0, at).join("\n").trim(),
+      body: lines.slice(at).join("\n").trim(),
+    };
+  }
+  // No headings at all — treat the first non-empty paragraph as the lead.
+  if (at === -1) {
+    const firstBreak = lines.findIndex((l, i) => i > 0 && l.trim() === "");
+    if (firstBreak > 0) {
+      return {
+        lead: lines.slice(0, firstBreak).join("\n").trim(),
+        body: lines.slice(firstBreak).join("\n").trim(),
+      };
+    }
+  }
+  return { lead: "", body: text };
+}
+
+/** One unit configuration on the payment plan, with every size priced under it. */
+export interface ProjectPaymentGroup {
+  unit_type: string;
+  tower: string;
+  lines: Omit<ProjectPaymentRow, "unit_type" | "tower">[];
+}
+
+/**
+ * Collapses consecutive rows that describe the same configuration into one
+ * block — "1 BHK — A Tower" once, with its 800 and 1000 sq.ft. prices under it,
+ * rather than the same heading printed twice.
+ *
+ * Only *consecutive* rows are merged, so the admin's ordering is still what
+ * the page shows: moving a row away from its group splits it, deliberately.
+ */
+export function groupPaymentRows(rows: ProjectPaymentRow[]): ProjectPaymentGroup[] {
+  const groups: ProjectPaymentGroup[] = [];
+
+  for (const { unit_type, tower, ...line } of rows) {
+    const last = groups[groups.length - 1];
+    if (last && last.unit_type === unit_type && last.tower === tower) {
+      last.lines.push(line);
+    } else {
+      groups.push({ unit_type, tower, lines: [line] });
+    }
+  }
+
+  return groups;
+}
+
+/**
+ * Splits the fine print under the payment table into its separate points, and
+ * each point into a heading and its body where the admin wrote one.
+ *
+ * Admins type this as a couple of starred or bolded lines — "**Note:** prices
+ * are indicative…", "Direct builder meeting available — contact us…" — and the
+ * page shows them as titled cells. A line with no obvious heading keeps its
+ * whole text as the body.
+ */
+export function parseNoteCells(note: string | null | undefined): { heading: string; body: string }[] {
+  if (!note?.trim()) return [];
+
+  return note
+    .split("\n")
+    .map((line) => line.replace(/\*\*/g, "").replace(/^[\s*•\-–—]+/, "").trim())
+    .filter(Boolean)
+    .map((line) => {
+      // "Note: …" / "Direct builder meeting available — …". The heading has to
+      // be short, or a sentence with a dash in it would lose its first clause.
+      const split = /^(.{3,60}?)\s*(?::|—|–)\s+(.+)$/.exec(line);
+      if (split && split[1].split(/\s+/).length <= 7) {
+        return { heading: split[1].trim(), body: split[2].trim() };
+      }
+      return { heading: "", body: line };
+    });
+}

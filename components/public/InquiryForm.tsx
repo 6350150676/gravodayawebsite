@@ -77,13 +77,11 @@ export function InquiryForm({
   return (
     <form action={action} className="space-y-3.5">
       {propertyId && <input type="hidden" name="property_id" value={propertyId} />}
-      {projectId && (
-        <>
-          <input type="hidden" name="project_id" value={projectId} />
-          <input type="hidden" name="context_label" value={title} />
-          {projectUrl && <input type="hidden" name="context_url" value={projectUrl} />}
-        </>
-      )}
+      {projectId && <input type="hidden" name="project_id" value={projectId} />}
+      {/* Labels the team notification. A property inquiry already carries its
+          own title, so this only ever fills in for project and general forms. */}
+      <input type="hidden" name="context_label" value={title} />
+      {projectUrl && <input type="hidden" name="context_url" value={projectUrl} />}
       {/* Honeypot — hidden from humans, bots tend to fill it */}
       <input
         type="text"

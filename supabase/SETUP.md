@@ -48,6 +48,24 @@ you bring an existing database up to date after pulling new code.
     suffix from slugs created under the old scheme, retiring each old project
     slug as a 301 redirect
 
+### Existing projects: move their text into the new sections
+
+Projects written before migration 11 keep their content in the long
+`description` and `payment_plan` fields. The detail page reads the sections out
+of that text on the fly, so it already renders the full design — but the admin
+panel can only edit what is in the structured columns. Run this once to move it
+across:
+
+```bash
+node scripts/backfill-project-content.mjs           # preview, writes nothing
+node scripts/backfill-project-content.mjs --apply   # writes (backs up first)
+```
+
+It uses exactly the rules the page uses (`lib/project-legacy-content.ts`), backs
+the previous values up to `scripts/backups/`, and leaves anything it doesn't
+understand where it is. Afterwards every section is editable in
+**Admin → Projects → Edit**.
+
 > **Skipping a migration breaks the admin portal, not just the feature.** The
 > project edit form always submits every column, so a database missing (say)
 > `price_min` rejects the whole update with `column projects.price_min does not

@@ -66,7 +66,10 @@ function isSectionHeading(line: string): boolean {
 // Admins write these descriptions in the same Markdown they use everywhere
 // else — **bold**, and "*" or "•" for bullets as often as "-". Only "-" was
 // understood, so real listings rendered raw asterisks: "**1 BHK — A Tower**".
-const BULLET = /^[-*•]\s+/;
+// A dash typed straight against the word is still a bullet — admins write both
+// "- Reading Room" and "-Reading Room". Section headings are checked first, so
+// a heading typed the same way ("-COMMON INFRASTRUCTURE") isn't caught here.
+const BULLET = /^[-*•]\s*/;
 const FULLY_BOLD = /^\*\*(.+)\*\*$/;
 
 /** Strips the bold markers, for heading detection. */
@@ -106,18 +109,41 @@ export function ProjectRichText({ text }: { text: string }) {
     // Two columns are right for a long feature list, but they strand a short
     // group in the left half with a hole beside it — which is exactly what a
     // payment plan looks like, where each tower heading has one or two sizes
-    // under it. Short groups run as a single column instead.
-    const columns = bulletBuffer.length > 3 ? "sm:grid-cols-2" : "";
+    // under it. Short groups run as a single column instead, and so does a list
+    // of full sentences, which columns would squeeze into unreadable slivers.
+    const longest = Math.max(...bulletBuffer.map((item) => item.length));
+    const columns =
+      longest > 95
+        ? ""
+        : bulletBuffer.length > 6
+          ? "sm:grid-cols-2 lg:grid-cols-3"
+          : bulletBuffer.length > 3
+            ? "sm:grid-cols-2"
+            : "";
     blocks.push(
       <ul key={key} className={`mt-3 mb-5 grid grid-cols-1 gap-x-6 gap-y-3 ${columns}`}>
         {bulletBuffer.map((item, i) => {
           const Icon = iconFor(plain(item));
+          // Specification lines are written "Kitchen: vitrified tiles, …" —
+          // leading with the label in bold is how they're meant to read.
+          const labelled = /^([^:]{2,45}):\s*(.+)$/.exec(plain(item));
           return (
             <li key={i} className="flex items-start gap-2.5 text-[15px] text-gray-600 leading-relaxed">
               <span className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-gold)]/15 flex items-center justify-center">
                 <Icon size={13} className="text-[var(--color-brand)]" />
               </span>
-              <span>{inline(item)}</span>
+              <span className="min-w-0 wrap-break-word">
+                {labelled ? (
+                  <>
+                    <strong className="font-semibold text-[var(--color-brand)]">
+                      {labelled[1]}:
+                    </strong>{" "}
+                    {inline(labelled[2])}
+                  </>
+                ) : (
+                  inline(item)
+                )}
+              </span>
             </li>
           );
         })}
@@ -128,25 +154,25 @@ export function ProjectRichText({ text }: { text: string }) {
 
   lines.forEach((rawLine, idx) => {
     const line = rawLine.trim();
+    const bare = plain(line).trim();
+    const stripped = bare.replace(BULLET, "").trim();
 
-    if (BULLET.test(line)) {
-      bulletBuffer.push(line.replace(BULLET, "").trim());
+    // A dash-prefixed heading is still a heading, so this test comes first.
+    if (stripped && !isSectionHeading(stripped) && BULLET.test(line)) {
+      bulletBuffer.push(stripped);
       return;
     }
     flushBullets(`bullets-${idx}`);
 
-    if (!line) return;
+    if (!line || !bare) return;
 
-    const bare = plain(line).trim();
-    if (!bare) return;
-
-    if (isSectionHeading(bare)) {
+    if (isSectionHeading(stripped)) {
       blocks.push(
         <h3
           key={idx}
           className="mt-6 mb-1 first:mt-0 text-[13px] font-bold tracking-[0.14em] uppercase text-[var(--color-gold)] border-b border-[var(--color-gold)]/20 pb-2"
         >
-          {bare}
+          {stripped}
         </h3>
       );
       return;
@@ -154,10 +180,10 @@ export function ProjectRichText({ text }: { text: string }) {
 
     // A line that is nothing but one bold span is a sub-heading — that is how
     // "**1 BHK — A Tower**" is meant to read above the sizes under it.
-    if (FULLY_BOLD.test(line) || (bare.endsWith(":") && bare.length < 80)) {
+    if (FULLY_BOLD.test(line) || (stripped.endsWith(":") && stripped.length < 80)) {
       blocks.push(
         <p key={idx} className="mt-5 mb-1 font-bold text-[var(--color-brand)] text-[15px]">
-          {bare}
+          {stripped}
         </p>
       );
       return;
