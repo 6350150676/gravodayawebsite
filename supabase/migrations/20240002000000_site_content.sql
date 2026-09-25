@@ -162,7 +162,7 @@ select * from (values
    'var(--color-gold)', 2),
   ('Sell Your Property', 'Get the best value',
    'List with us and reach thousands of qualified buyers. Free valuation & expert assistance.',
-   'Get Free Valuation →', '/contact',
+   'Get Free Valuation →', '/sell',
    'https://images.unsplash.com/photo-1613977257365-aaae5a9817ff?w=800&q=80&auto=format&fit=crop',
    'var(--color-moss)', 3)
 ) as v(title, subtitle, description, cta, href, image_url, accent, sort_order)

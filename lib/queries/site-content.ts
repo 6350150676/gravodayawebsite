@@ -73,7 +73,9 @@ export function getHeroSlides(): HeroSlide[] {
   return DEFAULT_HERO_SLIDES;
 }
 
-export const getIntentCards = unstable_cache(
+// Only the DB rows are cached; the fallback is applied outside the cache so an
+// edit to DEFAULT_INTENT_CARDS shows up without waiting out the revalidate.
+const getIntentCardRows = unstable_cache(
   async (): Promise<IntentCard[]> => {
     const supabase = createPublicClient();
     const { data, error } = await supabase
@@ -81,10 +83,14 @@ export const getIntentCards = unstable_cache(
       .select("title, subtitle, description, cta, href, image_url, accent")
       .order("sort_order");
 
-    const rows = (data ?? []) as unknown as IntentCard[];
-    if (error || rows.length === 0) return DEFAULT_INTENT_CARDS;
-    return rows;
+    if (error) return [];
+    return (data ?? []) as unknown as IntentCard[];
   },
   ["intent-cards"],
   CONTENT_CACHE,
 );
+
+export async function getIntentCards(): Promise<IntentCard[]> {
+  const rows = await getIntentCardRows();
+  return rows.length > 0 ? rows : DEFAULT_INTENT_CARDS;
+}

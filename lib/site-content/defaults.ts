@@ -77,7 +77,7 @@ export const DEFAULT_INTENT_CARDS: IntentCard[] = [
     description:
       "List with us and reach thousands of qualified buyers. Free valuation & expert assistance.",
     cta: "Get Free Valuation →",
-    href: "/contact",
+    href: "/sell",
     image_url:
       "https://images.unsplash.com/photo-1613977257365-aaae5a9817ff?w=800&q=80&auto=format&fit=crop",
     accent: "var(--color-moss)",
