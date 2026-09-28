@@ -1,6 +1,14 @@
--- Run in project zklajorxhofjilmytlbp -> SQL Editor -> Run.
--- Same as supabase/migrations/20260928000000_submission_review.sql.
--- Safe to run more than once.
+-- ============================================================
+-- Seller submissions: approve / reject workflow
+-- ============================================================
+-- A seller's listing stays in seller_submissions until an admin approves it.
+-- Approving copies it into `properties` as an ordinary active listing and
+-- links the two through property_id. Nothing pending or rejected is ever
+-- written to `properties`, so the existing anon RLS on that table (status =
+-- 'active') remains the single rule for what the public site can see, and the
+-- seller's name/phone/email never leave seller_submissions.
+--
+-- Safe to re-run.
 
 -- ---------- seller_submissions ----------
 
@@ -55,13 +63,3 @@ on conflict (id) do update
       allowed_mime_types = excluded.allowed_mime_types;
 
 notify pgrst, 'reload schema';
-
--- Must print 8 (7 submission columns + selling_points) and 1 bucket.
-select
-  (select count(*) from information_schema.columns
-    where table_schema = 'public'
-      and ((table_name = 'seller_submissions'
-            and column_name in ('area_sqft','bedrooms','bathrooms','rejection_reason',
-                                'approved_at','rejected_at','property_id'))
-        or (table_name = 'properties' and column_name = 'selling_points'))) as columns_added,
-  (select count(*) from storage.buckets where id = 'submission-images') as private_bucket;

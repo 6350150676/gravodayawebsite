@@ -11,6 +11,9 @@ export interface PropertyWithRelations {
   bedrooms: number | null;
   bathrooms: number | null;
   amenities: string[];
+  // Optional: a database that hasn't run the submission_review migration
+  // doesn't have the column.
+  selling_points?: string[];
   is_for_rent: boolean;
   is_featured: boolean;
   status: import("./database").PropertyStatus;

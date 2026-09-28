@@ -15,3 +15,11 @@ export const chatRatelimit = new Ratelimit({
   analytics: true,
   prefix: "garvoday:chat",
 });
+
+// Sell form: each submission can carry ten photos, so cap it per IP
+export const sellRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, "1 h"),
+  analytics: true,
+  prefix: "garvoday:sell",
+});

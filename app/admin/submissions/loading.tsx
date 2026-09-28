@@ -3,7 +3,7 @@ export default function SubmissionsLoading() {
     <div className="animate-pulse space-y-4">
       <div className="h-8 w-44 bg-gray-200 rounded-lg mb-6" />
       <div className="flex gap-1 mb-6">
-        {[1, 2, 3, 4, 5].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-9 w-20 bg-gray-200 rounded-lg" />
         ))}
       </div>

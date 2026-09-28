@@ -2,8 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { INVENTORY_TAG } from "@/lib/queries/tags";
 import { projectSchema } from "@/lib/validations/project";
 import {
@@ -27,13 +27,6 @@ function validationError(err: ReturnType<typeof projectSchema.safeParse>): strin
   const e = err.error.errors[0];
   const field = e.path.length ? `${String(e.path[0]).replace(/_/g, " ")}: ` : "";
   return `${field}${e.message}`;
-}
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/admin/login");
-  return user;
 }
 
 function parseFormData(formData: FormData) {

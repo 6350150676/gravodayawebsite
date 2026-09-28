@@ -26,6 +26,9 @@ export const propertySchema = z.object({
   bathrooms: z.number().int("Bathrooms must be a whole number").min(0).max(20, "Bathrooms cannot exceed 20").optional(),
 
   amenities: z.array(z.string()).default([]),
+  selling_points: z.array(z.string().max(150, "Each selling point must be under 150 characters"))
+    .max(12, "Up to 12 selling points")
+    .default([]),
   is_for_rent: z.boolean().default(false),
   is_featured: z.boolean().default(false),
   status: z.enum(["active", "sold", "rented", "inactive"]).default("active"),

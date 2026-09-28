@@ -1,9 +1,8 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { SITE_CONTENT_TAG } from "@/lib/queries/site-content";
 
 const SETTING_KEYS = [
@@ -19,12 +18,6 @@ const SETTING_KEYS = [
   "whyus_image_url",
   "company_tagline",
 ] as const;
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/admin/login");
-}
 
 function revalidatePublic() {
   // the page cache alone isn't enough — the getters are tag-cached as well

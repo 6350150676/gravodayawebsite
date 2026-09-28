@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Star, Trash2, Loader2 } from "lucide-react";
-import { deletePropertyImageAction, setCoverImageAction } from "@/lib/actions/property.actions";
+import { Star, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  deletePropertyImageAction,
+  movePropertyImageAction,
+  setCoverImageAction,
+} from "@/lib/actions/property.actions";
 
 interface Image {
   id: string;
@@ -21,13 +25,18 @@ function ImageCard({
   img,
   propertyId,
   supabaseUrl,
+  canMoveEarlier,
+  canMoveLater,
 }: {
   img: Image;
   propertyId: string;
   supabaseUrl: string;
+  canMoveEarlier: boolean;
+  canMoveLater: boolean;
 }) {
   const [isCoverPending, startCover] = useTransition();
   const [isDeletePending, startDelete] = useTransition();
+  const [isMovePending, startMove] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   function handleSetCover() {
@@ -53,7 +62,18 @@ function ImageCard({
     });
   }
 
-  const isPending = isCoverPending || isDeletePending;
+  function handleMove(direction: -1 | 1) {
+    setError(null);
+    startMove(async () => {
+      try {
+        await movePropertyImageAction(img.id, propertyId, direction);
+      } catch {
+        setError("Failed to move image");
+      }
+    });
+  }
+
+  const isPending = isCoverPending || isDeletePending || isMovePending;
 
   return (
     <div className="relative group">
@@ -74,7 +94,17 @@ function ImageCard({
         </div>
       )}
       {!isPending && (
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity flex items-center justify-center gap-2">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 focus-within:opacity-100 rounded-lg transition-opacity flex items-center justify-center gap-1.5">
+          {canMoveEarlier && (
+            <button
+              type="button"
+              title="Move earlier"
+              onClick={() => handleMove(-1)}
+              className="bg-white text-gray-800 rounded-full p-1 hover:bg-gray-100"
+            >
+              <ChevronLeft size={13} />
+            </button>
+          )}
           {!img.is_cover && (
             <button
               type="button"
@@ -93,6 +123,16 @@ function ImageCard({
           >
             <Trash2 size={13} />
           </button>
+          {canMoveLater && (
+            <button
+              type="button"
+              title="Move later"
+              onClick={() => handleMove(1)}
+              className="bg-white text-gray-800 rounded-full p-1 hover:bg-gray-100"
+            >
+              <ChevronRight size={13} />
+            </button>
+          )}
         </div>
       )}
       {error && (
@@ -105,20 +145,32 @@ function ImageCard({
 export function ImageManager({ images, propertyId, supabaseUrl }: Props) {
   if (!images.length) return null;
 
+  // Same order as the public gallery: cover first, then by sort_order. The
+  // cover is changed with the star, so only the others get arrows.
+  const ordered = [...images].sort((a, b) => {
+    if (a.is_cover !== b.is_cover) return a.is_cover ? -1 : 1;
+    return a.sort_order - b.sort_order;
+  });
+  const firstMovable = ordered.findIndex((img) => !img.is_cover);
+
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-      <h2 className="font-semibold text-gray-800 mb-3">Manage Images</h2>
+      <h2 className="font-semibold text-gray-800 mb-1">Manage Images</h2>
+      <p className="text-xs text-gray-400 mb-3">
+        Shown in this order on the listing. Hover a photo to reorder, set it as the cover or delete it.
+        Add new photos at the bottom of the form.
+      </p>
       <div className="flex flex-wrap gap-3">
-        {[...images]
-          .sort((a, b) => a.sort_order - b.sort_order)
-          .map((img) => (
-            <ImageCard
-              key={img.id}
-              img={img}
-              propertyId={propertyId}
-              supabaseUrl={supabaseUrl}
-            />
-          ))}
+        {ordered.map((img, i) => (
+          <ImageCard
+            key={img.id}
+            img={img}
+            propertyId={propertyId}
+            supabaseUrl={supabaseUrl}
+            canMoveEarlier={!img.is_cover && i > firstMovable}
+            canMoveLater={!img.is_cover && i < ordered.length - 1}
+          />
+        ))}
       </div>
     </div>
   );

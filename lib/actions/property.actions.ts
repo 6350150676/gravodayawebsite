@@ -1,12 +1,16 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath, revalidateTag } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { INVENTORY_TAG } from "@/lib/queries/tags";
+import { requireAdmin } from "@/lib/auth/require-admin";
+import { toListingWebp } from "@/lib/images/listing-image";
+import {
+  appendPropertyImages,
+  revalidatePublicProperties,
+  uniquePropertySlug,
+} from "@/lib/properties/listing";
 import { propertySchema } from "@/lib/validations/property";
-import { slugify } from "@/lib/utils";
 
 function toNum(value: FormDataEntryValue | null): number | undefined {
   if (!value || value === "") return undefined;
@@ -19,13 +23,6 @@ function validationError(err: ReturnType<typeof propertySchema.safeParse>): stri
   const e = err.error.errors[0];
   const field = e.path.length ? `${String(e.path[0]).replace(/_/g, " ")}: ` : "";
   return `${field}${e.message}`;
-}
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/admin/login");
-  return user;
 }
 
 function parseFormData(formData: FormData) {
@@ -43,6 +40,11 @@ function parseFormData(formData: FormData) {
     bedrooms: toNum(formData.get("bedrooms")),
     bathrooms: toNum(formData.get("bathrooms")),
     amenities: formData.getAll("amenities") as string[],
+    // one per line in the form
+    selling_points: String(formData.get("selling_points") ?? "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean),
     is_for_rent: formData.get("is_for_rent") === "true",
     is_featured: formData.get("is_featured") === "true",
     status: (formData.get("status") as string) || "active",
@@ -51,38 +53,6 @@ function parseFormData(formData: FormData) {
   };
 }
 
-
-// A property's URL is its title. Slugs used to get a Date.now() suffix purely to
-// guarantee uniqueness, which left every link 13 digits of noise longer than it
-// needed to be — an actual collision now takes a small numeric suffix instead.
-async function uniquePropertySlug(title: string): Promise<string> {
-  const supabase = createAdminClient();
-  const base = slugify(title) || "property";
-
-  for (let n = 1; n < 50; n++) {
-    const candidate = n === 1 ? base : `${base}-${n}`;
-    const { data } = await supabase
-      .from("properties")
-      .select("id")
-      .eq("slug", candidate)
-      .limit(1);
-    if (!data?.length) return candidate;
-  }
-
-  // Absurdly unlikely; fall back to the old timestamp scheme rather than fail.
-  return `${base}-${Date.now()}`;
-}
-
-// Public pages are now statically cached, so every admin write has to bust them
-// explicitly — otherwise an edit wouldn't show up until the ISR window expires.
-function revalidatePublicProperties() {
-  revalidateTag(INVENTORY_TAG); // the home page's featured list is cached data, not just HTML
-  revalidatePath("/");
-  revalidatePath("/properties");
-  revalidatePath("/properties/[slug]", "page");
-  revalidatePath("/projects/[slug]", "page"); // project pages list their units
-  revalidatePath("/sitemap.xml");
-}
 
 export async function createPropertyAction(
   _prev: string | null,
@@ -123,9 +93,23 @@ export async function updatePropertyAction(
   const parsed = propertySchema.safeParse(parseFormData(formData));
   if (!parsed.success) return validationError(parsed);
 
+  // A field emptied in the form parses to undefined, which the JSON body drops
+  // — so without this, clearing e.g. the bedrooms left the old value in place.
+  const d = parsed.data;
   const { error } = await supabase
     .from("properties")
-    .update(parsed.data)
+    .update({
+      ...d,
+      price_label: d.price_label ?? null,
+      locality_id: d.locality_id ?? null,
+      project_id: d.project_id ?? null,
+      address: d.address ?? null,
+      area_sqft: d.area_sqft ?? null,
+      bedrooms: d.bedrooms ?? null,
+      bathrooms: d.bathrooms ?? null,
+      map_lat: d.map_lat ?? null,
+      map_lng: d.map_lng ?? null,
+    })
     .eq("id", id);
 
   if (error) return error.message;
@@ -193,33 +177,47 @@ export async function setCoverImageAction(imageId: string, propertyId: string) {
   revalidatePublicProperties();
 }
 
-async function uploadPropertyImages(propertyId: string, files: File[]) {
+// Moves one photo a step earlier or later. The cover always shows first on the
+// public page, so only the other photos are reordered here — the cover changes
+// through setCoverImageAction.
+export async function movePropertyImageAction(imageId: string, propertyId: string, direction: -1 | 1) {
+  await requireAdmin();
+  if (direction !== -1 && direction !== 1) return;
   const supabase = createAdminClient();
-  const sharp = (await import("sharp")).default;
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+  const { data } = await supabase
+    .from("property_images")
+    .select("id, is_cover")
+    .eq("property_id", propertyId)
+    .order("sort_order")
+    .order("created_at");
+
+  const ids = (data ?? []).filter((img) => !img.is_cover).map((img) => img.id);
+  const from = ids.indexOf(imageId);
+  const to = from + direction;
+  if (from < 0 || to < 0 || to >= ids.length) return;
+  [ids[from], ids[to]] = [ids[to], ids[from]];
+
+  // the cover shows first whatever its sort_order, so just renumber the rest
+  const results = await Promise.all(
+    ids.map((id, i) => supabase.from("property_images").update({ sort_order: i + 1 }).eq("id", id)),
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) throw new Error(failed.error.message);
+
+  revalidatePath(`/admin/properties/${propertyId}/edit`);
+  revalidatePublicProperties();
+}
+
+async function uploadPropertyImages(propertyId: string, files: File[]) {
+  const webps: Buffer[] = [];
+  for (const file of files) {
     if (!file || file.size === 0) continue;
-
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const webp = await sharp(buffer)
-      .resize(1280, 960, { fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 82 })
-      .toBuffer();
-
-    const fileName = `${propertyId}/${crypto.randomUUID()}.webp`;
-
-    const { error } = await supabase.storage
-      .from("property-images")
-      .upload(fileName, webp, { contentType: "image/webp", upsert: false });
-
-    if (error) continue;
-
-    await supabase.from("property_images").insert({
-      property_id: propertyId,
-      storage_path: fileName,
-      is_cover: i === 0,
-      sort_order: i,
-    });
+    try {
+      webps.push(await toListingWebp(file));
+    } catch (err) {
+      console.error("[uploadPropertyImages]", err instanceof Error ? err.message : err);
+    }
   }
+  await appendPropertyImages(propertyId, webps);
 }

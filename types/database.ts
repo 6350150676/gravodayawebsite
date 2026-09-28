@@ -9,7 +9,7 @@ export type Json =
 export type PropertyStatus = "active" | "sold" | "rented" | "inactive";
 export type ProjectStatus = "active" | "inactive";
 export type InquiryStatus = "new" | "contacted" | "closed";
-export type SubmissionStatus = "pending" | "approved" | "rejected" | "published";
+export type SubmissionStatus = "pending" | "approved" | "rejected";
 
 export interface Database {
   public: {
@@ -55,6 +55,7 @@ export interface Database {
           bedrooms: number | null;
           bathrooms: number | null;
           amenities: string[];
+          selling_points: string[];
           is_for_rent: boolean;
           is_featured: boolean;
           status: PropertyStatus;
@@ -78,6 +79,7 @@ export interface Database {
           bedrooms?: number | null;
           bathrooms?: number | null;
           amenities?: string[];
+          selling_points?: string[];
           is_for_rent?: boolean;
           is_featured?: boolean;
           status?: PropertyStatus;
@@ -99,6 +101,7 @@ export interface Database {
           bedrooms?: number | null;
           bathrooms?: number | null;
           amenities?: string[];
+          selling_points?: string[];
           is_for_rent?: boolean;
           is_featured?: boolean;
           status?: PropertyStatus;
@@ -296,8 +299,16 @@ export interface Database {
           locality: string | null;
           description: string | null;
           asking_price: number | null;
+          area_sqft: number | null;
+          bedrooms: number | null;
+          bathrooms: number | null;
           status: SubmissionStatus;
           admin_notes: string | null;
+          rejection_reason: string | null;
+          approved_at: string | null;
+          rejected_at: string | null;
+          /** the listing an approval created; null until approved */
+          property_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -309,8 +320,15 @@ export interface Database {
           locality?: string | null;
           description?: string | null;
           asking_price?: number | null;
+          area_sqft?: number | null;
+          bedrooms?: number | null;
+          bathrooms?: number | null;
           status?: SubmissionStatus;
           admin_notes?: string | null;
+          rejection_reason?: string | null;
+          approved_at?: string | null;
+          rejected_at?: string | null;
+          property_id?: string | null;
         };
         Update: {
           name?: string;
@@ -321,15 +339,22 @@ export interface Database {
           locality?: string | null;
           description?: string | null;
           asking_price?: number | null;
+          area_sqft?: number | null;
+          bedrooms?: number | null;
+          bathrooms?: number | null;
           status?: SubmissionStatus;
           admin_notes?: string | null;
+          rejection_reason?: string | null;
+          approved_at?: string | null;
+          rejected_at?: string | null;
+          property_id?: string | null;
         };
         Relationships: [];
       };
       submission_images: {
-        Row: { id: string; submission_id: string; storage_path: string; created_at: string };
-        Insert: { submission_id: string; storage_path: string };
-        Update: { submission_id?: string; storage_path?: string };
+        Row: { id: string; submission_id: string; storage_path: string; sort_order: number; created_at: string };
+        Insert: { submission_id: string; storage_path: string; sort_order?: number };
+        Update: { submission_id?: string; storage_path?: string; sort_order?: number };
         Relationships: [];
       };
       contact_messages: {

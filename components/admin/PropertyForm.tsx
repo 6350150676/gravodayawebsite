@@ -4,39 +4,7 @@ import { useRef, useState, useActionState, startTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, X } from "lucide-react";
 import type { PropertyWithRelations } from "@/types";
-
-// Downscale to JPEG via canvas before upload; falls back to the original file.
-async function compressImage(file: File, maxWidth = 1280, maxHeight = 960, quality = 0.82): Promise<File> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      let { width, height } = img;
-      if (width > maxWidth || height > maxHeight) {
-        const ratio = Math.min(maxWidth / width, maxHeight / height);
-        width = Math.round(width * ratio);
-        height = Math.round(height * ratio);
-      }
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) { resolve(file); return; }
-      ctx.drawImage(img, 0, 0, width, height);
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) { resolve(file); return; }
-          resolve(new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" }));
-        },
-        "image/jpeg",
-        quality,
-      );
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
-    img.src = url;
-  });
-}
+import { compressImage } from "@/lib/images/compress-image";
 
 interface Lookup { id: number; name: string; slug: string }
 interface LocalityRow { id: number; name: string; slug: string; city_id: number }
@@ -218,6 +186,11 @@ export function PropertyForm({ action, property, categories, cities, localities,
               className={input} placeholder="e.g. 2" />
           </Field>
         </div>
+
+        <Field label="Selling Points">
+          <textarea name="selling_points" rows={4} defaultValue={property?.selling_points?.join("\n") ?? ""}
+            className={input} placeholder={"One per line, e.g.\nCorner plot with two open sides\n5 min drive to Har Ki Pauri"} />
+        </Field>
 
         <Field label="Amenities">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1">

@@ -1,21 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { inquirySchema } from "@/lib/validations/inquiry";
 import { notifyTeam } from "@/lib/notifications/notify-team";
 import type { Database, InquiryStatus } from "@/types/database";
 
 type InquiryInsert = Database["public"]["Tables"]["inquiries"]["Insert"];
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/admin/login");
-  return user;
-}
 
 export type InquiryFormState = {
   ok: boolean;

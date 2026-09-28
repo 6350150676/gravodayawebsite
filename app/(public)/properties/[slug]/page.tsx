@@ -245,6 +245,23 @@ export default async function PropertyDetailPage({ params }: Props) {
               </div>
             </Reveal>
 
+            {/* Selling points */}
+            {!!property.selling_points?.length && (
+              <Reveal as="section" className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h2 className="text-lg font-bold text-[var(--color-brand)] mb-4">Why You&apos;ll Love It</h2>
+                <ul className="space-y-2.5">
+                  {property.selling_points.map((point) => (
+                    <li key={point} className="flex items-start gap-2.5 text-sm text-gray-600">
+                      <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-[var(--color-gold)]/15 flex items-center justify-center">
+                        <Check size={12} className="text-[var(--color-gold)]" strokeWidth={3} />
+                      </span>
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            )}
+
             {/* Amenities */}
             {property.amenities.length > 0 && (
               <Reveal as="section" className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">

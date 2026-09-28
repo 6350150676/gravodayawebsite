@@ -47,6 +47,12 @@ you bring an existing database up to date after pulling new code.
 12. `20260830000001_short_slugs.sql` — drops the `-1784899386197` timestamp
     suffix from slugs created under the old scheme, retiring each old project
     slug as a 301 redirect
+13. `20260928000000_submission_review.sql` — the Sell Property review workflow:
+    seller photos (private `submission-images` bucket), approve/reject with
+    `rejection_reason` / `approved_at` / `rejected_at`, the `property_id` link
+    to the published listing, and `selling_points` on properties.
+    **Required for the Sell form and the admin property editor** — both write
+    the new columns and fail with a "missing column" message until it's run.
 
 ### Existing projects: move their text into the new sections
 
