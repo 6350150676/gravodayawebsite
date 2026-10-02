@@ -27,7 +27,7 @@ export function ProjectInquiryPanel({
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-        <h2 className="text-lg font-bold text-(--color-brand) wrap-break-word">
+        <h2 className="text-2xl font-semibold text-(--color-brand) wrap-break-word">
           Interested in {project.name}?
         </h2>
         <p className="mb-5 mt-1 text-xs text-gray-400">

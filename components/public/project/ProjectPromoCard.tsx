@@ -46,7 +46,7 @@ export function ProjectPromoCard({
       )}
 
       <div className="relative max-w-lg">
-        <h2 className="text-2xl font-bold leading-tight text-white sm:text-3xl wrap-break-word">
+        <h2 className="text-3xl font-semibold leading-tight text-white sm:text-4xl wrap-break-word">
           Visit {project.name} in person
         </h2>
         {subline && (

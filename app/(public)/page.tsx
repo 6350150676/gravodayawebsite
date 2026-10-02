@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Phone, Building2, Home, Map, Store, Trees, ArrowRight } from "lucide-react";
+import { Phone, Building2, Home, Map, Store, Trees, ArrowRight, ArrowUpRight, Mail } from "lucide-react";
 import { getFeaturedProperties, getCategories, getCities } from "@/lib/queries/properties";
 import { getFeaturedProjects } from "@/lib/queries/projects";
 import {
@@ -11,7 +11,8 @@ import {
   getHeroSlides,
 } from "@/lib/queries/site-content";
 import { PropertyCard } from "@/components/public/PropertyCard";
-import { ProjectCard } from "@/components/public/ProjectCard";
+import { ProjectShowcaseCard } from "@/components/public/home/ProjectShowcaseCard";
+import { SectionHeading, Eyebrow } from "@/components/public/home/SectionHeading";
 import { HeroSearch } from "@/components/public/HeroSearch";
 import { HeroCarousel } from "@/components/public/HeroCarousel";
 import { InquiryForm } from "@/components/public/InquiryForm";
@@ -27,6 +28,15 @@ export const metadata: Metadata = {
     "Find premium villas, plots and residential properties in Haridwar. Trusted by families across Uttarakhand.",
   alternates: { canonical: "/" },
 };
+
+// Each one restates a commitment already made elsewhere on the site (hero
+// slides, "Why choose us") — keep them in step if that copy changes.
+const PROMISES = [
+  { figure: "RERA", label: "Registered & legally compliant" },
+  { figure: "0%", label: "Brokerage — buy direct" },
+  { figure: "100%", label: "Transparent pricing" },
+  { figure: "1:1", label: "Dedicated relationship manager" },
+];
 
 function categoryIcon(name: string) {
   const n = name.toLowerCase();
@@ -75,6 +85,13 @@ export default async function HomePage() {
     },
   };
 
+  // Section numbers ("01", "02"…) follow render order, so a section that's
+  // hidden for lack of content doesn't leave a gap in the sequence.
+  let sectionCount = 0;
+  const nextIndex = () => String(++sectionCount).padStart(2, "0");
+
+  const closingImage = heroSlides[heroSlides.length - 1]?.image_url ?? settings.hero_image_url;
+
   return (
     <div className="bg-(--color-sand)">
       <script
@@ -84,107 +101,115 @@ export default async function HomePage() {
 
       {/* ── HERO CAROUSEL ────────────────────────────────────────── */}
       <HeroCarousel slides={heroSlides}>
-        {/* Search widget */}
-        <div className="mt-8">
-          <HeroSearch cities={cities} categories={categories} />
-        </div>
-
-        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-white/55 text-sm">
-          <span>✓ RERA Registered</span>
-          <span>✓ Transparent Pricing</span>
-          <span>✓ Local Haridwar Experts</span>
-          <Link href="/contact" className="text-(--color-gold) font-semibold hover:underline">
-            List your property →
-          </Link>
-        </div>
+        <HeroSearch cities={cities} categories={categories} />
       </HeroCarousel>
 
-      {/* ── BROWSE BY PROPERTY TYPE ──────────────────────────────── */}
-      {categories.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-2">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-2">Browse by Type</p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-(--color-brand)">Explore Property Types</h2>
+      {/* ── BRAND STATEMENT ─────────────────────────────────────── */}
+      <section className="bg-(--color-ivory) border-b border-(--color-charcoal)/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16 items-center">
+          <Reveal className="lg:col-span-7">
+            <Eyebrow>Garvoday Developers Pvt. Ltd.</Eyebrow>
+            <p className="mt-7 font-display text-[2rem] sm:text-4xl lg:text-[2.75rem] leading-[1.18] text-(--color-forest) text-balance">
+              A family-owned, RERA-registered developer building{" "}
+              <em className="text-(--color-terracotta)">gated communities</em> across Haridwar —
+              planned, approved and delivered by our own team.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4 text-xs font-semibold uppercase tracking-[0.22em] text-(--color-forest)">
+              <Link href="/about" className="link-line">
+                Our story <ArrowRight size={14} />
+              </Link>
+              <Link href="/sell" className="link-line text-(--color-terracotta)">
+                List your property <ArrowRight size={14} />
+              </Link>
             </div>
-            <Link href="/properties" className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-(--color-brand) hover:text-(--color-gold) transition-colors">
-              View all <ArrowRight size={15} />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            {categories.map((c) => {
-              const Icon = categoryIcon(c.name);
+          </Reveal>
+
+          <Reveal delay={150} className="lg:col-span-5">
+            <dl className="grid grid-cols-2 border-t border-l border-(--color-charcoal)/12">
+              {PROMISES.map((p) => (
+                <div key={p.label} className="border-r border-b border-(--color-charcoal)/12 px-5 py-7 sm:px-7 sm:py-9">
+                  <dt className="font-display text-4xl sm:text-5xl leading-none text-(--color-forest)">{p.figure}</dt>
+                  <dd className="mt-3 text-[11px] sm:text-xs font-medium uppercase tracking-[0.18em] leading-relaxed text-(--color-charcoal)/65">
+                    {p.label}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── OUR PROJECTS ────────────────────────────────────────── */}
+      {projects.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+          <SectionHeading
+            index={nextIndex()}
+            eyebrow="Featured Projects"
+            title={<>Our <em>Projects</em></>}
+            intro="Gated colonies and villa developments planned, approved and delivered by our own team."
+            action={{ href: "/projects", label: "View all projects" }}
+          />
+          {/* Lead project takes the wide, tall tile; the rest stack beside it */}
+          <div className="mt-14 grid grid-cols-1 gap-5 lg:grid-cols-12 lg:auto-rows-[340px]">
+            {projects.map((p, i) => {
+              const span =
+                projects.length === 1
+                  ? "lg:col-span-12 lg:row-span-2"
+                  : i === 0
+                    ? "lg:col-span-7 lg:row-span-2"
+                    : projects.length === 2
+                      ? "lg:col-span-5 lg:row-span-2"
+                      : "lg:col-span-5";
               return (
-                <Link
-                  key={c.id}
-                  href={`/properties?category=${c.id}`}
-                  className="group flex flex-col items-center text-center gap-3 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md hover:border-(--color-gold)/40 hover:-translate-y-1 transition-all duration-300"
-                >
-                  <span className="flex items-center justify-center w-12 h-12 rounded-full bg-(--color-brand)/5 text-(--color-brand) group-hover:bg-(--color-gold)/15 group-hover:text-(--color-gold) transition-colors">
-                    <Icon size={22} />
-                  </span>
-                  <span className="text-sm font-semibold text-gray-700 group-hover:text-(--color-brand) transition-colors leading-tight">
-                    {c.name}
-                  </span>
-                </Link>
+                <Reveal key={p.id} delay={i * 120} className={span}>
+                  <ProjectShowcaseCard project={p} supabaseUrl={supabaseUrl} feature={i === 0} />
+                </Reveal>
               );
             })}
           </div>
         </section>
       )}
 
-      {/* ── OUR PROJECTS ────────────────────────────────────────── */}
-      {projects.length > 0 && (
-        <section className="bg-white border-y border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-              <div>
-                <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-3">Featured Project</p>
-                <h2 className="text-3xl sm:text-4xl font-bold text-(--color-brand)">Our Projects</h2>
-                <div className="mt-3 w-16 h-1 bg-(--color-gold) rounded-full" />
-                <p className="mt-4 text-gray-500 text-[15px] max-w-xl leading-relaxed">
-                  Gated colonies and villa developments planned, approved and delivered by our own team.
-                </p>
-              </div>
-              <Link href="/projects" className="text-sm font-semibold text-(--color-brand) hover:text-(--color-gold) transition-colors">
-                View All →
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((p, i) => (
-                <Reveal key={p.id} delay={(i % 3) * 110}>
-                  <ProjectCard project={p} supabaseUrl={supabaseUrl} />
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* ── PROJECT ENQUIRY ─────────────────────────────────────── */}
       {projects.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-            <Reveal>
-              <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-3">Enquire Now</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-(--color-brand) leading-snug">
-                Interested in one of our projects?
-              </h2>
-              <div className="mt-3 w-16 h-1 bg-(--color-gold) rounded-full" />
-              <p className="mt-5 text-gray-500 text-[15px] leading-relaxed max-w-md">
-                Leave your details and our team will call you back with layouts, availability and
-                exact pricing — or talk to us right away.
-              </p>
-              <a href={`tel:${settings.phone_tel}`}
-                className="mt-8 inline-flex items-center gap-2.5 bg-(--color-royal) text-white font-bold px-7 py-3.5 rounded-full hover:bg-(--color-royal-dark) transition-colors shadow-lg">
-                <Phone size={15} /> {settings.phone_display}
-              </a>
+        <section className="grain relative isolate overflow-hidden bg-(--color-forest) text-white">
+          <div
+            aria-hidden="true"
+            className="absolute -top-40 -right-40 -z-10 h-[34rem] w-[34rem] rounded-full bg-(--color-terracotta)/15 blur-3xl"
+          />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16 items-center">
+            <Reveal className="lg:col-span-5">
+              <SectionHeading
+                tone="dark"
+                index={nextIndex()}
+                eyebrow="Enquire Now"
+                title={<>Interested in one of our <em>projects?</em></>}
+                intro="Leave your details and our team will call you back with layouts, availability and exact pricing — or talk to us right away."
+              />
+              <dl className="mt-10 border-t border-white/15">
+                <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-6 border-b border-white/15 py-6">
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/50">Call us</dt>
+                  <dd>
+                    <a href={`tel:${settings.phone_tel}`} className="inline-flex items-center gap-3 font-display text-2xl sm:text-3xl hover:text-(--color-terracotta-light) transition-colors">
+                      <Phone size={18} className="text-(--color-terracotta-light)" /> {settings.phone_display}
+                    </a>
+                  </dd>
+                </div>
+                <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-6 border-b border-white/15 py-6">
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/50">Write to us</dt>
+                  <dd className="min-w-0">
+                    <a href={`mailto:${settings.contact_email}`} className="inline-flex items-center gap-3 text-sm sm:text-base text-white/85 hover:text-(--color-terracotta-light) transition-colors">
+                      <Mail size={16} className="shrink-0 text-(--color-terracotta-light)" /> {settings.contact_email}
+                    </a>
+                  </dd>
+                </div>
+              </dl>
             </Reveal>
 
-            <Reveal delay={150}>
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
-                <h3 className="text-base font-bold text-(--color-brand)">Send us your enquiry</h3>
-                <p className="mb-5 mt-1 text-xs text-gray-400">
+            <Reveal delay={150} className="lg:col-span-6 lg:col-start-7">
+              <div className="rounded-sm bg-(--color-ivory) p-6 sm:p-10 text-(--color-charcoal) shadow-[0_40px_100px_-30px_rgba(0,0,0,0.6)]">
+                <h3 className="font-display text-3xl font-medium text-(--color-forest)">Send us your enquiry</h3>
+                <p className="mt-1.5 mb-7 text-sm text-(--color-charcoal)/55">
                   We usually get back within a few hours.
                 </p>
                 <InquiryForm title="Garvoday Projects" phone={settings.phone_tel} />
@@ -195,154 +220,199 @@ export default async function HomePage() {
       )}
 
       {/* ── WHAT ARE YOU LOOKING FOR ─────────────────────────────── */}
-      {intentCards.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20">
-          <div className="text-center mb-12">
-            <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-3">How Can We Help?</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-(--color-brand)">What Are You Looking For?</h2>
-            <div className="mt-3 mx-auto w-16 h-1 bg-(--color-gold) rounded-full" />
-          </div>
+      {(intentCards.length > 0 || categories.length > 0) && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+          <SectionHeading
+            index={nextIndex()}
+            eyebrow="How Can We Help?"
+            title={<>What are you <em>looking for?</em></>}
+          />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {intentCards.map((card, i) => (
-              <Reveal key={card.title} delay={i * 120}>
-                <Link href={card.href}
-                  className="group block h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-100 hover:border-(--color-gold)/30 hover:-translate-y-1 transition-all duration-300">
-
-                  {/* Card photo */}
-                  <div className="relative h-44 overflow-hidden">
+          {intentCards.length > 0 && (
+            <div className="mt-14 grid grid-cols-1 gap-5 md:grid-flow-col md:auto-cols-fr">
+              {intentCards.map((card, i) => (
+                <Reveal key={card.title} delay={i * 120}>
+                  <Link
+                    href={card.href}
+                    className="group relative isolate flex h-[420px] lg:h-[500px] flex-col justify-end overflow-hidden bg-(--color-forest) p-7 sm:p-10 text-white"
+                  >
                     {card.image_url && (
-                      <Image src={card.image_url} alt={card.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width:768px) 100vw, 33vw" />
+                      <Image
+                        src={card.image_url}
+                        alt={card.title}
+                        fill
+                        className="-z-20 object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.05]"
+                        sizes="(max-width:768px) 100vw, 50vw"
+                      />
                     )}
-                    <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
+                    {/* The admin-set accent tints the foot of the photo */}
+                    <div
+                      className="absolute inset-0 -z-10"
+                      style={{
+                        background: `linear-gradient(to top, color-mix(in srgb, ${card.accent} 92%, transparent) 0%, color-mix(in srgb, ${card.accent} 65%, transparent) 50%, color-mix(in srgb, ${card.accent} 15%, transparent) 85%, transparent 100%)`,
+                      }}
+                    />
                     {card.subtitle && (
-                      <span className="absolute bottom-3 left-4 text-white text-xs font-bold tracking-[0.15em] uppercase"
-                        style={{ textShadow: "0 1px 4px rgba(0,0,0,.6)" }}>
+                      <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/80">
+                        <span className="h-px w-8 bg-(--color-terracotta-light)" />
                         {card.subtitle}
+                      </p>
+                    )}
+                    <h3 className="mt-4 font-display text-4xl lg:text-5xl font-medium leading-none">{card.title}</h3>
+                    {card.description && (
+                      <p className="mt-4 max-w-sm text-sm sm:text-[15px] leading-relaxed text-white/75">{card.description}</p>
+                    )}
+                    {card.cta && (
+                      <span className="link-line mt-7 self-start text-xs font-semibold uppercase tracking-[0.22em]">
+                        {card.cta}
                       </span>
                     )}
-                  </div>
+                  </Link>
+                </Reveal>
+              ))}
+            </div>
+          )}
 
-                  {/* Card text */}
-                  <div className="p-6">
-                    <div className="w-8 h-1 rounded-full mb-4 transition-all duration-300 group-hover:w-12" style={{ backgroundColor: card.accent }} />
-                    <h3 className="text-xl font-bold text-(--color-brand) mb-2">{card.title}</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed mb-5">{card.description}</p>
-                    {card.cta && (
-                      <span className="inline-flex items-center gap-1 text-sm font-semibold transition-all group-hover:gap-2" style={{ color: card.accent }}>{card.cta}</span>
-                    )}
-                  </div>
+          {categories.length > 0 && (
+            <Reveal className="mt-16">
+              <div className="mb-2 flex items-center justify-between gap-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-(--color-charcoal)/55">
+                  Browse by property type
+                </p>
+                <Link href="/properties" className="link-line text-xs font-semibold uppercase tracking-[0.22em] text-(--color-forest)">
+                  View all <ArrowRight size={14} />
                 </Link>
-              </Reveal>
-            ))}
-          </div>
+              </div>
+              {/* Hairline index: one row on desktop, a list on mobile */}
+              <div className="grid grid-cols-1 gap-px border-y border-(--color-charcoal)/15 bg-(--color-charcoal)/15 lg:grid-flow-col lg:auto-cols-fr">
+                {categories.map((c) => {
+                  const Icon = categoryIcon(c.name);
+                  return (
+                    <Link
+                      key={c.id}
+                      href={`/properties?category=${c.id}`}
+                      className="group flex items-center justify-between gap-4 bg-(--color-sand) py-7 lg:px-7 lg:first:pl-0 transition-colors"
+                    >
+                      <span className="flex items-center gap-4">
+                        <Icon size={22} strokeWidth={1.25} className="shrink-0 text-(--color-terracotta)" />
+                        <span className="font-display text-2xl leading-tight text-(--color-forest) transition-colors group-hover:text-(--color-terracotta)">
+                          {c.name}
+                        </span>
+                      </span>
+                      <ArrowUpRight
+                        size={18}
+                        className="shrink-0 text-(--color-forest)/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-(--color-terracotta)"
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
+            </Reveal>
+          )}
         </section>
       )}
 
       {/* ── FEATURED PROPERTIES ────────────────────────────────── */}
       {featured.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-            <div>
-              <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-3">Handpicked for You</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-(--color-brand)">Featured Properties</h2>
-              <div className="mt-3 w-16 h-1 bg-(--color-gold) rounded-full" />
+        <section className="border-t border-(--color-charcoal)/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+            <SectionHeading
+              index={nextIndex()}
+              eyebrow="Handpicked for You"
+              title={<>Featured <em>Properties</em></>}
+              action={{ href: "/properties", label: "View all properties" }}
+            />
+            <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featured.map((p, i) => (
+                <Reveal key={p.id} delay={(i % 3) * 110}>
+                  <PropertyCard property={p} supabaseUrl={supabaseUrl} />
+                </Reveal>
+              ))}
             </div>
-            <Link href="/properties" className="text-sm font-semibold text-(--color-brand) hover:text-(--color-gold) transition-colors">
-              View All →
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featured.map((p, i) => (
-              <Reveal key={p.id} delay={(i % 3) * 110}>
-                <PropertyCard property={p} supabaseUrl={supabaseUrl} />
-              </Reveal>
-            ))}
           </div>
         </section>
       )}
 
-      {/* ── WHY GRAVODAYA ───────────────────────────────────────── */}
-      <section className="bg-(--color-sand)">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      {/* ── WHY GARVODAY ────────────────────────────────────────── */}
+      <section className="bg-(--color-ivory) border-y border-(--color-charcoal)/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-center">
 
-            {/* Left */}
-            <Reveal>
-              <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-3">Why Choose Us</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-(--color-brand) leading-snug mb-4">
-                Where Trust Meets<br />Real Estate
-              </h2>
-              <p className="text-gray-500 leading-relaxed mb-8 text-[15px]">
-                We know that buying a home is one of the most important decisions of your life. Our team makes it simple, transparent, and joyful — with honest pricing and hands-on guidance at every step.
-              </p>
-              <ul className="space-y-3.5">
-                {features.map((item) => (
-                  <li key={item} className="flex items-start gap-3.5">
-                    <span className="shrink-0 w-5 h-5 rounded-full bg-(--color-gold)/20 flex items-center justify-center mt-0.5">
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 6l3 3 5-5" stroke="var(--color-gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                    <span className="text-gray-600 text-sm leading-relaxed">{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-10">
-                <a href={`tel:${settings.phone_tel}`}
-                  className="inline-flex items-center gap-2.5 bg-(--color-royal) text-white font-bold px-7 py-3.5 rounded-full hover:bg-(--color-royal-dark) transition-colors shadow-lg">
-                  <Phone size={15} /> Call for Free Consultation
-                </a>
+          {/* Photo, set in an offset terracotta frame */}
+          <Reveal className="lg:col-span-6">
+            <figure className="relative mr-4 mb-4 sm:mr-6 sm:mb-6">
+              <div aria-hidden="true" className="absolute inset-0 translate-x-4 translate-y-4 sm:translate-x-6 sm:translate-y-6 border border-(--color-terracotta)/60" />
+              <div className="relative aspect-[4/5] lg:aspect-auto lg:h-[620px] overflow-hidden">
+                <Image
+                  src={settings.whyus_image_url}
+                  alt="Har Ki Pauri ghat on the Ganga in Haridwar"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width:1024px) 100vw, 50vw"
+                />
               </div>
-            </Reveal>
+              <figcaption className="absolute left-0 bottom-0 bg-(--color-forest) px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.26em] text-white/85">
+                {settings.company_tagline}
+              </figcaption>
+            </figure>
+          </Reveal>
 
-            {/* Right: photo */}
-            <Reveal delay={150} className="relative">
-              <div className="relative h-120 rounded-3xl overflow-hidden shadow-2xl">
-                <Image src={settings.whyus_image_url} alt="Har Ki Pauri ghat on the Ganga in Haridwar" fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" />
-                {/* Gold accent card overlay */}
-                <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-lg">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-(--color-gold) flex items-center justify-center shrink-0 font-bold text-(--color-brand) text-xl">G</div>
-                    <div>
-                      <p className="font-bold text-(--color-brand) text-sm">Garvoday Developers</p>
-                      <p className="text-gray-500 text-xs mt-0.5">{settings.company_tagline}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* decorative blobs */}
-              <div className="absolute -top-5 -right-5 w-28 h-28 rounded-full bg-(--color-gold)/15 -z-10 animate-floaty" />
-              <div className="absolute -bottom-5 -left-5 w-20 h-20 rounded-full bg-(--color-brand)/10 -z-10 animate-floaty" />
-            </Reveal>
-          </div>
+          <Reveal delay={150} className="lg:col-span-6">
+            <SectionHeading
+              index={nextIndex()}
+              eyebrow="Why Choose Us"
+              title={<>Where trust meets <em>real estate</em></>}
+              intro="We know that buying a home is one of the most important decisions of your life. Our team makes it simple, transparent, and joyful — with honest pricing and hands-on guidance at every step."
+            />
+            <ol className="mt-10 border-t border-(--color-charcoal)/12">
+              {features.map((item, i) => (
+                <li key={item} className="flex items-baseline gap-6 border-b border-(--color-charcoal)/12 py-5">
+                  <span className="w-7 shrink-0 font-display text-lg text-(--color-terracotta)">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-[15px] leading-relaxed text-(--color-charcoal)/80">{item}</span>
+                </li>
+              ))}
+            </ol>
+            <a
+              href={`tel:${settings.phone_tel}`}
+              className="mt-10 inline-flex items-center gap-3 rounded-sm bg-(--color-forest) px-8 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white hover:bg-(--color-terracotta) transition-colors duration-300"
+            >
+              <Phone size={15} /> Call for Free Consultation
+            </a>
+          </Reveal>
         </div>
       </section>
 
-      {/* ── CTA BANNER ──────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-(--color-brand)">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/3" />
-          <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-(--color-gold)/[0.07]" />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <p className="text-(--color-gold) text-xs font-bold tracking-[0.2em] uppercase mb-4">Let&apos;s Talk</p>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
-            Ready to Find Your Perfect Home?
-          </h2>
-          <p className="text-white/60 mb-10 text-base max-w-md mx-auto">
-            Talk to our experts today — free consultation, zero obligations.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href={`tel:${settings.phone_tel}`}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-(--color-gold) text-(--color-brand) font-bold px-8 py-4 rounded-full hover:bg-(--color-gold-light) transition-colors shadow-lg text-base">
-              <Phone size={16} /> {settings.phone_display}
-            </a>
-            <Link href="/properties"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-white/10 border border-white/20 text-white font-semibold px-8 py-4 rounded-full hover:bg-white/20 transition-colors text-base backdrop-blur-sm">
-              Browse Properties
-            </Link>
-          </div>
+      {/* ── CLOSING CTA ─────────────────────────────────────────── */}
+      <section className="relative isolate overflow-hidden bg-(--color-forest) text-white">
+        <Image src={closingImage} alt="" fill className="-z-20 object-cover" sizes="100vw" />
+        <div className="absolute inset-0 -z-10 bg-(--color-forest)/85" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-28 lg:py-36 text-center">
+          <Reveal>
+            <div className="flex justify-center">
+              <Eyebrow tone="dark">Let&apos;s Talk</Eyebrow>
+            </div>
+            <h2 className="mt-6 font-display font-medium text-[2.6rem] leading-[1.05] sm:text-6xl lg:text-7xl tracking-[-0.01em] text-balance">
+              Ready to find your <em className="font-normal text-(--color-terracotta-light)">perfect home?</em>
+            </h2>
+            <p className="mt-6 text-base sm:text-lg text-white/70 max-w-md mx-auto">
+              Talk to our experts today — free consultation, zero obligations.
+            </p>
+            <div className="mt-11 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href={`tel:${settings.phone_tel}`}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-sm bg-(--color-terracotta) px-9 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white hover:bg-(--color-terracotta-light) transition-colors duration-300"
+              >
+                <Phone size={15} /> {settings.phone_display}
+              </a>
+              <Link
+                href="/properties"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-sm border border-white/35 px-9 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white hover:bg-white hover:text-(--color-forest) transition-colors duration-300"
+              >
+                Browse Properties <ArrowRight size={15} />
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 

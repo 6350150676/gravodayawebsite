@@ -41,7 +41,7 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
         <div className="flex flex-col flex-1 min-w-0 p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="font-bold text-gray-900 text-base sm:text-lg leading-snug line-clamp-2 group-hover:text-[var(--color-brand)] transition-colors">
+              <h3 className="font-semibold text-gray-900 text-xl sm:text-2xl leading-tight line-clamp-2 group-hover:text-[var(--color-brand)] transition-colors">
                 {property.title}
               </h3>
               <p className="mt-1.5 flex items-center gap-1.5 text-gray-400 text-xs sm:text-sm">
@@ -101,7 +101,7 @@ export function PropertyCard({ property, supabaseUrl, layout = "vertical" }: Pro
       </div>
 
       <div className="p-5">
-        <p className="font-semibold text-gray-900 text-[15px] leading-snug line-clamp-2 group-hover:text-[var(--color-brand)] transition-colors mb-2">
+        <p className="font-display font-semibold text-gray-900 text-xl leading-tight line-clamp-2 group-hover:text-[var(--color-brand)] transition-colors mb-2">
           {property.title}
         </p>
 

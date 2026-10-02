@@ -21,7 +21,7 @@ export default async function ProjectsPage() {
         <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.2em] uppercase mb-2">
           Our Projects
         </p>
-        <h1 className="text-3xl font-bold text-[var(--color-brand)] mb-8">
+        <h1 className="text-4xl sm:text-5xl font-semibold text-[var(--color-brand)] mb-8">
           Colony &amp; Villa Projects
         </h1>
 

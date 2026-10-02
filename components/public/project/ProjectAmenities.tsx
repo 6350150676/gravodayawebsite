@@ -31,7 +31,7 @@ export function ProjectAmenities({ groups }: { groups: ProjectAmenityGroup[] }) 
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-(--color-brand)">
                   <Icon size={16} strokeWidth={1.7} className="text-(--color-gold)" />
                 </span>
-                <h3 className="text-[15px] font-bold text-(--color-brand) wrap-break-word">
+                <h3 className="text-xl font-semibold leading-tight text-(--color-brand) wrap-break-word">
                   {group.title}
                 </h3>
               </div>

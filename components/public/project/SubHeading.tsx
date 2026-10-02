@@ -6,7 +6,7 @@
  */
 export function SubHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-5 border-b border-gray-200 pb-2.5 text-[12px] font-bold uppercase tracking-[0.16em] text-(--color-brand)">
+    <h2 className="mb-5 border-b border-gray-200 pb-2.5 font-sans text-[12px] font-bold uppercase tracking-[0.16em] text-(--color-brand)">
       {children}
     </h2>
   );

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Poppins, Inter } from "next/font/google";
+import { Poppins, Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { RouteProgress } from "@/components/public/RouteProgress";
 import { MetaPixel } from "@/components/public/MetaPixel";
@@ -9,6 +9,15 @@ const poppins = Poppins({
         subsets: ["latin"],
         weight: ["500", "600", "700"],
         variable: "--font-poppins",
+        display: "swap",
+});
+
+// Display serif for every public heading. Poppins stays for the admin panel.
+const cormorant = Cormorant_Garamond({
+        subsets: ["latin"],
+        weight: ["400", "500", "600"],
+        style: ["normal", "italic"],
+        variable: "--font-cormorant",
         display: "swap",
 });
 
@@ -75,7 +84,7 @@ export default function RootLayout({
         children: React.ReactNode;
 }) {
         return (
-                <html lang="en" className={`${poppins.variable} ${inter.variable}`} suppressHydrationWarning>
+                <html lang="en" className={`${poppins.variable} ${inter.variable} ${cormorant.variable}`} suppressHydrationWarning>
                         <body>
                                 <script
                                         type="application/ld+json"

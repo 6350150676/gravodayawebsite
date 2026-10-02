@@ -128,7 +128,7 @@ export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
 
           {/* Quick links */}
           <div>
-            <h3 className="text-[var(--color-gold)] font-semibold text-xs uppercase tracking-[0.18em] mb-5">Quick Links</h3>
+            <h3 className="font-sans text-[var(--color-gold)] font-semibold text-xs uppercase tracking-[0.18em] mb-5">Quick Links</h3>
             <ul className="space-y-3">
               {QUICK_LINKS.map((l) => (
                 <li key={l.href + l.label}>
@@ -142,7 +142,7 @@ export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
 
           {/* Contact */}
           <div>
-            <h3 className="text-[var(--color-gold)] font-semibold text-xs uppercase tracking-[0.18em] mb-5">Get In Touch</h3>
+            <h3 className="font-sans text-[var(--color-gold)] font-semibold text-xs uppercase tracking-[0.18em] mb-5">Get In Touch</h3>
             <ul className="space-y-3 text-sm text-white/60">
               <li className="flex items-start gap-2.5">
                 <span className="mt-0.5 flex-shrink-0">📍</span>
@@ -170,7 +170,7 @@ export function Footer({ phoneTel, phoneDisplay, email, address }: Props) {
               </li>
             </ul>
 
-            <h3 className="text-[var(--color-gold)] font-semibold text-xs uppercase tracking-[0.18em] mt-8 mb-4">Follow Us</h3>
+            <h3 className="font-sans text-[var(--color-gold)] font-semibold text-xs uppercase tracking-[0.18em] mt-8 mb-4">Follow Us</h3>
             <div className="flex items-center gap-3">
               {SOCIAL_LINKS.map((s) => (
                 <a

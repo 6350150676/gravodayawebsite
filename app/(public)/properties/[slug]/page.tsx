@@ -192,7 +192,7 @@ export default async function PropertyDetailPage({ params }: Props) {
               <span className="inline-block text-xs font-semibold text-[var(--color-royal)] bg-[var(--color-royal)]/10 px-3 py-1 rounded-full">
                 {property.category.name}
               </span>
-              <h1 className="mt-3 text-2xl sm:text-3xl font-bold text-[var(--color-brand)] leading-tight break-words">
+              <h1 className="mt-3 text-3xl sm:text-4xl font-semibold text-[var(--color-brand)] leading-tight break-words">
                 {property.title}
               </h1>
               <p className="mt-2 flex items-center gap-1.5 text-gray-500 text-sm">
@@ -234,7 +234,7 @@ export default async function PropertyDetailPage({ params }: Props) {
 
             {/* Description */}
             <Reveal as="section" className="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h2 className="text-lg font-bold text-[var(--color-brand)] mb-3">About this property</h2>
+              <h2 className="text-2xl font-semibold text-[var(--color-brand)] mb-3">About this property</h2>
               <p className="text-gray-600 text-[15px] leading-relaxed whitespace-pre-line">
                 {property.description}
               </p>
@@ -248,7 +248,7 @@ export default async function PropertyDetailPage({ params }: Props) {
             {/* Selling points */}
             {!!property.selling_points?.length && (
               <Reveal as="section" className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="text-lg font-bold text-[var(--color-brand)] mb-4">Why You&apos;ll Love It</h2>
+                <h2 className="text-2xl font-semibold text-[var(--color-brand)] mb-4">Why You&apos;ll Love It</h2>
                 <ul className="space-y-2.5">
                   {property.selling_points.map((point) => (
                     <li key={point} className="flex items-start gap-2.5 text-sm text-gray-600">
@@ -265,7 +265,7 @@ export default async function PropertyDetailPage({ params }: Props) {
             {/* Amenities */}
             {property.amenities.length > 0 && (
               <Reveal as="section" className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="text-lg font-bold text-[var(--color-brand)] mb-4">Amenities &amp; Features</h2>
+                <h2 className="text-2xl font-semibold text-[var(--color-brand)] mb-4">Amenities &amp; Features</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {property.amenities.map((a) => (
                     <div key={a} className="flex items-center gap-2.5 text-sm text-gray-600">
@@ -283,7 +283,7 @@ export default async function PropertyDetailPage({ params }: Props) {
           </div>
 
           {/* ════════════ RIGHT SIDEBAR ════════════ */}
-          <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
+          <aside className="lg:sticky lg:top-24 lg:self-start space-y-4">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               {/* Price header */}
               <div className="bg-[var(--color-brand)] px-6 py-5">
@@ -297,7 +297,7 @@ export default async function PropertyDetailPage({ params }: Props) {
 
               {/* Form */}
               <div className="p-6">
-                <h3 className="text-base font-bold text-[var(--color-brand)] mb-1">Interested in this property?</h3>
+                <h3 className="text-xl font-semibold text-[var(--color-brand)] mb-1">Interested in this property?</h3>
                 <p className="text-xs text-gray-400 mb-4">Send us a message and we&apos;ll get back to you.</p>
                 <InquiryForm propertyId={property.id} title={property.title} phone={PHONE_TEL} />
               </div>
@@ -338,7 +338,7 @@ export default async function PropertyDetailPage({ params }: Props) {
                 <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.2em] uppercase mb-1">
                   You may also like
                 </p>
-                <h2 className="text-2xl font-bold text-[var(--color-brand)]">
+                <h2 className="text-3xl font-semibold text-[var(--color-brand)]">
                   Similar properties in {property.city.name}
                 </h2>
               </div>

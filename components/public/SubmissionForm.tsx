@@ -122,7 +122,7 @@ export function SubmissionForm() {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
         <CheckCircle2 size={52} className="text-green-500" />
-        <h3 className="text-xl font-bold text-[var(--color-brand)]">Submission received!</h3>
+        <h3 className="text-2xl font-semibold text-[var(--color-brand)]">Submission received!</h3>
         <p className="text-sm text-gray-500 max-w-sm">
           Thank you for listing with Garvoday Developers. Our team will review your property before it is
           published and get in touch within 24 hours.

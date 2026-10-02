@@ -170,7 +170,7 @@ export function ProjectRichText({ text }: { text: string }) {
       blocks.push(
         <h3
           key={idx}
-          className="mt-6 mb-1 first:mt-0 text-[13px] font-bold tracking-[0.14em] uppercase text-[var(--color-gold)] border-b border-[var(--color-gold)]/20 pb-2"
+          className="mt-6 mb-1 first:mt-0 font-sans text-[13px] font-bold tracking-[0.14em] uppercase text-[var(--color-gold)] border-b border-[var(--color-gold)]/20 pb-2"
         >
           {stripped}
         </h3>

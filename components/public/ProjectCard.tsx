@@ -40,7 +40,7 @@ export function ProjectCard({
         )}
       </div>
       <div className="p-5">
-        <p className="font-semibold text-gray-900 text-[15px] leading-snug line-clamp-2 group-hover:text-(--color-brand) transition-colors mb-2">
+        <p className="font-display font-semibold text-gray-900 text-xl leading-tight line-clamp-2 group-hover:text-(--color-brand) transition-colors mb-2">
           {project.name}
         </p>
         {project.tagline && (

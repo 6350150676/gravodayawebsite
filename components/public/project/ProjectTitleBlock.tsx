@@ -42,7 +42,7 @@ export function ProjectTitleBlock({
         </div>
       )}
 
-      <h1 className="mt-3 text-3xl font-bold leading-tight text-(--color-brand) sm:text-4xl wrap-break-word">
+      <h1 className="mt-3 text-4xl font-semibold leading-tight text-(--color-brand) sm:text-5xl wrap-break-word">
         {project.name}
       </h1>
 

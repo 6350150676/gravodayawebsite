@@ -69,10 +69,7 @@ export function IntroGate() {
         </svg>
 
         <div className="gd-wordmark select-none">
-          <p
-            className="font-bold uppercase tracking-[0.28em] text-[var(--color-brand)]"
-            style={{ fontFamily: "var(--font-heading)" }}
-          >
+          <p className="font-bold uppercase tracking-[0.28em] text-[var(--color-brand)]">
             Garvoday
           </p>
           <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-[var(--color-gold)]">

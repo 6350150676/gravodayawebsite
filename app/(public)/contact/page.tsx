@@ -19,7 +19,7 @@ export default async function ContactPage() {
         <p className="text-(--color-gold) text-xs font-bold tracking-[0.2em] uppercase mb-3">
           Get In Touch
         </p>
-        <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
+        <h1 className="text-4xl sm:text-5xl font-semibold text-white leading-tight">
           We&apos;re here to help
         </h1>
         <p className="mt-3 text-white/60 text-sm max-w-md mx-auto">
@@ -32,7 +32,7 @@ export default async function ContactPage() {
 
           {/* Contact Form */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
-            <h2 className="text-xl font-bold text-(--color-brand) mb-1">Send us a message</h2>
+            <h2 className="text-2xl font-semibold text-(--color-brand) mb-1">Send us a message</h2>
             <p className="text-sm text-gray-400 mb-6">We typically respond within a few hours.</p>
             <ContactForm />
           </div>
@@ -40,7 +40,7 @@ export default async function ContactPage() {
           {/* Info sidebar */}
           <div className="space-y-4">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
-              <h3 className="text-base font-bold text-(--color-brand)">Contact Details</h3>
+              <h3 className="text-2xl font-semibold text-(--color-brand)">Contact Details</h3>
 
               <InfoRow icon={Phone} label="Phone">
                 <a href={`tel:${settings.phone_tel}`} className="text-(--color-royal) font-semibold hover:underline">

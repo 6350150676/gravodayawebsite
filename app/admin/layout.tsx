@@ -8,7 +8,9 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    // The public site's headings are serif; the admin keeps sans ones, which
+    // scan better in dense tables and forms.
+    <div className="flex min-h-screen bg-gray-100 [--font-heading:var(--font-poppins),ui-sans-serif,system-ui,sans-serif]">
       <AdminSidebar />
       {/* pt-14 on mobile to clear the fixed top bar; no padding on lg (sidebar is inline) */}
       <main className="flex-1 p-4 pt-18 lg:pt-4 lg:p-8 overflow-auto min-w-0">

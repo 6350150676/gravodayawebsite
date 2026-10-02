@@ -68,7 +68,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
           <p className="text-(--color-gold) text-xs font-bold tracking-[0.22em] uppercase mb-2">
             Explore Our Listings
           </p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white">All Properties</h1>
+          <h1 className="text-4xl sm:text-5xl font-semibold text-white">All Properties</h1>
           <p className="text-white/55 text-sm mt-2">
             Haridwar, Uttarakhand
           </p>
@@ -79,7 +79,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
         <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
 
           {/* ── Filter sidebar ─────────────────────────────── */}
-          <aside className="lg:sticky lg:top-20 lg:self-start">
+          <aside className="lg:sticky lg:top-24 lg:self-start">
             <Suspense>
               <PropertyFilters
                 categories={categories}
@@ -115,7 +115,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
                 {/* Projects — whole developments, shown ahead of single units */}
                 {projects.length > 0 && (
                   <section>
-                    <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 mb-4">
+                    <h2 className="font-sans text-xs font-bold uppercase tracking-[0.18em] text-gray-400 mb-4">
                       {projects.length === 1 ? "Project" : "Projects"}
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -131,7 +131,7 @@ export default async function PropertiesPage({ searchParams }: Props) {
                 {propertyTotal > 0 && (
                   <section>
                     {projects.length > 0 && (
-                      <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 mb-4">
+                      <h2 className="font-sans text-xs font-bold uppercase tracking-[0.18em] text-gray-400 mb-4">
                         Individual Properties
                       </h2>
                     )}

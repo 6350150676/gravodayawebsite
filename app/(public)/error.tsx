@@ -20,7 +20,7 @@ export default function PublicError({
         <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.2em] uppercase mb-3">
           Error
         </p>
-        <h1 className="text-3xl sm:text-4xl font-bold text-[var(--color-brand)] leading-tight">
+        <h1 className="text-4xl sm:text-5xl font-semibold text-[var(--color-brand)] leading-tight">
           Something went wrong
         </h1>
         <p className="mt-3 text-gray-500 text-sm max-w-md mx-auto">

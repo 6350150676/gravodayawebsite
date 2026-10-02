@@ -23,7 +23,7 @@ export default function SellPage() {
         <p className="text-[var(--color-gold)] text-xs font-bold tracking-[0.2em] uppercase mb-3">
           Sell or Rent
         </p>
-        <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
+        <h1 className="text-4xl sm:text-5xl font-semibold text-white leading-tight">
           List your property with us
         </h1>
         <p className="mt-3 text-white/60 text-sm max-w-md mx-auto">
@@ -39,7 +39,7 @@ export default function SellPage() {
               <span className="inline-flex w-11 h-11 rounded-full bg-[var(--color-brand)]/5 items-center justify-center mb-3">
                 <Icon size={20} className="text-[var(--color-brand)]" />
               </span>
-              <p className="font-bold text-sm text-[var(--color-brand)] mb-1">{title}</p>
+              <p className="font-display font-semibold text-xl text-[var(--color-brand)] mb-1">{title}</p>
               <p className="text-xs text-gray-400 leading-relaxed">{desc}</p>
             </div>
           ))}
@@ -47,7 +47,7 @@ export default function SellPage() {
 
         {/* Form */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-10 max-w-2xl mx-auto">
-          <h2 className="text-xl font-bold text-[var(--color-brand)] mb-1">Property Details</h2>
+          <h2 className="text-2xl font-semibold text-[var(--color-brand)] mb-1">Property Details</h2>
           <p className="text-sm text-gray-400 mb-7">
             Fill in the form below and our team will get back to you within 24 hours.
           </p>

@@ -123,7 +123,7 @@ export function ProjectPaymentPlan({
 
         {charges.length > 0 && (
           <aside className="min-w-0 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-            <h3 className="flex items-center gap-2 bg-(--color-brand) px-5 py-3.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white">
+            <h3 className="flex items-center gap-2 bg-(--color-brand) px-5 py-3.5 font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-white">
               <Info size={14} className="shrink-0 text-(--color-gold)" />
               Additional Charges
             </h3>
@@ -209,7 +209,7 @@ function SectionTitle({ title, kicker }: { title: string; kicker: string }) {
     <header className="mb-6 text-center">
       <div className="flex items-center justify-center gap-4">
         <Rule className="rotate-180" />
-        <h2 className="text-xl font-bold uppercase tracking-[0.1em] text-(--color-brand) sm:text-2xl">
+        <h2 className="text-2xl font-semibold uppercase tracking-[0.12em] text-(--color-brand) sm:text-3xl">
           {title}
         </h2>
         <Rule />

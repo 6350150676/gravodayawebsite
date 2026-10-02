@@ -57,7 +57,7 @@ export function InquiryForm({
         <div className="mx-auto w-14 h-14 rounded-full bg-green-50 flex items-center justify-center mb-4">
           <CheckCircle2 className="text-green-600" size={30} />
         </div>
-        <h3 className="text-lg font-bold text-[var(--color-brand)]">Thank you!</h3>
+        <h3 className="text-2xl font-semibold text-[var(--color-brand)]">Thank you!</h3>
         <p className="text-sm text-gray-500 mt-2 leading-relaxed">
           Your inquiry has been received. Our team will reach out to you shortly.
         </p>

@@ -64,7 +64,7 @@ export function PropertyFilters({ categories, cities, total }: Props) {
 
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-sm font-bold text-(--color-brand)">
+          <h2 className="flex items-center gap-2 font-sans text-sm font-bold text-(--color-brand)">
             <SlidersHorizontal size={15} /> Filters
           </h2>
           {hasFilters && (

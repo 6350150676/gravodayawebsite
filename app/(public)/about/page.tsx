@@ -34,7 +34,7 @@ export default function AboutPage() {
           <p className="text-(--color-gold) text-xs font-bold tracking-[0.2em] uppercase mb-3">
             About Us
           </p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-semibold text-white leading-tight">
             Garvoday Developers
           </h1>
           <p className="mt-3 text-white/60 text-sm max-w-lg mx-auto">
@@ -49,7 +49,7 @@ export default function AboutPage() {
         <section className="grid sm:grid-cols-2 gap-8 items-center">
           <div>
             <p className="text-(--color-gold) text-xs font-bold tracking-[0.2em] uppercase mb-3">Our Story</p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-(--color-brand) mb-4">Rooted in Haridwar</h2>
+            <h2 className="text-3xl sm:text-4xl font-semibold text-(--color-brand) mb-4">Rooted in Haridwar</h2>
             <p className="text-gray-600 leading-relaxed text-[15px]">
               Garvoday Realty, by Garvoday Developers Pvt. Ltd., is built around a simple idea: know Haridwar deeply
               and do right by every client. From established neighborhoods to fastest-growing pockets, we bring
@@ -80,7 +80,7 @@ export default function AboutPage() {
           </div>
           <div className="p-6 sm:p-10">
             <p className="text-(--color-gold) text-xs font-bold tracking-[0.2em] uppercase mb-3">Our Vision</p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-(--color-brand) mb-4">
+            <h2 className="text-3xl sm:text-4xl font-semibold text-(--color-brand) mb-4">
               To be Haridwar's most trusted real estate partner
             </h2>
             <p className="text-gray-600 leading-relaxed text-[15px]">
@@ -96,14 +96,14 @@ export default function AboutPage() {
         {/* Values */}
         <section>
           <p className="text-(--color-gold) text-xs font-bold tracking-[0.2em] uppercase mb-3 text-center">What We Stand For</p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-(--color-brand) mb-8 text-center">Our Values</h2>
+          <h2 className="text-3xl sm:text-4xl font-semibold text-(--color-brand) mb-8 text-center">Our Values</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {VALUES.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center">
                 <span className="inline-flex w-11 h-11 rounded-full bg-(--color-brand)/5 items-center justify-center mb-3">
                   <Icon size={20} className="text-(--color-brand)" />
                 </span>
-                <p className="font-bold text-sm text-(--color-brand) mb-1">{title}</p>
+                <p className="font-display font-semibold text-xl text-(--color-brand) mb-1">{title}</p>
                 <p className="text-xs text-gray-400 leading-relaxed">{desc}</p>
               </div>
             ))}

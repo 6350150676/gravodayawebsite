@@ -289,7 +289,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             long as the project has content and no longer. */}
         <div className="space-y-8 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-7">
           <section id="about" className="scroll-mt-32">
-            <h2 className="text-lg font-bold text-(--color-brand)">About this project</h2>
+            <h2 className="text-2xl font-semibold text-(--color-brand)">About this project</h2>
             {lead && (
               <div className="mt-3">
                 <ProjectRichText text={lead} />

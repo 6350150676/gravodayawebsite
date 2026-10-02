@@ -23,18 +23,23 @@ export function Navbar({ phoneTel, phoneDisplay }: Props) {
 
   return (
     <header className="sticky top-0 z-50 bg-[var(--color-brand)] shadow-lg">
-      <nav className="w-full px-5 sm:px-8 lg:px-12 h-28 flex items-center justify-between gap-4">
+      <nav className="w-full px-5 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between gap-4">
         {/* Logo — pinned top-left */}
-        <Link href="/" className="group flex items-center gap-0 shrink-0" onClick={() => setOpen(false)}>
-          <Image
-            src="/logo.png"
-            alt="Garvoday Developers logo"
-            width={96}
-            height={64}
-            priority
-            className="brand-logo h-24 w-auto object-contain select-none flex-shrink-0"
-          />
-          <div className="-ml-8">
+        <Link href="/" className="group flex items-center gap-2.5 shrink-0" onClick={() => setOpen(false)}>
+          {/* logo.png is mostly transparent padding (the emblem is ~40% of its
+              height), so it's drawn at full size inside a tight clipping box —
+              the emblem keeps its size without the padding setting the bar height. */}
+          <span className="flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 overflow-hidden shrink-0">
+            <Image
+              src="/logo.png"
+              alt="Garvoday Developers logo"
+              width={144}
+              height={96}
+              priority
+              className="brand-logo h-20 sm:h-24 w-auto max-w-none object-contain select-none shrink-0"
+            />
+          </span>
+          <div>
             <p className="text-white font-bold text-base sm:text-lg tracking-[0.18em] uppercase leading-tight">Garvoday</p>
             <p className="text-[var(--color-gold)] text-[11px] font-extrabold tracking-[0.22em] uppercase">Realty</p>
           </div>

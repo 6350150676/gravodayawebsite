@@ -16,7 +16,7 @@ export function ContactForm() {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
         <CheckCircle2 size={48} className="text-green-500" />
-        <h3 className="text-lg font-bold text-[var(--color-brand)]">Message received!</h3>
+        <h3 className="text-2xl font-semibold text-[var(--color-brand)]">Message received!</h3>
         <p className="text-sm text-gray-500 max-w-xs">
           Thank you for reaching out. We&apos;ll get back to you within a few hours.
         </p>

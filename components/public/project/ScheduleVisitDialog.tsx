@@ -83,7 +83,7 @@ export function ScheduleVisitDialog({
           <div className="max-h-[inherit] overflow-y-auto">
             <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-6 py-5">
               <div className="min-w-0">
-                <h2 id={titleId} className="text-lg font-bold text-(--color-brand) wrap-break-word">
+                <h2 id={titleId} className="text-2xl font-semibold text-(--color-brand) wrap-break-word">
                   Schedule a Site Visit
                 </h2>
                 <p className="mt-1 text-xs text-gray-400 wrap-break-word">
